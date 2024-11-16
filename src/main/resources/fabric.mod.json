@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "forgotten",
+  "version": "${version}",
+  "name": "Forgotten",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/marco/Forgotten"
+  },
+  "license": "MIT",
+  "icon": "assets/forgotten/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.restonic4.forgotten.client.ForgottenClient"
+    ],
+    "main": [
+      "com.restonic4.forgotten.Forgotten"
+    ]
+  },
+  "mixins": [
+    "forgotten.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

@@ -28,6 +28,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
@@ -95,6 +96,11 @@ public class Forgotten implements ModInitializer {
                     placePlayerHead(serverPlayer);
                     serverPlayer.getInventory().dropAll();
 
+                    if (serverPlayer.level() instanceof ServerLevel && !serverPlayer.wasExperienceConsumed()) {
+                        ExperienceOrb.award((ServerLevel)serverPlayer.level(), serverPlayer.position(), serverPlayer.getExperienceReward());
+                        serverPlayer.setExperiencePoints(0);
+                    }
+
                     if (isVoiceChatLoaded()) {
                         Plugin.leaveGroup(serverPlayer);
                     }
@@ -139,7 +145,7 @@ public class Forgotten implements ModInitializer {
                             try {
                                 Thread.sleep(new Random().nextInt(1000 * finalI));
                                 server.execute(() -> {
-                                    serverPlayer.level().playLocalSound(serverPlayer.blockPosition(), getRandomWhisper(), SoundSource.PLAYERS, 1, 1, false);
+                                    serverPlayer.level().playSound(null, serverPlayer.blockPosition(), getRandomWhisper(), SoundSource.PLAYERS, 0.25f, 1);
                                 });
                             } catch (InterruptedException ignored) {}
                         }).start();
@@ -161,7 +167,7 @@ public class Forgotten implements ModInitializer {
             if (damageSource.getEntity() instanceof ServerPlayer attacker) {
                 if (isVanishLoaded() && VanishManager.isVanished(attacker)) {
                     if (shouldPlayCreepySound()) {
-                        livingEntity.level().playSound(null, attacker.blockPosition(), getRandomWhisper(), SoundSource.PLAYERS);
+                        livingEntity.level().playSound(null, attacker.blockPosition(), getRandomWhisper(), SoundSource.PLAYERS, 0.25f, 1);
                     }
 
                     return false;
@@ -216,14 +222,14 @@ public class Forgotten implements ModInitializer {
 
     private static boolean shouldPlayRareCreepySound() {
         Random random = new Random();
-        int randomNumber = random.nextInt(1000);
-        return randomNumber < 5;
+        int randomNumber = random.nextInt(3000);
+        return randomNumber < 1;
     }
 
     private static boolean shouldPlayCreepySound() {
         Random random = new Random();
         int randomNumber = random.nextInt(1000);
-        return randomNumber < 5;
+        return randomNumber < 8;
     }
 
     private static void placePlayerHead(ServerPlayer serverPlayer) {

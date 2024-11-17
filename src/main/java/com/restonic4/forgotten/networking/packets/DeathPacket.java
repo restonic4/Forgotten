@@ -15,11 +15,14 @@ public class DeathPacket {
 
         DeathUtils.setDeathValue(shouldHaveDeathShader);
 
-        minecraft.execute(() -> {
-            if (minecraft.level != null && minecraft.player != null) {
-                minecraft.level.playLocalSound(minecraft.player.blockPosition(), Forgotten.DEATH_SOUND, SoundSource.PLAYERS, 1, 1, false);
-                minecraft.level.playLocalSound(minecraft.player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.PLAYERS, 1, 1, false);
-            }
-        });
+        if (shouldHaveDeathShader) {
+            minecraft.execute(() -> {
+                if (minecraft.level != null && minecraft.player != null) {
+                    minecraft.level.playLocalSound(minecraft.player.blockPosition(), Forgotten.WHISPER1, SoundSource.PLAYERS, 0.25f, 1, false);
+                    minecraft.level.playLocalSound(minecraft.player.blockPosition(), Forgotten.DEATH_SOUND, SoundSource.PLAYERS, 1, 1, false);
+                    minecraft.level.playLocalSound(minecraft.player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.PLAYERS, 1, 1, false);
+                }
+            });
+        }
     }
 }

@@ -17,6 +17,9 @@
     ],
     "main": [
       "com.restonic4.forgotten.Forgotten"
+    ],
+    "voicechat": [
+      "com.restonic4.forgotten.compatibility.voicechat.Plugin"
     ]
   },
   "mixins": [

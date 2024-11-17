@@ -11,6 +11,7 @@ base {
 }
 
 repositories {
+    maven { url "https://maven.nucleoid.xyz/" }
     maven { url = 'https://maven.fabricmc.net/' }
     maven { url 'https://api.modrinth.com/maven' }
 }
@@ -23,8 +24,12 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation 'maven.modrinth:vanish:1.5.5+1.20.1'
-    modImplementation 'maven.modrinth:incapacitated:1.9.1LTS'
+    modImplementation include('maven.modrinth:vanish:1.5.5+1.20.1')
+    modImplementation include("eu.pb4:player-data-api:0.2.2+1.19.3")
+    modImplementation include("me.lucko:fabric-permissions-api:0.3.1") {
+        exclude group: 'net.fabricmc.fabric-api'
+    }
+    modImplementation 'maven.modrinth:simple-voice-chat:fabric-1.20.1-2.5.25'
 }
 
 processResources {

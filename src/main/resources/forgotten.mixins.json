@@ -4,6 +4,9 @@
   "package": "com.restonic4.forgotten.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "BiomeMixin",
+    "LevelMixin",
+    "VanishManagerMixin"
   ],
   "client": [
   ],

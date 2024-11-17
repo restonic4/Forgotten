@@ -1,0 +1,82 @@
+{
+  "death": {
+    "sounds": [
+      {
+        "name": "forgotten:death",
+        "stream": false
+      }
+    ]
+  },
+
+  "whisper1": {
+    "sounds": [
+      {
+        "name": "forgotten:whisper1",
+        "stream": false
+      }
+    ]
+  },
+
+  "whisper2": {
+    "sounds": [
+      {
+        "name": "forgotten:whisper2",
+        "stream": false
+      }
+    ]
+  },
+
+  "whisper3": {
+    "sounds": [
+      {
+        "name": "forgotten:whisper3",
+        "stream": false
+      }
+    ]
+  },
+
+  "whisper4": {
+    "sounds": [
+      {
+        "name": "forgotten:whisper4",
+        "stream": false
+      }
+    ]
+  },
+
+  "whisper5": {
+    "sounds": [
+      {
+        "name": "forgotten:whisper5",
+        "stream": false
+      }
+    ]
+  },
+
+  "whisper6": {
+    "sounds": [
+      {
+        "name": "forgotten:whisper6",
+        "stream": false
+      }
+    ]
+  },
+
+  "whisper7": {
+    "sounds": [
+      {
+        "name": "forgotten:whisper7",
+        "stream": false
+      }
+    ]
+  },
+
+  "whisper8": {
+    "sounds": [
+      {
+        "name": "forgotten:whisper8",
+        "stream": false
+      }
+    ]
+  }
+}

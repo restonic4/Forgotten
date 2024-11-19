@@ -2,13 +2,17 @@ package com.restonic4.forgotten;
 
 import com.restonic4.forgotten.compatibility.voicechat.Plugin;
 import com.restonic4.forgotten.networking.PacketManager;
+import com.restonic4.forgotten.registries.ForgottenSounds;
+import com.restonic4.forgotten.saving.JsonDataManager;
 import me.drex.vanish.api.VanishEvents;
 import me.drex.vanish.config.ConfigManager;
 import me.drex.vanish.util.VanishManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -43,44 +47,29 @@ import java.util.Random;
 
 public class Forgotten implements ModInitializer {
     public static final String MOD_ID = "forgotten";
-    public static SoundEvent DEATH_SOUND;
-    public static SoundEvent WHISPER1;
-    public static SoundEvent WHISPER2;
-    public static SoundEvent WHISPER3;
-    public static SoundEvent WHISPER4;
-    public static SoundEvent WHISPER5;
-    public static SoundEvent WHISPER6;
-    public static SoundEvent WHISPER7;
-    public static SoundEvent WHISPER8;
 
+    private static final JsonDataManager dataManager = new JsonDataManager();
     int ticksLeft = 0;
-
+    int tickSaveCounter = 0;
     @Override
     public void onInitialize() {
-        registerSounds();
+        ForgottenSounds.register();
         registerEvents();
     }
 
-    private void registerSounds() {
-        ResourceLocation deathLocation = new ResourceLocation(MOD_ID, "death");
-        DEATH_SOUND = Registry.register(BuiltInRegistries.SOUND_EVENT, deathLocation, SoundEvent.createVariableRangeEvent(deathLocation));
-
-        WHISPER1 = registerWhisper(1);
-        WHISPER2 = registerWhisper(2);
-        WHISPER3 = registerWhisper(3);
-        WHISPER4 = registerWhisper(4);
-        WHISPER5 = registerWhisper(5);
-        WHISPER6 = registerWhisper(6);
-        WHISPER7 = registerWhisper(7);
-        WHISPER8 = registerWhisper(8);
-    }
-
-    private SoundEvent registerWhisper(int number) {
-        ResourceLocation whisperLocation = new ResourceLocation(MOD_ID, "whisper" + number);
-        return Registry.register(BuiltInRegistries.SOUND_EVENT, whisperLocation, SoundEvent.createVariableRangeEvent(whisperLocation));
-    }
-
     private void registerEvents() {
+        ServerLifecycleEvents.SERVER_STARTING.register(dataManager::loadFromDisk);
+
+        ServerLifecycleEvents.SERVER_STOPPING.register(dataManager::saveToDisk);
+
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            tickSaveCounter++;
+            if (tickSaveCounter >= 3000) {
+                dataManager.saveToDisk(server);
+                tickSaveCounter = 0;
+            }
+        });
+
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
             if (isVanishLoaded()) {
                 ConfigManager.vanish().sendJoinDisconnectMessage = false;
@@ -146,7 +135,7 @@ public class Forgotten implements ModInitializer {
                             try {
                                 Thread.sleep(new Random().nextInt(1000 * finalI));
                                 server.execute(() -> {
-                                    serverPlayer.level().playSound(null, serverPlayer.blockPosition(), getRandomWhisper(), SoundSource.PLAYERS, 0.25f, 1);
+                                    serverPlayer.level().playSound(null, serverPlayer.blockPosition(), ForgottenSounds.getRandomWhisper(), SoundSource.PLAYERS, 0.25f, 1);
                                 });
                             } catch (InterruptedException ignored) {}
                         }).start();
@@ -168,7 +157,7 @@ public class Forgotten implements ModInitializer {
             if (damageSource.getEntity() instanceof ServerPlayer attacker) {
                 if (isVanishLoaded() && VanishManager.isVanished(attacker)) {
                     if (shouldPlayCreepySound()) {
-                        livingEntity.level().playSound(null, attacker.blockPosition(), getRandomWhisper(), SoundSource.PLAYERS, 0.25f, 1);
+                        livingEntity.level().playSound(null, attacker.blockPosition(), ForgottenSounds.getRandomWhisper(), SoundSource.PLAYERS, 0.25f, 1);
                     }
 
                     return false;
@@ -203,22 +192,6 @@ public class Forgotten implements ModInitializer {
                 }
             });
         }
-    }
-
-    public static SoundEvent getRandomWhisper() {
-        List<SoundEvent> whispers = Arrays.asList(
-                WHISPER1,
-                WHISPER2,
-                WHISPER3,
-                WHISPER4,
-                WHISPER5,
-                WHISPER6,
-                WHISPER7,
-                WHISPER8
-        );
-
-        int randomIndex = new Random().nextInt(whispers.size());
-        return whispers.get(randomIndex);
     }
 
     private static boolean shouldPlayRareCreepySound() {
@@ -322,5 +295,17 @@ public class Forgotten implements ModInitializer {
 
     public static boolean isVoiceChatLoaded() {
         return FabricLoader.getInstance().isModLoaded("voicechat");
+    }
+
+    public static JsonDataManager getDataManager() {
+        return dataManager;
+    }
+
+    public static boolean isVanishLoadedAndVanished(ServerPlayer serverPlayer) {
+        if (!isVanishLoaded()) {
+            return false;
+        }
+
+        return VanishManager.isVanished(serverPlayer);
     }
 }

@@ -1,0 +1,10 @@
+accessWidener	v1	named
+
+accessible method net/minecraft/client/gui/Gui renderCrosshair (Lnet/minecraft/client/gui/GuiGraphics;)V
+accessible field net/minecraft/client/gui/Gui minecraft Lnet/minecraft/client/Minecraft;
+accessible field net/minecraft/client/gui/Gui debugScreen Lnet/minecraft/client/gui/components/DebugScreenOverlay;
+accessible method net/minecraft/client/gui/Gui renderEffects (Lnet/minecraft/client/gui/GuiGraphics;)V
+accessible field net/minecraft/client/gui/Gui screenWidth I
+accessible field net/minecraft/client/gui/Gui screenHeight I
+accessible field net/minecraft/client/gui/Gui tickCount I
+accessible method net/minecraft/client/gui/Gui renderSavingIndicator (Lnet/minecraft/client/gui/GuiGraphics;)V

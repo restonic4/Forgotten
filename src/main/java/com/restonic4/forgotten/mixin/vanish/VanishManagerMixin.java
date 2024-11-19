@@ -1,4 +1,4 @@
-package com.restonic4.forgotten.mixin;
+package com.restonic4.forgotten.mixin.vanish;
 
 import me.drex.vanish.util.VanishManager;
 import net.minecraft.commands.SharedSuggestionProvider;

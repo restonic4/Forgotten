@@ -8,6 +8,15 @@
     ]
   },
 
+  "reject": {
+    "sounds": [
+      {
+        "name": "forgotten:reject",
+        "stream": false
+      }
+    ]
+  },
+
   "whisper1": {
     "sounds": [
       {

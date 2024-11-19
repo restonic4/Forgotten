@@ -1,6 +1,12 @@
 package com.restonic4.forgotten.mixin;
 
+import com.restonic4.forgotten.Forgotten;
+import com.restonic4.forgotten.util.Effects;
+import me.drex.vanish.util.VanishManager;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -35,7 +41,23 @@ public class ItemFrameMixin {
     private void preventPlayerHeadPlacement(Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
         ItemStack itemStack = player.getItemInHand(interactionHand);
         if (itemStack.getItem() instanceof PlayerHeadItem) {
+            if (!player.level().isClientSide()) {
+                ItemFrame current = (ItemFrame) (Object) this;
+                Effects.invalidHeadPlacement((ServerLevel) player.level(), current.blockPosition());
+            }
+
             cir.setReturnValue(InteractionResult.FAIL);
+            cir.cancel();
+        }
+    }
+
+    // Prevents ghost killing entity
+    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
+    public void hurt(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
+        ItemFrame current = (ItemFrame) (Object) this;
+
+        if (!current.level().isClientSide() && damageSource.getEntity() instanceof ServerPlayer serverPlayer && Forgotten.isVanishLoadedAndVanished(serverPlayer)) {
+            cir.setReturnValue(false);
             cir.cancel();
         }
     }

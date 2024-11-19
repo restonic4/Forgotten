@@ -98,6 +98,7 @@ public class Forgotten implements ModInitializer {
 
                     if (serverPlayer.level() instanceof ServerLevel && !serverPlayer.wasExperienceConsumed()) {
                         ExperienceOrb.award((ServerLevel)serverPlayer.level(), serverPlayer.position(), serverPlayer.getExperienceReward());
+                        serverPlayer.setExperienceLevels(0);
                         serverPlayer.setExperiencePoints(0);
                     }
 

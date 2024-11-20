@@ -99,7 +99,7 @@ public abstract class GuiMixin {
         int textureX = size * iconID;
         int textureY = (isCooldown) ? size : 0;
 
-        double realOffset = Math.sin(System.currentTimeMillis());
+        double realOffset = Math.sin(System.currentTimeMillis()) * 50;
         int offset = (int) realOffset;
         System.out.println(realOffset + " = " + offset);
 

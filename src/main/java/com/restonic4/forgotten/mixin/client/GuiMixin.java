@@ -33,7 +33,6 @@ public abstract class GuiMixin {
             cancellable = true
     )
     private void onRenderHotbarInjected(GuiGraphics guiGraphics, float f, CallbackInfo ci) {
-        renderIcons(guiGraphics);
         if (DeathUtils.isDeath()) {
             Gui current = (Gui) (Object) this;
 
@@ -42,6 +41,8 @@ public abstract class GuiMixin {
             current.screenHeight = guiGraphics.guiHeight();
 
             if (!current.minecraft.options.hideGui) {
+                renderIcons(guiGraphics);
+
                 RenderSystem.enableBlend();
                 current.renderCrosshair(guiGraphics);
                 RenderSystem.disableBlend();
@@ -61,9 +62,14 @@ public abstract class GuiMixin {
                 current.minecraft.getProfiler().pop();
 
                 current.renderSavingIndicator(guiGraphics);
-
-                //renderIcons(guiGraphics);
             }
+
+            if (DeathUtils.shouldLightBolt()) {
+                guiGraphics.blit(new ResourceLocation("minecraft", "textures/misc/white.png"), 0, 0, 0, 4, 4, current.screenWidth, current.screenHeight, 4, 4);
+                DeathUtils.lightBoltStepCompleted();
+            }
+
+            current.renderTextureOverlay(guiGraphics, new ResourceLocation(Forgotten.MOD_ID, "textures/gui/border.png"), 1);
 
             ci.cancel();
         }
@@ -88,7 +94,9 @@ public abstract class GuiMixin {
             int x = startX + (i * (iconSize + spacing));
             int y = startY;
 
-            renderIcon(guiGraphics, x, y, iconSize, i, false);
+            boolean isInCooldown = false;
+
+            renderIcon(guiGraphics, x, y, iconSize, i, isInCooldown);
         }
     }
 
@@ -97,12 +105,15 @@ public abstract class GuiMixin {
         ResourceLocation texture = new ResourceLocation(Forgotten.MOD_ID, "textures/gui/icons.png");
 
         int textureX = size * iconID;
-        int textureY = (isCooldown) ? size : 0;
+        int textureY = 0;
 
-        double realOffset = Math.sin(System.currentTimeMillis()) * 50;
-        int offset = (int) realOffset;
-        System.out.println(realOffset + " = " + offset);
+        int globalTextureXSize = size * 3;
+        int globalTextureYSize = size * 2;
 
-        guiGraphics.blit(texture, x + offset, y, textureX, textureY, size, size);
+        guiGraphics.blit(texture, x, y, 0, textureX, textureY, size, size, globalTextureXSize, globalTextureYSize);
+
+        if (isCooldown) {
+            guiGraphics.blit(texture, x, y, 0, 0, textureY + size, size, size, globalTextureXSize, globalTextureYSize);
+        }
     }
 }

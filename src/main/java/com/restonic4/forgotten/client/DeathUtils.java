@@ -2,9 +2,8 @@ package com.restonic4.forgotten.client;
 
 public class DeathUtils {
     private static boolean isDeath = false;
-    private static boolean shouldLightBolt = false;
-
-    private static long firstLightTime = -1;
+    private static boolean shouldResetGuiAnimations= false;
+    private static boolean shouldResetFovAnimations= false;
 
     public static boolean isDeath() {
         return isDeath;
@@ -12,21 +11,23 @@ public class DeathUtils {
 
     public static void setDeathValue(boolean value) {
         isDeath = value;
-        shouldLightBolt = value;
+        shouldResetGuiAnimations = value;
+        shouldResetFovAnimations = value;
     }
 
-    public static boolean shouldLightBolt() {
-        return shouldLightBolt;
+    public static boolean shouldResetGuiAnimations() {
+        return shouldResetGuiAnimations;
     }
 
-    public static void lightBoltStepCompleted() {
-        if (firstLightTime == -1) {
-            firstLightTime = System.currentTimeMillis();
-        }
+    public static void guiAnimationsRestarted() {
+        shouldResetGuiAnimations = false;
+    }
 
-        if (System.currentTimeMillis() >= firstLightTime + 250) {
-            shouldLightBolt = false;
-            firstLightTime = -1;
-        }
+    public static boolean shouldResetFovAnimations() {
+        return shouldResetFovAnimations;
+    }
+
+    public static void fovAnimationsRestarted() {
+        shouldResetFovAnimations = false;
     }
 }

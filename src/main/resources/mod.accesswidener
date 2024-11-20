@@ -9,3 +9,4 @@ accessible field net/minecraft/client/gui/Gui screenHeight I
 accessible field net/minecraft/client/gui/Gui tickCount I
 accessible method net/minecraft/client/gui/Gui renderSavingIndicator (Lnet/minecraft/client/gui/GuiGraphics;)V
 accessible method net/minecraft/client/gui/Gui renderTextureOverlay (Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/ResourceLocation;F)V
+accessible field net/minecraft/client/renderer/GameRenderer minecraft Lnet/minecraft/client/Minecraft;

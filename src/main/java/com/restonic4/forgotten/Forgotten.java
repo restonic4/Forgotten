@@ -1,5 +1,6 @@
 package com.restonic4.forgotten;
 
+import com.restonic4.forgotten.commdands.TestDeath;
 import com.restonic4.forgotten.compatibility.voicechat.Plugin;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.ForgottenSounds;
@@ -8,6 +9,7 @@ import me.drex.vanish.api.VanishEvents;
 import me.drex.vanish.config.ConfigManager;
 import me.drex.vanish.util.VanishManager;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -61,6 +63,10 @@ public class Forgotten implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(dataManager::loadFromDisk);
 
         ServerLifecycleEvents.SERVER_STOPPING.register(dataManager::saveToDisk);
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            TestDeath.register(dispatcher);
+        });
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             tickSaveCounter++;

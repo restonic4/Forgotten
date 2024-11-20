@@ -11,6 +11,7 @@
     "vanish.VanishManagerMixin"
   ],
   "client": [
+    "client.GameRendererMixin",
     "client.GuiMixin",
     "client.MinecraftMixin"
   ],

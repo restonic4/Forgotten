@@ -9,6 +9,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.client.DeathUtils;
+import com.restonic4.forgotten.util.EasingSystem;
+import com.restonic4.forgotten.util.RandomUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,6 +29,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class GuiMixin {
     @Shadow public abstract void render(GuiGraphics guiGraphics, float f);
 
+    @Unique private static long borderEasingStartTime = 0;
+    @Unique private static long borderEasingEndTime = 0;
+
+    @Unique private static long flashEasingStartTime = 0;
+    @Unique private static long flashEasingEndTime = 0;
+
+    @Unique private static long iconShakingEasingStartTime = 0;
+    @Unique private static long iconShakingEasingEndTime = 0;
+
     @Inject(
             method = "render(Lnet/minecraft/client/gui/GuiGraphics;F)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderHotbar(FLnet/minecraft/client/gui/GuiGraphics;)V"),
@@ -36,40 +47,36 @@ public abstract class GuiMixin {
         if (DeathUtils.isDeath()) {
             Gui current = (Gui) (Object) this;
 
+            if (DeathUtils.shouldResetGuiAnimations()) {
+                DeathUtils.guiAnimationsRestarted();
+
+                borderEasingStartTime = System.currentTimeMillis();
+                borderEasingEndTime = System.currentTimeMillis() + 2000;
+
+                flashEasingStartTime = System.currentTimeMillis();
+                flashEasingEndTime = System.currentTimeMillis() + 500;
+
+                iconShakingEasingStartTime = System.currentTimeMillis();
+                iconShakingEasingEndTime = System.currentTimeMillis() + 24000;
+            }
+
             Window window = current.minecraft.getWindow();
             current.screenWidth = guiGraphics.guiWidth();
             current.screenHeight = guiGraphics.guiHeight();
 
+            float easedValue = EasingSystem.getEasedValue(flashEasingStartTime, flashEasingEndTime, 1, 0, EasingSystem.EasingType.BOUNCE_IN_OUT);
+            if (easedValue >= 0.2f && easedValue <= 0.8f) {
+                guiGraphics.blit(new ResourceLocation("minecraft", "textures/misc/white.png"), 0, 0, 0, 4, 4, current.screenWidth, current.screenHeight, 4, 4);
+            }
+
+            float easedAlpha = EasingSystem.getEasedValue(borderEasingStartTime, borderEasingEndTime, 0, 1, EasingSystem.EasingType.BOUNCE_IN_OUT);
+            current.renderTextureOverlay(guiGraphics, new ResourceLocation(Forgotten.MOD_ID, "textures/gui/border.png"), easedAlpha);
+
             if (!current.minecraft.options.hideGui) {
                 renderIcons(guiGraphics);
 
-                RenderSystem.enableBlend();
-                current.renderCrosshair(guiGraphics);
-                RenderSystem.disableBlend();
-
-                current.renderEffects(guiGraphics);
-                if (current.minecraft.options.renderDebug) {
-                    current.debugScreen.render(guiGraphics);
-                }
-
-                int o;
-
-                RenderSystem.enableBlend();
-                o = Mth.floor(current.minecraft.mouseHandler.xpos() * (double)window.getGuiScaledWidth() / (double)window.getScreenWidth());
-                int q = Mth.floor(current.minecraft.mouseHandler.ypos() * (double)window.getGuiScaledHeight() / (double)window.getScreenHeight());
-                current.minecraft.getProfiler().push("chat");
-                current.getChat().render(guiGraphics, current.tickCount, o, q);
-                current.minecraft.getProfiler().pop();
-
-                current.renderSavingIndicator(guiGraphics);
+                renderOtherStuff(guiGraphics, window);
             }
-
-            if (DeathUtils.shouldLightBolt()) {
-                guiGraphics.blit(new ResourceLocation("minecraft", "textures/misc/white.png"), 0, 0, 0, 4, 4, current.screenWidth, current.screenHeight, 4, 4);
-                DeathUtils.lightBoltStepCompleted();
-            }
-
-            current.renderTextureOverlay(guiGraphics, new ResourceLocation(Forgotten.MOD_ID, "textures/gui/border.png"), 1);
 
             ci.cancel();
         }
@@ -94,6 +101,12 @@ public abstract class GuiMixin {
             int x = startX + (i * (iconSize + spacing));
             int y = startY;
 
+            float easedShakingIntensity = EasingSystem.getEasedValue(iconShakingEasingStartTime, iconShakingEasingEndTime, 1, 0, EasingSystem.EasingType.CUBIC_OUT);
+            if (easedShakingIntensity < 1) {
+                x += (int) (RandomUtil.randomBetween(-10, 10) * easedShakingIntensity);
+                y += (int) (RandomUtil.randomBetween(-10, 10) * easedShakingIntensity);
+            }
+
             boolean isInCooldown = false;
 
             renderIcon(guiGraphics, x, y, iconSize, i, isInCooldown);
@@ -115,5 +128,31 @@ public abstract class GuiMixin {
         if (isCooldown) {
             guiGraphics.blit(texture, x, y, 0, 0, textureY + size, size, size, globalTextureXSize, globalTextureYSize);
         }
+    }
+
+    @Unique
+    private void renderOtherStuff(GuiGraphics guiGraphics, Window window) {
+        Gui current = (Gui) (Object) this;
+
+        RenderSystem.enableBlend();
+        current.renderCrosshair(guiGraphics);
+        RenderSystem.disableBlend();
+
+        current.renderEffects(guiGraphics);
+        if (current.minecraft.options.renderDebug) {
+            current.debugScreen.render(guiGraphics);
+        }
+
+        int o;
+
+        RenderSystem.enableBlend();
+        o = Mth.floor(current.minecraft.mouseHandler.xpos() * (double)window.getGuiScaledWidth() / (double)window.getScreenWidth());
+        int q = Mth.floor(current.minecraft.mouseHandler.ypos() * (double)window.getGuiScaledHeight() / (double)window.getScreenHeight());
+        current.minecraft.getProfiler().push("chat");
+        current.getChat().render(guiGraphics, current.tickCount, o, q);
+        current.minecraft.getProfiler().pop();
+
+        current.renderSavingIndicator(guiGraphics);
+        RenderSystem.disableBlend();
     }
 }

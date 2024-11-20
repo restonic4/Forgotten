@@ -11,7 +11,8 @@
     "vanish.VanishManagerMixin"
   ],
   "client": [
-    "client.GuiMixin"
+    "client.GuiMixin",
+    "client.MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

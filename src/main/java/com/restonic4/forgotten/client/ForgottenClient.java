@@ -24,12 +24,12 @@ public class ForgottenClient implements ClientModInitializer {
             DeathUtils.setDeathValue(false);
         });
 
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        /*ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
                 configured = true;
                 configureWindow();
             }
-        });
+        });*/
     }
 
     private void configureWindow() {

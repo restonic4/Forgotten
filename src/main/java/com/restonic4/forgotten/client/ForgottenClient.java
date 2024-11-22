@@ -2,11 +2,27 @@ package com.restonic4.forgotten.client;
 
 import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.restonic4.forgotten.networking.PacketManager;
+import com.restonic4.forgotten.util.CircleGenerator;
+import com.restonic4.forgotten.util.LodestoneCommandVars;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
+import team.lodestar.lodestone.registry.client.LodestoneRenderTypeRegistry;
+import team.lodestar.lodestone.registry.client.LodestoneShaderRegistry;
+import team.lodestar.lodestone.registry.common.particle.LodestoneParticleRegistry;
+import team.lodestar.lodestone.systems.easing.Easing;
+import team.lodestar.lodestone.systems.particle.builder.WorldParticleBuilder;
+import team.lodestar.lodestone.systems.particle.data.GenericParticleData;
+import team.lodestar.lodestone.systems.particle.data.color.ColorParticleData;
+import team.lodestar.lodestone.systems.particle.data.spin.SpinParticleData;
+import team.lodestar.lodestone.systems.particle.render_types.LodestoneWorldParticleRenderType;
+
+import java.awt.*;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
 
@@ -15,6 +31,7 @@ public class ForgottenClient implements ClientModInitializer {
      * Runs the mod initializer on the client environment.
      */
     private boolean configured = false;
+    private long lastTimeSpawned = System.currentTimeMillis();
 
     @Override
     public void onInitializeClient() {
@@ -24,12 +41,47 @@ public class ForgottenClient implements ClientModInitializer {
             DeathUtils.setDeathValue(false);
         });
 
-        /*ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
                 configured = true;
                 configureWindow();
             }
-        });*/
+
+            if (System.currentTimeMillis() > lastTimeSpawned + 3000 && Minecraft.getInstance().level != null) {
+                lastTimeSpawned = System.currentTimeMillis();
+
+                spawnParticles(Minecraft.getInstance());
+            }
+        });
+    }
+
+    private void spawnParticles(Minecraft minecraft) {
+        Vec3 targetPointRing = new Vec3(0, 10, 0);
+
+        float radius = 20;
+        int precision = 100;
+
+        List<CircleGenerator.CirclePoint> circle = CircleGenerator.generateCircle(radius, precision);
+
+        Color startingColor = new Color(255, 179, 0);
+        Color endingColor = new Color(91, 10, 146);
+
+        for (int i = 0; i < circle.size(); i++) {
+            CircleGenerator.CirclePoint point = circle.get(i);
+
+            WorldParticleBuilder.create(LodestoneParticleRegistry.WISP_PARTICLE)
+                    .setScaleData(GenericParticleData.create(2, 14).build())
+                    .setTransparencyData(GenericParticleData.create(1, 0f).build())
+                    .setColorData(ColorParticleData.create(startingColor, endingColor).setCoefficient(1.4f).setEasing(Easing.BOUNCE_IN_OUT).build())
+                    .setSpinData(SpinParticleData.create(0.2f, 0.4f).setSpinOffset((minecraft.level.getGameTime() * 0.2f) % 6.28f).setEasing(Easing.QUARTIC_IN).build())
+                    .setLifetime(300)
+                    .addMotion(-point.toCenter.x, 0, -point.toCenter.y)
+                    .enableNoClip()
+                    .setRenderType(LodestoneCommandVars.renderType)
+                    //.setRenderTarget(LodestoneRenderTypeRegistry.)
+                    .enableForcedSpawn()
+                    .spawn(minecraft.level, targetPointRing.x, targetPointRing.y, targetPointRing.z);
+        }
     }
 
     private void configureWindow() {

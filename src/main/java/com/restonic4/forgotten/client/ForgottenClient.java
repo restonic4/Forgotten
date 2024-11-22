@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
+import team.lodestar.lodestone.handlers.RenderHandler;
 import team.lodestar.lodestone.registry.client.LodestoneRenderTypeRegistry;
 import team.lodestar.lodestone.registry.client.LodestoneShaderRegistry;
 import team.lodestar.lodestone.registry.common.particle.LodestoneParticleRegistry;
@@ -78,7 +79,7 @@ public class ForgottenClient implements ClientModInitializer {
                     .addMotion(-point.toCenter.x, 0, -point.toCenter.y)
                     .enableNoClip()
                     .setRenderType(LodestoneCommandVars.renderType)
-                    //.setRenderTarget(LodestoneRenderTypeRegistry.)
+                    .setRenderTarget(LodestoneCommandVars.renderTarget)
                     .enableForcedSpawn()
                     .spawn(minecraft.level, targetPointRing.x, targetPointRing.y, targetPointRing.z);
         }

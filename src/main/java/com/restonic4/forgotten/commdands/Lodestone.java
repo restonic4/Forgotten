@@ -1,28 +1,20 @@
 package com.restonic4.forgotten.commdands;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.restonic4.forgotten.networking.PacketManager;
-import com.restonic4.forgotten.util.LodestoneCommandVars;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import com.restonic4.forgotten.registries.client.CustomRenderTypes;
+import com.restonic4.forgotten.util.LodestoneVars;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import team.lodestar.lodestone.handlers.RenderHandler;
 import team.lodestar.lodestone.registry.client.LodestoneRenderTypeRegistry;
 import team.lodestar.lodestone.registry.client.LodestoneShaderRegistry;
@@ -35,9 +27,6 @@ import team.lodestar.lodestone.systems.rendering.rendeertype.RenderTypeToken;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-import static com.mojang.blaze3d.vertex.DefaultVertexFormat.PARTICLE;
-import static com.mojang.blaze3d.vertex.VertexFormat.Mode.QUADS;
 
 public class Lodestone {
     private static final List<String> TYPES = Arrays.asList("render_type", "render_target");
@@ -108,61 +97,40 @@ public class Lodestone {
     private static void executeRenderType(String value) {
         switch (value) {
             case "ADDITIVE":
-                LodestoneCommandVars.renderType = LodestoneWorldParticleRenderType.ADDITIVE;
+                LodestoneVars.renderType = LodestoneWorldParticleRenderType.ADDITIVE;
                 break;
             case "TRANSPARENT":
-                LodestoneCommandVars.renderType = LodestoneWorldParticleRenderType.TRANSPARENT;
+                LodestoneVars.renderType = LodestoneWorldParticleRenderType.TRANSPARENT;
                 break;
             case "LUMITRANSPARENT":
-                LodestoneCommandVars.renderType = LodestoneWorldParticleRenderType.LUMITRANSPARENT;
+                LodestoneVars.renderType = LodestoneWorldParticleRenderType.LUMITRANSPARENT;
                 break;
             case "TERRAIN_SHEET":
-                LodestoneCommandVars.renderType = LodestoneWorldParticleRenderType.TERRAIN_SHEET;
+                LodestoneVars.renderType = LodestoneWorldParticleRenderType.TERRAIN_SHEET;
                 break;
             case "ADDITIVE_TERRAIN_SHEET":
-                LodestoneCommandVars.renderType = LodestoneWorldParticleRenderType.ADDITIVE_TERRAIN_SHEET;
+                LodestoneVars.renderType = LodestoneWorldParticleRenderType.ADDITIVE_TERRAIN_SHEET;
                 break;
             case "VANILLA_TERRAIN_SHEET":
-                LodestoneCommandVars.renderType = ParticleRenderType.TERRAIN_SHEET;
+                LodestoneVars.renderType = ParticleRenderType.TERRAIN_SHEET;
                 break;
             case "VANILLA_PARTICLE_SHEET_OPAQUE":
-                LodestoneCommandVars.renderType = ParticleRenderType.PARTICLE_SHEET_OPAQUE;
+                LodestoneVars.renderType = ParticleRenderType.PARTICLE_SHEET_OPAQUE;
                 break;
             case "VANILLA_PARTICLE_SHEET_TRANSLUCENT":
-                LodestoneCommandVars.renderType = ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+                LodestoneVars.renderType = ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
                 break;
             case "VANILLA_PARTICLE_SHEET_LIT":
-                LodestoneCommandVars.renderType = ParticleRenderType.PARTICLE_SHEET_LIT;
+                LodestoneVars.renderType = ParticleRenderType.PARTICLE_SHEET_LIT;
                 break;
             case "VANILLA_CUSTOM":
-                LodestoneCommandVars.renderType = ParticleRenderType.CUSTOM;
+                LodestoneVars.renderType = ParticleRenderType.CUSTOM;
                 break;
             case "VANILLA_NO_RENDER":
-                LodestoneCommandVars.renderType = ParticleRenderType.NO_RENDER;
+                LodestoneVars.renderType = ParticleRenderType.NO_RENDER;
                 break;
             case "CUSTOM":
-                ResourceLocation TEXTURE = new ResourceLocation("lodestone", "textures/particle/wisp.png");
-
-                RenderTypeProvider MY_PROVIDER = new RenderTypeProvider(token ->
-                        LodestoneRenderType.createGenericRenderType("name", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, LodestoneRenderTypeRegistry.builder()
-                                .setShaderState(LodestoneShaderRegistry.LODESTONE_TEXTURE)
-                                .setTransparencyState(StateShards.ADDITIVE_TRANSPARENCY)
-                                .setLightmapState(LodestoneRenderTypeRegistry.LIGHTMAP)
-                                .setTextureState(token.get())
-                        )
-                );
-
-                LodestoneRenderType RENDER_TYPE_CUSTOM = MY_PROVIDER.apply(RenderTypeToken.createToken(TEXTURE));
-
-
-                LodestoneWorldParticleRenderType particleType = new LodestoneWorldParticleRenderType(
-                        RENDER_TYPE_CUSTOM,
-                        LodestoneShaderRegistry.PARTICLE,
-                        TextureAtlas.LOCATION_BLOCKS,
-                        LodestoneRenderTypeRegistry.TRANSPARENT_FUNCTION
-                );
-
-                LodestoneCommandVars.renderType = particleType;
+                LodestoneVars.renderType = CustomRenderTypes.particleType;
                 break;
         }
     }
@@ -170,10 +138,10 @@ public class Lodestone {
     private static void executeRenderTarget(String value) {
         switch (value) {
             case "DELAYED_RENDER":
-                LodestoneCommandVars.renderTarget = RenderHandler.DELAYED_RENDER;
+                LodestoneVars.renderTarget = RenderHandler.DELAYED_RENDER;
                 break;
             case "LATE_DELAYED_RENDER":
-                LodestoneCommandVars.renderTarget = RenderHandler.LATE_DELAYED_RENDER;
+                LodestoneVars.renderTarget = RenderHandler.LATE_DELAYED_RENDER;
                 break;
         }
     }

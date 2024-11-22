@@ -1,31 +1,25 @@
 package com.restonic4.forgotten.client;
 
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.restonic4.forgotten.networking.PacketManager;
+import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import com.restonic4.forgotten.util.CircleGenerator;
-import com.restonic4.forgotten.util.LodestoneCommandVars;
+import com.restonic4.forgotten.util.LodestoneVars;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
-import team.lodestar.lodestone.handlers.RenderHandler;
-import team.lodestar.lodestone.registry.client.LodestoneRenderTypeRegistry;
-import team.lodestar.lodestone.registry.client.LodestoneShaderRegistry;
 import team.lodestar.lodestone.registry.common.particle.LodestoneParticleRegistry;
 import team.lodestar.lodestone.systems.easing.Easing;
 import team.lodestar.lodestone.systems.particle.builder.WorldParticleBuilder;
 import team.lodestar.lodestone.systems.particle.data.GenericParticleData;
 import team.lodestar.lodestone.systems.particle.data.color.ColorParticleData;
 import team.lodestar.lodestone.systems.particle.data.spin.SpinParticleData;
-import team.lodestar.lodestone.systems.particle.render_types.LodestoneWorldParticleRenderType;
 
 import java.awt.*;
 import java.util.List;
-
-import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
 
 public class ForgottenClient implements ClientModInitializer {
     /**
@@ -37,16 +31,17 @@ public class ForgottenClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         PacketManager.registerServerToClient();
+        CustomRenderTypes.init();
 
         ClientPlayConnectionEvents.DISCONNECT.register((clientPacketListener, minecraft) -> {
             DeathUtils.setDeathValue(false);
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
+            /*if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
                 configured = true;
                 configureWindow();
-            }
+            }*/
 
             if (System.currentTimeMillis() > lastTimeSpawned + 3000 && Minecraft.getInstance().level != null) {
                 lastTimeSpawned = System.currentTimeMillis();
@@ -61,6 +56,10 @@ public class ForgottenClient implements ClientModInitializer {
 
         float radius = 20;
         int precision = 100;
+
+        String string = CustomRenderTypes.COOL_PARTICLE.getInstance().get().getName();
+        //ResourceLocation thing = new ResourceLocation("shaders/core/" + string + ".json");
+        System.out.println("waos");
 
         List<CircleGenerator.CirclePoint> circle = CircleGenerator.generateCircle(radius, precision);
 
@@ -78,8 +77,8 @@ public class ForgottenClient implements ClientModInitializer {
                     .setLifetime(300)
                     .addMotion(-point.toCenter.x, 0, -point.toCenter.y)
                     .enableNoClip()
-                    .setRenderType(LodestoneCommandVars.renderType)
-                    .setRenderTarget(LodestoneCommandVars.renderTarget)
+                    .setRenderType(LodestoneVars.renderType)
+                    .setRenderTarget(LodestoneVars.renderTarget)
                     .enableForcedSpawn()
                     .spawn(minecraft.level, targetPointRing.x, targetPointRing.y, targetPointRing.z);
         }

@@ -42,6 +42,24 @@ import java.util.List;
 
 public class BeamPacket {
     public static void receive(Minecraft minecraft, ClientPacketListener clientPacketListener, FriendlyByteBuf friendlyByteBuf, PacketSender packetSender) {
+        new Thread(() -> {
+            int time = 0;
+
+            while (time < 1000) {
+                int finalTime = time;
+                Minecraft.getInstance().execute(() -> {
+                    CustomRenderTypes.SKY_SHADER.getInstance().get().safeGetUniform("Time").set(finalTime);
+                });
+
+                time++;
+
+                try {
+                    Thread.sleep(10);
+                } catch (Exception ignored) {}
+            }
+
+        }).start();
+
         minecraft.execute(() -> {
             if (minecraft.level != null && minecraft.player != null) {
                 Vec3 targetPoint = new Vec3(0, 0, 0);
@@ -63,7 +81,6 @@ public class BeamPacket {
 
                 Color startingColor = new Color(255, 179, 0);
                 Color endingColor = new Color(91, 10, 146);
-
 
                 for (int i = 0; i < circle.size(); i++) {
                     CircleGenerator.CirclePoint point = circle.get(i);

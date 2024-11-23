@@ -65,11 +65,14 @@ public class CustomRenderTypes extends RenderStateShard {
 
     //public static final LodestoneRenderType RENDER_TYPE_CUSTOM = LodestoneRenderTypeRegistry.copyWithUniformChanges("forgotten:render_type_custom", LodestoneRenderTypeRegistry.TRANSPARENT_PARTICLE, ShaderUniformHandler.LUMITRANSPARENT);
 
-    public static LodestoneRenderType RENDER_TYPE_CUSTOM = LodestoneRenderTypeRegistry.createGenericRenderType("render_type_custom", PARTICLE, QUADS, LodestoneRenderTypeRegistry.builder()
-            .setShaderState(COOL_PARTICLE)
-            .setTransparencyState(StateShards.NORMAL_TRANSPARENCY)
-            .setTextureState(TextureAtlas.LOCATION_PARTICLES)
-            .setCullState(LodestoneRenderTypeRegistry.NO_CULL)
+    public static LodestoneRenderType RENDER_TYPE_CUSTOM = LodestoneRenderTypeRegistry.applyUniformChanges(
+            LodestoneRenderTypeRegistry.createGenericRenderType("render_type_custom", PARTICLE, QUADS, LodestoneRenderTypeRegistry.builder()
+                    .setShaderState(COOL_PARTICLE)
+                    .setTransparencyState(StateShards.NORMAL_TRANSPARENCY)
+                    .setTextureState(TextureAtlas.LOCATION_PARTICLES)
+                    .setCullState(LodestoneRenderTypeRegistry.NO_CULL)
+            ),
+            ShaderUniformHandler.LUMITRANSPARENT
     );
 
     public static LodestoneWorldParticleRenderType particleType = new LodestoneWorldParticleRenderType(

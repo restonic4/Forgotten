@@ -24,6 +24,7 @@ void main() {
     vec4 clipSpacePos = ProjMat * viewSpacePos;
     gl_Position = clipSpacePos;
 
+
     vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0);
 
     texCoord0 = UV0;

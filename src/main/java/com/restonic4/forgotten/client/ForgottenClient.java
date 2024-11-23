@@ -46,7 +46,7 @@ public class ForgottenClient implements ClientModInitializer {
             if (System.currentTimeMillis() > lastTimeSpawned + 3000 && Minecraft.getInstance().level != null) {
                 lastTimeSpawned = System.currentTimeMillis();
 
-                spawnParticles(Minecraft.getInstance());
+                //spawnParticles(Minecraft.getInstance());
             }
         });
     }

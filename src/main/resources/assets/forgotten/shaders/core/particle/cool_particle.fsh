@@ -21,7 +21,13 @@ in float pixelDepthClip;
 
 out vec4 fragColor;
 
+vec4 transformColorFixed(vec4 initialColor, float lumiTransparent, vec4 vertexColor, vec4 colorModulator) {
+    initialColor = lumiTransparent == 1. ? vec4(initialColor.rgb, initialColor.a * (0.21 * initialColor.r + 0.71 * initialColor.g + 0.07 * initialColor.b)) : initialColor;
+    vec4 result = initialColor * vertexColor * colorModulator;
+    result.rgb /= max(result.a, 0.001); // Normaliza los colores para evitar oscurecimiento
+    return result;
+}
 void main() {
-    vec4 color = transformColor(texture(Sampler0, texCoord0), LumiTransparency, vertexColor, ColorModulator);
+    vec4 color = transformColorFixed(texture(Sampler0, texCoord0), LumiTransparency, vertexColor, ColorModulator);
     fragColor = color;
 }

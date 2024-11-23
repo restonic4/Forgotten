@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.restonic4.forgotten.client.DeathUtils;
 import com.restonic4.forgotten.registries.ForgottenSounds;
+import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import com.restonic4.forgotten.util.CircleGenerator;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
@@ -44,10 +45,10 @@ public class BeamPacket {
         minecraft.execute(() -> {
             if (minecraft.level != null && minecraft.player != null) {
                 Vec3 targetPoint = new Vec3(0, 0, 0);
-                Vec3 targetPointRing = targetPoint.add(0, 100, 0);
+                Vec3 targetPointRing = targetPoint.add(0, 200, 0);
 
                 ScreenshakeInstance roarScreenShake = new PositionedScreenshakeInstance(260, targetPoint, 1000000f, 2000000f, Easing.CIRC_OUT).setIntensity(0.0f, 2, 0.0f);
-                ScreenshakeHandler.addScreenshake(roarScreenShake);
+                //ScreenshakeHandler.addScreenshake(roarScreenShake);
 
                 spawnBeam(minecraft.player.level(),  targetPoint, 120);
                 spawnBeam(minecraft.player.level(),  targetPoint, 140);
@@ -56,19 +57,13 @@ public class BeamPacket {
                 spawnBeam(minecraft.player.level(),  targetPoint, 260);
 
                 float radius = 20;
-                int precision = 100;
+                int precision = 200;
 
                 List<CircleGenerator.CirclePoint> circle = CircleGenerator.generateCircle(radius, precision);
 
                 Color startingColor = new Color(255, 179, 0);
                 Color endingColor = new Color(91, 10, 146);
 
-                LodestoneWorldParticleRenderType CUSTOM = new LodestoneWorldParticleRenderType(
-                        LodestoneRenderTypeRegistry.LUMITRANSPARENT_PARTICLE,
-                        LodestoneShaderRegistry.PARTICLE,
-                        TextureAtlas.LOCATION_PARTICLES,
-                        LodestoneRenderTypeRegistry.TRANSPARENT_FUNCTION
-                );
 
                 for (int i = 0; i < circle.size(); i++) {
                     CircleGenerator.CirclePoint point = circle.get(i);
@@ -81,9 +76,7 @@ public class BeamPacket {
                             .setLifetime(300)
                             .addMotion(-point.toCenter.x, 0, -point.toCenter.y)
                             .enableNoClip()
-                            //.setRenderType(LodestoneWorldParticleRenderType.ADDITIVE)
-                            //.setRenderType(ParticleRenderType.PARTICLE_SHEET_LIT)
-                            .setRenderType(LodestoneWorldParticleRenderType.TRANSPARENT)
+                            .setRenderType(CustomRenderTypes.particleType)
                             .enableForcedSpawn()
                             .spawn(minecraft.level, targetPointRing.x, targetPointRing.y, targetPointRing.z);
                 }
@@ -92,7 +85,7 @@ public class BeamPacket {
     }
 
     public static void spawnBeam(Level level, Vec3 pos, int duration) {
-        for (int i = 0; i <= 200; i++) {
+        for (int i = 0; i <= 400; i++) {
             Color startingColor = new Color(255, 179, 0);
             Color endingColor = new Color(91, 10, 146);
 
@@ -106,9 +99,9 @@ public class BeamPacket {
                     .setSpinData(SpinParticleData.create(0.2f, 0.4f).setSpinOffset((level.getGameTime() * 0.2f) % 6.28f).setEasing(Easing.QUARTIC_IN).build())
                     .setLifetime(duration)
                     .addMotion(0, 0.01f, 0)
-                    .setRenderType(LodestoneWorldParticleRenderType.LUMITRANSPARENT)
+                    .setRenderType(CustomRenderTypes.particleType)
                     .enableForcedSpawn()
-                    //.enableNoClip()
+                    .enableNoClip()
                     .setForceSpawn(true)
                     .spawn(level, pos.x, pos.y + i * verticalFactor, pos.z);
         }

@@ -18,5 +18,5 @@ import team.lodestar.lodestone.systems.rendering.rendeertype.RenderTypeToken;
 public class LodestoneVars {
     public static ParticleRenderType renderType = LodestoneWorldParticleRenderType.ADDITIVE;
     public static RenderHandler.LodestoneRenderLayer renderTarget = RenderHandler.DELAYED_RENDER;
-
+    public static float FAR_PLANE = 1000;
 }

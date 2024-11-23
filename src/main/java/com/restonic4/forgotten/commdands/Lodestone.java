@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class Lodestone {
-    private static final List<String> TYPES = Arrays.asList("render_type", "render_target");
+    private static final List<String> TYPES = Arrays.asList("render_type", "render_target", "far_plane");
 
     private static final List<String> RENDER_TYPES = Arrays.asList(
             "ADDITIVE", "TRANSPARENT", "LUMITRANSPARENT",
@@ -86,6 +86,10 @@ public class Lodestone {
             case "render_target":
                 executeRenderTarget(value);
                 context.getSource().sendSuccess(() -> Component.literal("Setting render target to: " + value), false);
+                break;
+            case "far_plane":
+                LodestoneVars.FAR_PLANE = Float.parseFloat(value);
+                context.getSource().sendSuccess(() -> Component.literal("Setting far plane to: " + value), false);
                 break;
             default:
                 context.getSource().sendFailure(Component.literal("Unknown type: " + type));

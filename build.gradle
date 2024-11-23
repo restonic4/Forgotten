@@ -42,11 +42,11 @@ dependencies {
     }
     modImplementation 'maven.modrinth:simple-voice-chat:fabric-1.20.1-2.5.25'
 
-    modImplementation("team.lodestar.lodestone:lodestone:1.20.1-1.6.2.3f-fabric")
+    modImplementation(include("team.lodestar.lodestone:lodestone:1.20.1-1.6.2.3f-fabric"))
     //For this you also need the following
-    modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.2")
-    modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.2")
-    modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-world:5.2.2")
+    modImplementation(include("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.2"))
+    modImplementation(include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.2"))
+    modImplementation(include("dev.onyxstudios.cardinal-components-api:cardinal-components-world:5.2.2"))
 
     modImplementation("dev.emi:trinkets:3.7.1")
     for (String module in port_lib_modules.split(",")) {

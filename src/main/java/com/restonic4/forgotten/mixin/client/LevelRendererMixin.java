@@ -12,6 +12,10 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.util.CubicSampler;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
@@ -20,6 +24,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -50,7 +55,7 @@ public class LevelRendererMixin {
             ordinal = 0
     ))
     private void addSky(PoseStack poseStack, Matrix4f matrix4f, float f, Camera camera, boolean bl, Runnable runnable, CallbackInfo ci) {
-        Vec3 vec3 = this.level.getSkyColor(this.minecraft.gameRenderer.getMainCamera().getPosition(), f);
+        Vec3 vec3 = this.level.getSkyColor(this.minecraft.gameRenderer.getMainCamera().getPosition(), 18000);
 
         float r = (float)vec3.x;
         float g = (float)vec3.y;
@@ -62,6 +67,8 @@ public class LevelRendererMixin {
 
         ShaderInstance shaderInstance = CustomRenderTypes.SKY_SHADER.getInstance().get();
         updateSkyShaderData(shaderInstance);
+
+        RenderSystem.enableBlend();
 
         this.skyBuffer.bind();
         this.skyBuffer.drawWithShader(poseStack.last().pose(), matrix4f, shaderInstance);
@@ -84,4 +91,6 @@ public class LevelRendererMixin {
 
         shader.safeGetUniform("PlayerPos").set(uniformPos);
     }
+
+
 }

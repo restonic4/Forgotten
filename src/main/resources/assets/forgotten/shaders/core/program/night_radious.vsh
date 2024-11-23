@@ -16,16 +16,17 @@ out vec3 vPosition;
 out vec3 CenterPoint;
 
 void main() {
+    float limit = 5000;
+
     vec3 distance = BeamCenter - PlayerPos;
+    distance.x = clamp(distance.x, -limit, limit);
+    distance.z = clamp(distance.z, -limit, limit);
 
-    // Calcula el factor de escala según el tiempo (puedes ajustar la fórmula para personalizar el crecimiento)
-    float scale = 0.001 + 0.001 * Time; // Crece un 10% por unidad de tiempo
+    float scale = 0.001 + 0.0001 * Time;
 
-    // Aplica la escala solo en las dimensiones X y Z
     vec3 scaledPosition = vec3(Position.x * scale, Position.y, Position.z * scale);
 
-    // Aplica la transformación de posición adicional
-    vec3 testPos = scaledPosition + vec3(distance.x, 200, distance.z);
+    vec3 testPos = scaledPosition + vec3(distance.x, 1000, distance.z);
 
     gl_Position = ProjMat * ModelViewMat * vec4(testPos, 1.0);
 

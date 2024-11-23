@@ -62,7 +62,7 @@ public class CustomRenderTypes extends RenderStateShard {
     );*/
 
     public static ShaderHolder COOL_PARTICLE = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "particle/cool_particle"), DefaultVertexFormat.PARTICLE, "LumiTransparency", "DepthFade");
-    public static ShaderHolder SKY_SHADER = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "program/night_radious"), DefaultVertexFormat.POSITION, "Time", "BeamCenter", "PlayerPos");
+    public static ShaderHolder SKY_SHADER = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "program/night_radious"), DefaultVertexFormat.POSITION, "Time", "Alpha", "BeamCenter", "PlayerPos");
 
     //public static final LodestoneRenderType RENDER_TYPE_CUSTOM = LodestoneRenderTypeRegistry.copyWithUniformChanges("forgotten:render_type_custom", LodestoneRenderTypeRegistry.TRANSPARENT_PARTICLE, ShaderUniformHandler.LUMITRANSPARENT);
 

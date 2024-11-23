@@ -17,6 +17,24 @@
     ]
   },
 
+  "wave": {
+    "sounds": [
+      {
+        "name": "forgotten:wave",
+        "stream": false
+      }
+    ]
+  },
+
+  "explosion": {
+    "sounds": [
+      {
+        "name": "forgotten:explosion",
+        "stream": false
+      }
+    ]
+  },
+
   "whisper1": {
     "sounds": [
       {

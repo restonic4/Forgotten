@@ -13,6 +13,8 @@ import java.util.Random;
 public class ForgottenSounds {
     public static SoundEvent DEATH_SOUND;
     public static SoundEvent REJECT;
+    public static SoundEvent WAVE;
+    public static SoundEvent EXPLOSION;
 
     public static SoundEvent WHISPER1;
     public static SoundEvent WHISPER2;
@@ -29,6 +31,12 @@ public class ForgottenSounds {
 
         ResourceLocation rejectLocation = new ResourceLocation(Forgotten.MOD_ID, "reject");
         REJECT = Registry.register(BuiltInRegistries.SOUND_EVENT, rejectLocation, SoundEvent.createVariableRangeEvent(rejectLocation));
+
+        ResourceLocation waveLocation = new ResourceLocation(Forgotten.MOD_ID, "wave");
+        WAVE = Registry.register(BuiltInRegistries.SOUND_EVENT, waveLocation, SoundEvent.createVariableRangeEvent(waveLocation));
+
+        ResourceLocation explosionLocation = new ResourceLocation(Forgotten.MOD_ID, "explosion");
+        EXPLOSION = Registry.register(BuiltInRegistries.SOUND_EVENT, explosionLocation, SoundEvent.createVariableRangeEvent(explosionLocation));
 
         WHISPER1 = registerWhisper(1);
         WHISPER2 = registerWhisper(2);

@@ -1,5 +1,6 @@
 package com.restonic4.forgotten.client;
 
+import com.restonic4.forgotten.client.gui.IrisScreen;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import com.restonic4.forgotten.util.CircleGenerator;
@@ -7,6 +8,7 @@ import com.restonic4.forgotten.util.LodestoneVars;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
@@ -38,6 +40,10 @@ public class ForgottenClient implements ClientModInitializer {
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (FabricLoader.getInstance().isModLoaded("iris") && (Minecraft.getInstance().screen == null || !(Minecraft.getInstance().screen instanceof IrisScreen))) {
+                Minecraft.getInstance().forceSetScreen(new IrisScreen());
+            }
+
             /*if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
                 configured = true;
                 configureWindow();

@@ -1,3 +1,5 @@
 {
-  "container.forgotten.locked": "For some reason you can't open this container!"
+  "gui.forgotten.incompatibility.title.iris": "Iris is incompatible with Forgotten!",
+  "gui.forgotten.incompatibility.message.iris": "Iris changes how Minecraft renders certain things, and most importantly, it does not allow the use of CORE/VANILLA type shaders, which breaks the visual effects of Forgotten. If you really want to play Forgotten with shaders, you will need to create a MIXIN to the ForgottenClient class to remove this alert. I don’t provide the option here because people tend not to read these messages and then complain that the mod doesn’t work.",
+  "gui.forgotten.incompatibility.close": "Close Minecraft"
 }

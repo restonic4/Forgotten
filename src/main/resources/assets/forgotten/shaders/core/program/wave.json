@@ -4,8 +4,8 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "forgotten:program/night_radious",
-  "fragment": "forgotten:program/night_radious",
+  "vertex": "forgotten:program/wave",
+  "fragment": "forgotten:program/wave",
   "attributes": [
   ],
   "samplers": [

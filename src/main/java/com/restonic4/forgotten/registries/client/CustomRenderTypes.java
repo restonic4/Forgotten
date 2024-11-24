@@ -1,37 +1,22 @@
 package com.restonic4.forgotten.registries.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.restonic4.forgotten.Forgotten;
 import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceProvider;
-import team.lodestar.lodestone.LodestoneLib;
 import team.lodestar.lodestone.events.LodestoneShaderRegistrationEvent;
 import team.lodestar.lodestone.registry.client.LodestoneRenderTypeRegistry;
 import team.lodestar.lodestone.registry.client.LodestoneShaderRegistry;
 import team.lodestar.lodestone.systems.particle.render_types.LodestoneWorldParticleRenderType;
 import team.lodestar.lodestone.systems.rendering.LodestoneRenderType;
 import team.lodestar.lodestone.systems.rendering.StateShards;
-import team.lodestar.lodestone.systems.rendering.rendeertype.RenderTypeProvider;
-import team.lodestar.lodestone.systems.rendering.rendeertype.RenderTypeToken;
 import team.lodestar.lodestone.systems.rendering.rendeertype.ShaderUniformHandler;
-import team.lodestar.lodestone.systems.rendering.shader.ExtendedShaderInstance;
 import team.lodestar.lodestone.systems.rendering.shader.ShaderHolder;
 import com.mojang.datafixers.util.Pair;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.PARTICLE;
 import static com.mojang.blaze3d.vertex.VertexFormat.Mode.QUADS;
-import static team.lodestar.lodestone.LodestoneLib.lodestonePath;
 
 public class CustomRenderTypes extends RenderStateShard {
     //public static ResourceLocation TEXTURE = new ResourceLocation(LodestoneLib.LODESTONE, "textures/particle/wisp.png");
@@ -62,7 +47,7 @@ public class CustomRenderTypes extends RenderStateShard {
     );*/
 
     public static ShaderHolder COOL_PARTICLE = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "particle/cool_particle"), DefaultVertexFormat.PARTICLE, "LumiTransparency", "DepthFade");
-    public static ShaderHolder SKY_SHADER = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "program/night_radious"), DefaultVertexFormat.POSITION, "Time", "Alpha", "BeamCenter", "PlayerPos");
+    public static ShaderHolder WAVE_SHADER = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "program/wave"), DefaultVertexFormat.POSITION, "Time", "Alpha", "BeamCenter", "PlayerPos");
 
     //public static final LodestoneRenderType RENDER_TYPE_CUSTOM = LodestoneRenderTypeRegistry.copyWithUniformChanges("forgotten:render_type_custom", LodestoneRenderTypeRegistry.TRANSPARENT_PARTICLE, ShaderUniformHandler.LUMITRANSPARENT);
 
@@ -90,7 +75,7 @@ public class CustomRenderTypes extends RenderStateShard {
     public static void init() {
         LodestoneShaderRegistrationEvent.EVENT.register((provider, shaderList) -> {
             shaderList.add(Pair.of(COOL_PARTICLE.createInstance(provider), LodestoneShaderRegistry.getConsumer()));
-            shaderList.add(Pair.of(SKY_SHADER.createInstance(provider), LodestoneShaderRegistry.getConsumer()));
+            shaderList.add(Pair.of(WAVE_SHADER.createInstance(provider), LodestoneShaderRegistry.getConsumer()));
         });
     }
 }

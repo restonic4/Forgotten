@@ -1,42 +1,25 @@
 package com.restonic4.forgotten.networking.packets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.restonic4.forgotten.client.DeathUtils;
 import com.restonic4.forgotten.registries.ForgottenSounds;
 import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import com.restonic4.forgotten.util.CircleGenerator;
+import com.restonic4.forgotten.util.LodestoneVars;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
-import team.lodestar.lodestone.handlers.RenderHandler;
 import team.lodestar.lodestone.handlers.ScreenshakeHandler;
-import team.lodestar.lodestone.registry.client.LodestoneRenderTypeRegistry;
-import team.lodestar.lodestone.registry.client.LodestoneShaderRegistry;
 import team.lodestar.lodestone.registry.common.particle.LodestoneParticleRegistry;
 import team.lodestar.lodestone.systems.easing.Easing;
 import team.lodestar.lodestone.systems.particle.builder.WorldParticleBuilder;
 import team.lodestar.lodestone.systems.particle.data.GenericParticleData;
 import team.lodestar.lodestone.systems.particle.data.color.ColorParticleData;
 import team.lodestar.lodestone.systems.particle.data.spin.SpinParticleData;
-import team.lodestar.lodestone.systems.particle.render_types.LodestoneWorldParticleRenderType;
-import team.lodestar.lodestone.systems.particle.world.LodestoneWorldParticle;
-import team.lodestar.lodestone.systems.particle.world.type.LodestoneWorldParticleType;
-import team.lodestar.lodestone.systems.screenshake.PositionedScreenshakeInstance;
 import team.lodestar.lodestone.systems.screenshake.ScreenshakeInstance;
 
 import java.awt.*;
@@ -61,15 +44,15 @@ public class BeamPacket {
             float velocity = 0.01f;
 
             Minecraft.getInstance().execute(() -> {
-                CustomRenderTypes.SKY_SHADER.getInstance().get().safeGetUniform("BeamCenter").set(new float[] {(float) beamCenter.x, (float) beamCenter.y, (float) beamCenter.z});
-                CustomRenderTypes.SKY_SHADER.getInstance().get().safeGetUniform("Time").set(0);
-                CustomRenderTypes.SKY_SHADER.getInstance().get().safeGetUniform("Alpha").set(1f);
+                CustomRenderTypes.WAVE_SHADER.getInstance().get().safeGetUniform("BeamCenter").set(new float[] {(float) beamCenter.x, (float) beamCenter.y, (float) beamCenter.z});
+                CustomRenderTypes.WAVE_SHADER.getInstance().get().safeGetUniform("Time").set(0);
+                CustomRenderTypes.WAVE_SHADER.getInstance().get().safeGetUniform("Alpha").set(1f);
             });
 
             while (time < Integer.MAX_VALUE && time >= 0) {
                 int finalTime = time;
                 Minecraft.getInstance().execute(() -> {
-                    CustomRenderTypes.SKY_SHADER.getInstance().get().safeGetUniform("Time").set(finalTime);
+                    CustomRenderTypes.WAVE_SHADER.getInstance().get().safeGetUniform("Time").set(finalTime);
                 });
 
                 time += Math.max((int) (time * velocity), 1);
@@ -83,7 +66,7 @@ public class BeamPacket {
             while (alpha > 0) {
                 float finalAlpha = alpha;
                 Minecraft.getInstance().execute(() -> {
-                    CustomRenderTypes.SKY_SHADER.getInstance().get().safeGetUniform("Alpha").set(Math.max(finalAlpha, 0));
+                    CustomRenderTypes.WAVE_SHADER.getInstance().get().safeGetUniform("Alpha").set(Math.max(finalAlpha, 0));
                 });
 
                 alpha -= 0.01f;
@@ -155,7 +138,8 @@ public class BeamPacket {
                     .setLifetime(300)
                     .addMotion(-point.toCenter.x * speed, 0, -point.toCenter.y * speed)
                     .enableNoClip()
-                    .setRenderType(CustomRenderTypes.particleType)
+                    .setRenderType(LodestoneVars.renderType)
+                    //.setRenderType(CustomRenderTypes.particleType)
                     .enableForcedSpawn()
                     .spawn(minecraft.level, targetPointRing.x, targetPointRing.y, targetPointRing.z);
         }

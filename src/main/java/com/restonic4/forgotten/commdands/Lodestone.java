@@ -1,7 +1,5 @@
 package com.restonic4.forgotten.commdands;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -11,29 +9,15 @@ import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import com.restonic4.forgotten.util.LodestoneVars;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
 import team.lodestar.lodestone.handlers.RenderHandler;
-import team.lodestar.lodestone.registry.client.LodestoneRenderTypeRegistry;
-import team.lodestar.lodestone.registry.client.LodestoneShaderRegistry;
 import team.lodestar.lodestone.systems.particle.render_types.LodestoneWorldParticleRenderType;
-import team.lodestar.lodestone.systems.rendering.LodestoneRenderType;
-import team.lodestar.lodestone.systems.rendering.StateShards;
-import team.lodestar.lodestone.systems.rendering.rendeertype.RenderTypeProvider;
-import team.lodestar.lodestone.systems.rendering.rendeertype.RenderTypeToken;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL32.glFramebufferTexture;
 
 public class Lodestone {
     private static final List<String> TYPES = Arrays.asList("render_type", "render_target", "far_plane", "time");
@@ -100,7 +84,7 @@ public class Lodestone {
                 break;
             case "time":
                 Minecraft.getInstance().execute(() -> {
-                    CustomRenderTypes.SKY_SHADER.getInstance().get().safeGetUniform("Time").set(Integer.parseInt(value));
+                    CustomRenderTypes.WAVE_SHADER.getInstance().get().safeGetUniform("Time").set(Integer.parseInt(value));
                 });
                 break;
             default:

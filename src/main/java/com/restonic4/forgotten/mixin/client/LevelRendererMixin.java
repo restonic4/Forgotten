@@ -2,12 +2,14 @@ package com.restonic4.forgotten.mixin.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.restonic4.forgotten.client.RenderingHelper;
 import com.restonic4.forgotten.registries.client.CustomRenderTypes;
+import com.restonic4.forgotten.util.CircleGenerator;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.*;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
@@ -18,20 +20,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.awt.*;
+import java.util.List;
+
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
-    /*@Redirect(method = "renderSky",
-            at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;getShader()Lnet/minecraft/client/renderer/ShaderInstance;"))
-    private ShaderInstance modifyShaderInstance() {
-        ShaderInstance customShader = CustomRenderTypes.SKY_SHADER.getInstance().get();
-
-        if (customShader == null) {
-            return RenderSystem.getShader();
-        }
-
-        return customShader;
-    }*/
-
     @Shadow private VertexBuffer skyBuffer;
     @Shadow private ClientLevel level;
     @Final @Shadow private Minecraft minecraft;
@@ -44,12 +37,6 @@ public class LevelRendererMixin {
 
     @Unique private VertexBuffer waveBuffer;
 
-    /*@Inject(method = "renderSky", at = @At(
-            value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/vertex/VertexBuffer;unbind()V",
-            shift = At.Shift.AFTER,
-            ordinal = 0
-    ))*/
     @Inject(method = "renderSky", at = @At("RETURN"))
     private void addSky(PoseStack poseStack, Matrix4f matrix4f, float f, Camera camera, boolean bl, Runnable runnable, CallbackInfo ci) {
         Vec3 vec3 = this.level.getSkyColor(this.minecraft.gameRenderer.getMainCamera().getPosition(), 18000);
@@ -97,5 +84,16 @@ public class LevelRendererMixin {
         shader.safeGetUniform("PlayerPos").set(uniformPos);
     }
 
+    @Inject(method = "renderLevel", at = @At("TAIL"))
+    private void renderBeams(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
+        List<CircleGenerator.CirclePoint> circle = CircleGenerator.generateCircle(100, 30);
 
+        for (int i = 0; i < circle.size(); i++) {
+            CircleGenerator.CirclePoint point = circle.get(i);
+
+            RenderingHelper.renderBeam(poseStack, camera, new Vec3(0, 0, 0), point.position, 5);
+        }
+
+        //RenderingHelper.renderBeam(poseStack, camera, new Vec3(0, 0, 0), new Vec3(0, 100, 0), 20);
+    }
 }

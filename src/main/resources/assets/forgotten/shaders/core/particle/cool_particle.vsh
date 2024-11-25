@@ -15,6 +15,7 @@ uniform mat4 ProjMat;
 uniform int FogShape;
 
 out vec4 vertexColor;
+out float vertexDistance;
 out vec2 texCoord0;
 out float pixelDepthClip;
 
@@ -24,8 +25,10 @@ void main() {
     vec4 clipSpacePos = ProjMat * viewSpacePos;
     gl_Position = clipSpacePos;
 
+    pixelDepthClip = getDepthFromClipSpace(clipSpacePos);
 
     vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0);
+    vertexDistance = fogDistance(ModelViewMat, IViewRotMat, Position, FogShape);
 
     texCoord0 = UV0;
 }

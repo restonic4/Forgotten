@@ -35,6 +35,7 @@ public class ForgottenClient implements ClientModInitializer {
     public void onInitializeClient() {
         PacketManager.registerServerToClient();
         CustomRenderTypes.init();
+        CustomRenderTypes.registerCParticles();
         ForgottenEntityRenderers.register();
 
         ClientPlayConnectionEvents.DISCONNECT.register((clientPacketListener, minecraft) -> {
@@ -48,13 +49,13 @@ public class ForgottenClient implements ClientModInitializer {
 
             if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
                 configured = true;
-                configureWindow();
+                //configureWindow();
             }
 
             if (System.currentTimeMillis() > lastTimeSpawned + 3000 && Minecraft.getInstance().level != null) {
                 lastTimeSpawned = System.currentTimeMillis();
 
-                spawnParticles(Minecraft.getInstance());
+                //spawnParticles(Minecraft.getInstance());
             }
         });
     }
@@ -76,7 +77,7 @@ public class ForgottenClient implements ClientModInitializer {
         for (int i = 0; i < circle.size(); i++) {
             CircleGenerator.CirclePoint point = circle.get(i);
 
-            WorldParticleBuilder.create(LodestoneParticleRegistry.WISP_PARTICLE)
+            WorldParticleBuilder.create(CustomRenderTypes.WISP_PARTICLE)
                     .setScaleData(GenericParticleData.create(2, 14).build())
                     .setTransparencyData(GenericParticleData.create(1, 0f).build())
                     .setColorData(ColorParticleData.create(startingColor, endingColor).setCoefficient(1.4f).setEasing(Easing.BOUNCE_IN_OUT).build())
@@ -88,6 +89,45 @@ public class ForgottenClient implements ClientModInitializer {
                     .setRenderTarget(LodestoneVars.renderTarget)
                     .enableForcedSpawn()
                     .spawn(minecraft.level, targetPointRing.x, targetPointRing.y, targetPointRing.z);
+
+            /*WorldParticleBuilder.create(LodestoneParticleRegistry.WISP_PARTICLE)
+                    .setScaleData(GenericParticleData.create(2, 14).build())
+                    .setTransparencyData(GenericParticleData.create(1, 0f).build())
+                    .setColorData(ColorParticleData.create(startingColor, endingColor).setCoefficient(1.4f).setEasing(Easing.BOUNCE_IN_OUT).build())
+                    .setSpinData(SpinParticleData.create(0.2f, 0.4f).setSpinOffset((minecraft.level.getGameTime() * 0.2f) % 6.28f).setEasing(Easing.QUARTIC_IN).build())
+                    .setLifetime(300)
+                    .addMotion(-point.toCenter.x, 0, -point.toCenter.y)
+                    .enableNoClip()
+                    .setRenderType(LodestoneVars.renderType)
+                    .setRenderTarget(LodestoneVars.renderTarget)
+                    .enableForcedSpawn()
+                    .spawn(minecraft.level, targetPointRing.x, targetPointRing.y + 20, targetPointRing.z);
+
+            WorldParticleBuilder.create(LodestoneParticleRegistry.SMOKE_PARTICLE)
+                    .setScaleData(GenericParticleData.create(2, 14).build())
+                    .setTransparencyData(GenericParticleData.create(1, 0f).build())
+                    .setColorData(ColorParticleData.create(startingColor, endingColor).setCoefficient(1.4f).setEasing(Easing.BOUNCE_IN_OUT).build())
+                    .setSpinData(SpinParticleData.create(0.2f, 0.4f).setSpinOffset((minecraft.level.getGameTime() * 0.2f) % 6.28f).setEasing(Easing.QUARTIC_IN).build())
+                    .setLifetime(300)
+                    .addMotion(-point.toCenter.x, 0, -point.toCenter.y)
+                    .enableNoClip()
+                    .setRenderType(LodestoneVars.renderType)
+                    .setRenderTarget(LodestoneVars.renderTarget)
+                    .enableForcedSpawn()
+                    .spawn(minecraft.level, targetPointRing.x, targetPointRing.y + 40, targetPointRing.z);
+
+            WorldParticleBuilder.create(LodestoneParticleRegistry.SPARK_PARTICLE)
+                    .setScaleData(GenericParticleData.create(2, 14).build())
+                    .setTransparencyData(GenericParticleData.create(1, 0f).build())
+                    .setColorData(ColorParticleData.create(startingColor, endingColor).setCoefficient(1.4f).setEasing(Easing.BOUNCE_IN_OUT).build())
+                    .setSpinData(SpinParticleData.create(0.2f, 0.4f).setSpinOffset((minecraft.level.getGameTime() * 0.2f) % 6.28f).setEasing(Easing.QUARTIC_IN).build())
+                    .setLifetime(300)
+                    .addMotion(-point.toCenter.x, 0, -point.toCenter.y)
+                    .enableNoClip()
+                    .setRenderType(LodestoneVars.renderType)
+                    .setRenderTarget(LodestoneVars.renderTarget)
+                    .enableForcedSpawn()
+                    .spawn(minecraft.level, targetPointRing.x, targetPointRing.y + 60, targetPointRing.z);*/
         }
     }
 

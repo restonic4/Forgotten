@@ -15,6 +15,7 @@ uniform vec4 FogColor;
 uniform mat4 InvProjMat;
 uniform vec2 ScreenSize;
 
+in float vertexDistance;
 in vec4 vertexColor;
 in vec2 texCoord0;
 in float pixelDepthClip;
@@ -28,6 +29,6 @@ vec4 transformColorFixed(vec4 initialColor, float lumiTransparent, vec4 vertexCo
     return result;
 }
 void main() {
-    vec4 color = transformColorFixed(texture(Sampler0, texCoord0), LumiTransparency, vertexColor, ColorModulator);
+    vec4 color = transformColor(texture(Sampler0, texCoord0), LumiTransparency, vertexColor, ColorModulator);
     fragColor = color;
 }

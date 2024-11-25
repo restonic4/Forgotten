@@ -7,6 +7,7 @@ import com.restonic4.forgotten.compatibility.voicechat.Plugin;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.ForgottenEntities;
 import com.restonic4.forgotten.registries.ForgottenSounds;
+import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import com.restonic4.forgotten.saving.JsonDataManager;
 import me.drex.vanish.api.VanishEvents;
 import me.drex.vanish.config.ConfigManager;
@@ -61,6 +62,7 @@ public class Forgotten implements ModInitializer {
         ForgottenSounds.register();
         registerEvents();
         ForgottenEntities.register();
+        CustomRenderTypes.registerSParticles();
     }
 
     private void registerEvents() {

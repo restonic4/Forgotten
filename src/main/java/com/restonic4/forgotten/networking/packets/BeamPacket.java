@@ -1,5 +1,8 @@
 package com.restonic4.forgotten.networking.packets;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.restonic4.forgotten.registries.ForgottenSounds;
 import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import com.restonic4.forgotten.util.CircleGenerator;
@@ -12,7 +15,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import team.lodestar.lodestone.handlers.RenderHandler;
 import team.lodestar.lodestone.handlers.ScreenshakeHandler;
 import team.lodestar.lodestone.registry.common.particle.LodestoneParticleRegistry;
 import team.lodestar.lodestone.systems.easing.Easing;
@@ -20,6 +25,7 @@ import team.lodestar.lodestone.systems.particle.builder.WorldParticleBuilder;
 import team.lodestar.lodestone.systems.particle.data.GenericParticleData;
 import team.lodestar.lodestone.systems.particle.data.color.ColorParticleData;
 import team.lodestar.lodestone.systems.particle.data.spin.SpinParticleData;
+import team.lodestar.lodestone.systems.rendering.VFXBuilders;
 import team.lodestar.lodestone.systems.screenshake.ScreenshakeInstance;
 
 import java.awt.*;
@@ -153,7 +159,7 @@ public class BeamPacket {
             float sizeFactor = (float) (2.5f / Math.pow(i + 1, 0.5));
             float verticalFactor = Math.max(0.5f, ((float) Math.pow(0.9, i)));
 
-            WorldParticleBuilder.create(LodestoneParticleRegistry.WISP_PARTICLE)
+            /*WorldParticleBuilder.create(LodestoneParticleRegistry.WISP_PARTICLE)
                     .setScaleData(GenericParticleData.create(sizeFactor, Math.max(sizeFactor, 0.2f)).build())
                     .setTransparencyData(GenericParticleData.create(1, 0f).build())
                     .setColorData(ColorParticleData.create(startingColor, endingColor).setCoefficient(1.4f).setEasing(Easing.BOUNCE_IN_OUT).build())
@@ -164,9 +170,12 @@ public class BeamPacket {
                     .enableForcedSpawn()
                     .enableNoClip()
                     .setForceSpawn(true)
-                    .spawn(level, pos.x, pos.y + i * verticalFactor, pos.z);
+                    .spawn(level, pos.x, pos.y + i * verticalFactor, pos.z);*/
+
         }
     }
+
+
 
     public static float calculateScale(Vector3f distance, float maxDistance, float maxValue) {
         // Calcula la longitud del vector en X y Z.

@@ -13,25 +13,20 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockGeoEntity extends Animal {
     public final AnimationState idleAnimationState = new AnimationState();
-    private int idleAnimationTimeout = 0;
 
     public BlockGeoEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
     }
 
     private void setupAnimationStates() {
-        if (this.idleAnimationTimeout <= 0) {
-            this.idleAnimationTimeout = this.random.nextInt(40) + 80;
-            this.idleAnimationState.start(this.age);
-        } else {
-            --this.idleAnimationTimeout;
-        }
+        this.idleAnimationState.animateWhen(true, this.tickCount);
     }
 
     @Override
     public void tick() {
         super.tick();
-        if(this.level().isClientSide()) {
+
+        if (this.level().isClientSide()) {
             setupAnimationStates();
         }
     }

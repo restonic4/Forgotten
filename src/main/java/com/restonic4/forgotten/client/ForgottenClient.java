@@ -67,7 +67,6 @@ public class ForgottenClient implements ClientModInitializer {
 
         String string = CustomRenderTypes.COOL_PARTICLE.getInstance().get().getName();
         //ResourceLocation thing = new ResourceLocation("shaders/core/" + string + ".json");
-        System.out.println("waos");
 
         List<CircleGenerator.CirclePoint> circle = CircleGenerator.generateCircle(radius, precision);
 

@@ -37,7 +37,7 @@ public class BeamPacket {
         Vec3 playerPosition = Minecraft.getInstance().player.position();
 
         Vec3 distance = beamCenter.subtract(playerPosition);
-        float secondsToWait = calculateScale(distance.toVector3f(), maxDistance, 9);
+        float secondsToWait = Math.max(4, calculateScale(distance.toVector3f(), maxDistance, 9));
 
         new Thread(() -> {
             int time = 0;

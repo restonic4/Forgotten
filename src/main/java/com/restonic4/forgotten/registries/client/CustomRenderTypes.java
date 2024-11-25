@@ -63,7 +63,8 @@ public class CustomRenderTypes extends RenderStateShard {
 
     public static LodestoneWorldParticleRenderType particleType = new LodestoneWorldParticleRenderType(
             RENDER_TYPE_CUSTOM,
-            COOL_PARTICLE,
+            //COOL_PARTICLE,
+            LodestoneShaderRegistry.PARTICLE,
             TextureAtlas.LOCATION_PARTICLES,
             LodestoneRenderTypeRegistry.TRANSPARENT_FUNCTION
     );

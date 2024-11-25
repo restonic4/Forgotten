@@ -3,6 +3,7 @@ package com.restonic4.forgotten.client;
 import com.restonic4.forgotten.client.gui.IrisScreen;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.client.CustomRenderTypes;
+import com.restonic4.forgotten.registries.client.ForgottenEntityRenderers;
 import com.restonic4.forgotten.util.CircleGenerator;
 import com.restonic4.forgotten.util.LodestoneVars;
 import net.fabricmc.api.ClientModInitializer;
@@ -34,6 +35,7 @@ public class ForgottenClient implements ClientModInitializer {
     public void onInitializeClient() {
         PacketManager.registerServerToClient();
         CustomRenderTypes.init();
+        ForgottenEntityRenderers.register();
 
         ClientPlayConnectionEvents.DISCONNECT.register((clientPacketListener, minecraft) -> {
             DeathUtils.setDeathValue(false);
@@ -44,15 +46,15 @@ public class ForgottenClient implements ClientModInitializer {
                 Minecraft.getInstance().forceSetScreen(new IrisScreen());
             }
 
-            /*if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
+            if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
                 configured = true;
                 configureWindow();
-            }*/
+            }
 
             if (System.currentTimeMillis() > lastTimeSpawned + 3000 && Minecraft.getInstance().level != null) {
                 lastTimeSpawned = System.currentTimeMillis();
 
-                //spawnParticles(Minecraft.getInstance());
+                spawnParticles(Minecraft.getInstance());
             }
         });
     }

@@ -7,6 +7,8 @@ import com.restonic4.forgotten.registries.BeamRenderType;
 import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import com.restonic4.forgotten.util.CircleGenerator;
 import com.restonic4.forgotten.util.LodestoneVars;
+import com.restonic4.forgotten.util.VertexArrayStack;
+import com.restonic4.forgotten.util.VertexStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -127,22 +129,23 @@ public class LevelRendererMixin {
 
         this.quadBuffer = null;*/
 
+        VertexArrayStack vertexArrayStack = new VertexArrayStack();
+
         Vector3f[] vertices = RenderingHelper.getQuadVertices();
         RenderingHelper.scaleVertices(vertices, 1, 1, 100);
+        RenderingHelper.rotateVerticesX(vertices, -90);
+
+        vertexArrayStack.setLast(vertices);
+
         RenderingHelper.translateVertices(vertices, 0, 0, 1);
-        RenderingHelper.rotateVerticesX(vertices, -180);
-        RenderingHelper.rotateVerticesY(vertices, 0);
 
         RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vertices);
 
-        RenderingHelper.rotateVerticesY(vertices, 90);
-        RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vertices);
+        //RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vertices);
 
-        RenderingHelper.rotateVerticesY(vertices, 90);
-        RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vertices);
+        //RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vertices);
 
-        RenderingHelper.rotateVerticesY(vertices, 90);
-        RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vertices);
+        //RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vertices);
 
         //RenderingHelper.renderBeam(poseStack, camera, new Vec3(0, 0, 0), new Vec3(0, 100, 0), 20);
     }

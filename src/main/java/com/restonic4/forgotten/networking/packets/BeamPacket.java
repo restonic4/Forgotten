@@ -1,7 +1,9 @@
 package com.restonic4.forgotten.networking.packets;
 
+import com.restonic4.forgotten.client.rendering.BeamEffectManager;
 import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
+import com.restonic4.forgotten.util.EasingSystem;
 import com.restonic4.forgotten.util.helpers.CircleGenerator;
 import com.restonic4.forgotten.util.trash.TestingVars;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -79,16 +81,32 @@ public class BeamPacket {
 
         minecraft.execute(() -> {
             if (minecraft.level != null && minecraft.player != null) {
-                Vec3 targetPoint = new Vec3(0, 0, 0);
+                float beamR = 0.3f;
+                float beamG = 1;
+                float beamB = 1;
 
-                spawnBeam(minecraft.player.level(),  targetPoint, 120);
-                spawnBeam(minecraft.player.level(),  targetPoint, 140);
-                spawnBeam(minecraft.player.level(),  targetPoint, 180);
-                spawnBeam(minecraft.player.level(),  targetPoint, 200);
-                spawnBeam(minecraft.player.level(),  targetPoint, 260);
+                BeamEffectManager.create()
+                        .lifetime(10)
+                        .setPosition(beamCenter.toVector3f())
+                        .timeBetweenFades(4f)
+                        .setFadeInAnimation((animationContext, progress) -> {
+                            float easedProgress = EasingSystem.getEasedValue(
+                                    progress, 0f, 1f, EasingSystem.EasingType.BACK_OUT
+                            );
 
-                spawnCircle(minecraft, targetPoint.add(0, 200, 0), 20, 200, 0.25f);
-                spawnCircle(minecraft, targetPoint.add(0, 400, 0), 20, 200, 2);
+                            animationContext.setWidth(animationContext.getWidth() * easedProgress);
+                        })
+                        .setFadeOutAnimation((animationContext, progress) -> {
+                            float easedProgress = EasingSystem.getEasedValue(
+                                    progress, 1f, 0f, EasingSystem.EasingType.BACK_IN
+                            );
+
+                            animationContext.setWidth(animationContext.getWidth() * easedProgress);
+                        })
+                        .addLayer(2, 1020, new Color(beamR, beamG, beamB, 1))
+                        .addLayer(4, 1020, new Color(beamR, beamG, beamB, 0.75f))
+                        .addLayer(6, 1020, new Color(beamR, beamG, beamB, 0.5f))
+                        .addLayer(8, 1020, new Color(beamR, beamG, beamB, 0.25f));
 
                 BlockPos blockPos = minecraft.player.blockPosition();
 
@@ -121,64 +139,14 @@ public class BeamPacket {
         });
     }
 
-    public static void spawnCircle(Minecraft minecraft, Vec3 targetPointRing, float radius, int precision, float speed) {
-        List<CircleGenerator.CirclePoint> circle = CircleGenerator.generateCircle(radius, precision);
-
-        Color startingColor = new Color(255, 179, 0);
-        Color endingColor = new Color(91, 10, 146);
-
-        for (int i = 0; i < circle.size(); i++) {
-            CircleGenerator.CirclePoint point = circle.get(i);
-
-            WorldParticleBuilder.create(LodestoneParticleRegistry.WISP_PARTICLE)
-                    .setScaleData(GenericParticleData.create(2, 14).build())
-                    .setTransparencyData(GenericParticleData.create(1, 0f).build())
-                    .setColorData(ColorParticleData.create(startingColor, endingColor).setCoefficient(1.4f).setEasing(Easing.BOUNCE_IN_OUT).build())
-                    .setSpinData(SpinParticleData.create(0.2f, 0.4f).setSpinOffset((minecraft.level.getGameTime() * 0.2f) % 6.28f).setEasing(Easing.QUARTIC_IN).build())
-                    .setLifetime(300)
-                    .addMotion(-point.toCenter.x * speed, 0, -point.toCenter.y * speed)
-                    .enableNoClip()
-                    .setRenderType(TestingVars.renderType)
-                    //.setRenderType(CustomRenderTypes.particleType)
-                    .enableForcedSpawn()
-                    .spawn(minecraft.level, targetPointRing.x, targetPointRing.y, targetPointRing.z);
-        }
-    }
-
-    public static void spawnBeam(Level level, Vec3 pos, int duration) {
-        for (int i = 0; i <= 400; i++) {
-            Color startingColor = new Color(255, 179, 0);
-            Color endingColor = new Color(91, 10, 146);
-
-            float sizeFactor = (float) (2.5f / Math.pow(i + 1, 0.5));
-            float verticalFactor = Math.max(0.5f, ((float) Math.pow(0.9, i)));
-
-            /*WorldParticleBuilder.create(LodestoneParticleRegistry.WISP_PARTICLE)
-                    .setScaleData(GenericParticleData.create(sizeFactor, Math.max(sizeFactor, 0.2f)).build())
-                    .setTransparencyData(GenericParticleData.create(1, 0f).build())
-                    .setColorData(ColorParticleData.create(startingColor, endingColor).setCoefficient(1.4f).setEasing(Easing.BOUNCE_IN_OUT).build())
-                    .setSpinData(SpinParticleData.create(0.2f, 0.4f).setSpinOffset((level.getGameTime() * 0.2f) % 6.28f).setEasing(Easing.QUARTIC_IN).build())
-                    .setLifetime(duration)
-                    .addMotion(0, 0.01f, 0)
-                    .setRenderType(CustomRenderTypes.particleType)
-                    .enableForcedSpawn()
-                    .enableNoClip()
-                    .setForceSpawn(true)
-                    .spawn(level, pos.x, pos.y + i * verticalFactor, pos.z);*/
-
-        }
-    }
 
 
 
     public static float calculateScale(Vector3f distance, float maxDistance, float maxValue) {
-        // Calcula la longitud del vector en X y Z.
         float lengthXZ = (float) Math.sqrt(distance.x * distance.x + distance.z * distance.z);
 
-        // Asegúrate de que la distancia no exceda el máximo permitido.
         lengthXZ = Math.min(lengthXZ, maxDistance);
 
-        // Escala el valor de 0 a maxValue en función de la distancia.
         return (lengthXZ / maxDistance) * maxValue;
     }
 }

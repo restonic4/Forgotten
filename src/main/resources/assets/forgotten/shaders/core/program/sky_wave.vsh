@@ -26,7 +26,7 @@ void main() {
 
     vec3 scaledPosition = vec3(Position.x * scale, Position.y, Position.z * scale);
 
-    vec3 testPos = scaledPosition + vec3(distance.x, 1000, distance.z);
+    vec3 testPos = scaledPosition + vec3(distance.x, distance.y + 1000, distance.z);
 
     gl_Position = ProjMat * ModelViewMat * vec4(testPos, 1.0);
 

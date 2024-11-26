@@ -2,6 +2,7 @@ package com.restonic4.forgotten.mixin.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.restonic4.forgotten.client.rendering.BeamEffectManager;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
 import com.restonic4.forgotten.util.helpers.RenderingHelper;
 import net.minecraft.client.Camera;
@@ -79,11 +80,6 @@ public class LevelRendererMixin {
 
     @Inject(method = "renderLevel", at = @At("TAIL"))
     private void renderBeams(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
-        for (int i = 0; i < 8; i++) {
-            RenderSystem.setShaderColor(0, 1, 0, 0.9f - 0.1f*i);
-            RenderingHelper.renderComplexBeam(poseStack, matrix4f, camera, new Vector3f(), 1 + i, 500);
-        }
-
-        RenderSystem.setShaderColor(1, 1, 1, 1);
+        BeamEffectManager.render(poseStack, matrix4f, camera);
     }
 }

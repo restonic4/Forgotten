@@ -1,10 +1,8 @@
 package com.restonic4.forgotten.entity.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.restonic4.forgotten.Forgotten;
-import com.restonic4.forgotten.client.RenderingHelper;
+import com.restonic4.forgotten.util.RenderingHelper;
 import com.restonic4.forgotten.entity.common.BlockGeoEntity;
 import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,13 +11,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import team.lodestar.lodestone.handlers.RenderHandler;
 import team.lodestar.lodestone.registry.client.LodestoneRenderTypeRegistry;
-import team.lodestar.lodestone.registry.common.particle.LodestoneParticleRegistry;
-import team.lodestar.lodestone.systems.rendering.VFXBuilders;
-
-import java.awt.*;
 
 public class BlockGeoRenderer extends MobRenderer<BlockGeoEntity, BlockGeo<BlockGeoEntity>> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Forgotten.MOD_ID, "textures/entity/block_geo.png");

@@ -1,4 +1,4 @@
-package com.restonic4.forgotten.client;
+package com.restonic4.forgotten.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -6,7 +6,6 @@ import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -15,6 +14,7 @@ import team.lodestar.lodestone.registry.client.LodestoneRenderTypeRegistry;
 import team.lodestar.lodestone.systems.rendering.VFXBuilders;
 
 import java.awt.*;
+import java.util.List;
 
 public class RenderingHelper {
     public static void renderBeamFromEntity(PoseStack poseStack, Vec3 startPos, Vec3 endPos, float width) {
@@ -119,54 +119,15 @@ public class RenderingHelper {
         return bufferBuilder.end();
     }
 
-    public static Vector3f[] getQuadVertices() {
-        return new Vector3f[] {
-                new Vector3f(0, 0, 0),
-                new Vector3f(1, 0, 0),
-                new Vector3f(1, 0, 1),
-                new Vector3f(0, 0, 1)
-        };
-    }
+    public static void renderComplexBeam(PoseStack poseStack, Matrix4f matrix4f, Camera camera, Vector3f position, float width, float height) {
+        List<Vector3f[]> vector3fList = RenderShapes.BEAM.getVertices();
 
-    public static void scaleVertices(Vector3f[] vertices, float scaleX, float scaleY, float scaleZ) {
-        for (Vector3f vertex : vertices) {
-            vertex.mul(scaleX, scaleY, scaleZ);
-        }
-    }
+        for (int i = 0; i < vector3fList.size(); i++) {
+            Vector3f[] vector3fs = vector3fList.get(i);
 
-    public static void translateVertices(Vector3f[] vertices, float translateX, float translateY, float translateZ) {
-        for (Vector3f vertex : vertices) {
-            vertex.add(translateX, translateY, translateZ);
-        }
-    }
-
-    public static void rotateVerticesX(Vector3f[] vertices, float angleDegrees) {
-        float angleRadians = (float) Math.toRadians(angleDegrees);
-        for (Vector3f vertex : vertices) {
-            float y = vertex.y;
-            float z = vertex.z;
-            vertex.y = y * (float) Math.cos(angleRadians) - z * (float) Math.sin(angleRadians);
-            vertex.z = y * (float) Math.sin(angleRadians) + z * (float) Math.cos(angleRadians);
-        }
-    }
-
-    public static void rotateVerticesY(Vector3f[] vertices, float angleDegrees) {
-        float angleRadians = (float) Math.toRadians(angleDegrees);
-        for (Vector3f vertex : vertices) {
-            float x = vertex.x;
-            float z = vertex.z;
-            vertex.x = x * (float) Math.cos(angleRadians) + z * (float) Math.sin(angleRadians);
-            vertex.z = -x * (float) Math.sin(angleRadians) + z * (float) Math.cos(angleRadians);
-        }
-    }
-
-    public static void rotateVerticesZ(Vector3f[] vertices, float angleDegrees) {
-        float angleRadians = (float) Math.toRadians(angleDegrees);
-        for (Vector3f vertex : vertices) {
-            float x = vertex.x;
-            float y = vertex.y;
-            vertex.x = x * (float) Math.cos(angleRadians) - y * (float) Math.sin(angleRadians);
-            vertex.y = x * (float) Math.sin(angleRadians) + y * (float) Math.cos(angleRadians);
+            MathHelper.scaleVertices(vector3fs, width, height, width);
+            MathHelper.translateVertices(vector3fs, position.x - width/2, position.y, position.z - width/2);
+            RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vector3fs);
         }
     }
 }

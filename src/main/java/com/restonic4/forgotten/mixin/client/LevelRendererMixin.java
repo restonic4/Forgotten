@@ -21,18 +21,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
-    @Shadow private VertexBuffer skyBuffer;
     @Shadow private ClientLevel level;
     @Final @Shadow private Minecraft minecraft;
-    @Shadow private VertexBuffer starBuffer;
-    @Shadow private VertexBuffer darkBuffer;
     @Shadow  private static BufferBuilder.RenderedBuffer buildSkyDisc(BufferBuilder bufferBuilder, float f) {
         return null;
     };
 
 
     @Unique private VertexBuffer waveBuffer;
-    @Unique private VertexBuffer quadBuffer;
 
     @Inject(method = "renderSky", at = @At("RETURN"))
     private void addSky(PoseStack poseStack, Matrix4f matrix4f, float f, Camera camera, boolean bl, Runnable runnable, CallbackInfo ci) {
@@ -83,8 +79,11 @@ public class LevelRendererMixin {
 
     @Inject(method = "renderLevel", at = @At("TAIL"))
     private void renderBeams(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 8; i++) {
+            RenderSystem.setShaderColor(0, 1, 0, 0.9f - 0.1f*i);
             RenderingHelper.renderComplexBeam(poseStack, matrix4f, camera, new Vector3f(), 1 + i, 500);
         }
+
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 }

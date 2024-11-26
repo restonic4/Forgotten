@@ -1,8 +1,7 @@
 package com.restonic4.forgotten.networking.packets;
 
-import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.client.DeathUtils;
-import com.restonic4.forgotten.registries.ForgottenSounds;
+import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;

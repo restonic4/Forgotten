@@ -1,9 +1,8 @@
-package com.restonic4.forgotten.util;
+package com.restonic4.forgotten.util.helpers;
 
-import com.restonic4.forgotten.registries.ForgottenSounds;
+import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -11,7 +10,7 @@ import net.minecraft.sounds.SoundSource;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Effects {
+public class SimpleEffectHelper {
     public static void invalidHeadPlacement(ServerLevel serverLevel, BlockPos blockPos) {
         particle(serverLevel, blockPos, ParticleTypes.TOTEM_OF_UNDYING, 4, 0.2, 0.2, 0.2, 0);
         particle(serverLevel, blockPos, ParticleTypes.ENCHANTED_HIT, 4, 0.2, 0.2, 0.2, 0);

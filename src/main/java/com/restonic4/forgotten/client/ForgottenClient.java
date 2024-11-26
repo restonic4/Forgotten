@@ -2,19 +2,18 @@ package com.restonic4.forgotten.client;
 
 import com.restonic4.forgotten.client.gui.IrisScreen;
 import com.restonic4.forgotten.networking.PacketManager;
-import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import com.restonic4.forgotten.registries.client.ForgottenEntityRenderers;
-import com.restonic4.forgotten.util.CircleGenerator;
-import com.restonic4.forgotten.util.LodestoneVars;
+import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
+import com.restonic4.forgotten.registries.common.ForgottenParticleTypes;
+import com.restonic4.forgotten.util.helpers.CircleGenerator;
+import com.restonic4.forgotten.util.trash.TestingVars;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
-import team.lodestar.lodestone.registry.common.particle.LodestoneParticleRegistry;
 import team.lodestar.lodestone.systems.easing.Easing;
 import team.lodestar.lodestone.systems.particle.builder.WorldParticleBuilder;
 import team.lodestar.lodestone.systems.particle.data.GenericParticleData;
@@ -34,8 +33,8 @@ public class ForgottenClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         PacketManager.registerServerToClient();
-        CustomRenderTypes.init();
-        CustomRenderTypes.registerCParticles();
+        ForgottenShaderHolders.register();
+        ForgottenParticleTypes.registerClient();
         ForgottenEntityRenderers.register();
 
         ClientPlayConnectionEvents.DISCONNECT.register((clientPacketListener, minecraft) -> {
@@ -66,7 +65,7 @@ public class ForgottenClient implements ClientModInitializer {
         float radius = 20;
         int precision = 100;
 
-        String string = CustomRenderTypes.COOL_PARTICLE.getInstance().get().getName();
+        String string = ForgottenShaderHolders.COOL_PARTICLE.getInstance().get().getName();
         //ResourceLocation thing = new ResourceLocation("shaders/core/" + string + ".json");
 
         List<CircleGenerator.CirclePoint> circle = CircleGenerator.generateCircle(radius, precision);
@@ -77,7 +76,7 @@ public class ForgottenClient implements ClientModInitializer {
         for (int i = 0; i < circle.size(); i++) {
             CircleGenerator.CirclePoint point = circle.get(i);
 
-            WorldParticleBuilder.create(CustomRenderTypes.WISP_PARTICLE)
+            WorldParticleBuilder.create(ForgottenParticleTypes.WISP_PARTICLE)
                     .setScaleData(GenericParticleData.create(2, 14).build())
                     .setTransparencyData(GenericParticleData.create(1, 0f).build())
                     .setColorData(ColorParticleData.create(startingColor, endingColor).setCoefficient(1.4f).setEasing(Easing.BOUNCE_IN_OUT).build())
@@ -85,8 +84,8 @@ public class ForgottenClient implements ClientModInitializer {
                     .setLifetime(300)
                     .addMotion(-point.toCenter.x, 0, -point.toCenter.y)
                     .enableNoClip()
-                    .setRenderType(LodestoneVars.renderType)
-                    .setRenderTarget(LodestoneVars.renderTarget)
+                    .setRenderType(TestingVars.renderType)
+                    .setRenderTarget(TestingVars.renderTarget)
                     .enableForcedSpawn()
                     .spawn(minecraft.level, targetPointRing.x, targetPointRing.y, targetPointRing.z);
 

@@ -1,5 +1,7 @@
-package com.restonic4.forgotten.util;
+package com.restonic4.forgotten.registries.client.custom;
 
+import com.restonic4.forgotten.util.VertexArrayStack;
+import com.restonic4.forgotten.util.helpers.MathHelper;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;

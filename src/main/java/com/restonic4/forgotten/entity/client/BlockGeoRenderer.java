@@ -2,9 +2,9 @@ package com.restonic4.forgotten.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.restonic4.forgotten.Forgotten;
-import com.restonic4.forgotten.util.RenderingHelper;
+import com.restonic4.forgotten.registries.client.ForgottenRenderTypeTokens;
+import com.restonic4.forgotten.util.helpers.RenderingHelper;
 import com.restonic4.forgotten.entity.common.BlockGeoEntity;
-import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -33,7 +33,7 @@ public class BlockGeoRenderer extends MobRenderer<BlockGeoEntity, BlockGeo<Block
             poseStack.scale(1f, 1f, 1f);
         }
 
-        RenderType renderType = LodestoneRenderTypeRegistry.ADDITIVE_TEXTURE.applyAndCache(CustomRenderTypes.BEAM_THINGY_TEXTURE);
+        RenderType renderType = LodestoneRenderTypeRegistry.ADDITIVE_TEXTURE.applyAndCache(ForgottenRenderTypeTokens.BEAM_THINGY_TEXTURE);
 
         Vec3 startPos = entity.position();
         Vec3 endPos = new Vec3(0, 10, 0);

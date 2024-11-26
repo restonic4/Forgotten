@@ -1,4 +1,4 @@
-package com.restonic4.forgotten.util;
+package com.restonic4.forgotten.util.helpers;
 
 import org.joml.Vector3f;
 

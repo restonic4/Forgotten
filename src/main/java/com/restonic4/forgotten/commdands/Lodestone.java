@@ -5,8 +5,9 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.restonic4.forgotten.registries.client.CustomRenderTypes;
-import com.restonic4.forgotten.util.LodestoneVars;
+import com.restonic4.forgotten.registries.client.ForgottenRenderTypes;
+import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
+import com.restonic4.forgotten.util.trash.TestingVars;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.commands.CommandSourceStack;
@@ -79,27 +80,27 @@ public class Lodestone {
                 context.getSource().sendSuccess(() -> Component.literal("Setting render target to: " + value), false);
                 break;
             case "far_plane":
-                LodestoneVars.FAR_PLANE = Float.parseFloat(value);
+                TestingVars.FAR_PLANE = Float.parseFloat(value);
                 context.getSource().sendSuccess(() -> Component.literal("Setting far plane to: " + value), false);
                 break;
             case "time":
                 Minecraft.getInstance().execute(() -> {
-                    CustomRenderTypes.WAVE_SHADER.getInstance().get().safeGetUniform("Time").set(Integer.parseInt(value));
+                    ForgottenShaderHolders.WAVE_SHADER.getInstance().get().safeGetUniform("Time").set(Integer.parseInt(value));
                 });
                 break;
             case "rotX":
                 Minecraft.getInstance().execute(() -> {
-                    LodestoneVars.ROTX = Float.parseFloat(value);
+                    TestingVars.ROTX = Float.parseFloat(value);
                 });
                 break;
             case "rotY":
                 Minecraft.getInstance().execute(() -> {
-                    LodestoneVars.ROTY = Float.parseFloat(value);
+                    TestingVars.ROTY = Float.parseFloat(value);
                 });
                 break;
             case "rotZ":
                 Minecraft.getInstance().execute(() -> {
-                    LodestoneVars.ROTZ = Float.parseFloat(value);
+                    TestingVars.ROTZ = Float.parseFloat(value);
                 });
                 break;
             default:
@@ -112,40 +113,40 @@ public class Lodestone {
     private static void executeRenderType(String value) {
         switch (value) {
             case "ADDITIVE":
-                LodestoneVars.renderType = LodestoneWorldParticleRenderType.ADDITIVE;
+                TestingVars.renderType = LodestoneWorldParticleRenderType.ADDITIVE;
                 break;
             case "TRANSPARENT":
-                LodestoneVars.renderType = LodestoneWorldParticleRenderType.TRANSPARENT;
+                TestingVars.renderType = LodestoneWorldParticleRenderType.TRANSPARENT;
                 break;
             case "LUMITRANSPARENT":
-                LodestoneVars.renderType = LodestoneWorldParticleRenderType.LUMITRANSPARENT;
+                TestingVars.renderType = LodestoneWorldParticleRenderType.LUMITRANSPARENT;
                 break;
             case "TERRAIN_SHEET":
-                LodestoneVars.renderType = LodestoneWorldParticleRenderType.TERRAIN_SHEET;
+                TestingVars.renderType = LodestoneWorldParticleRenderType.TERRAIN_SHEET;
                 break;
             case "ADDITIVE_TERRAIN_SHEET":
-                LodestoneVars.renderType = LodestoneWorldParticleRenderType.ADDITIVE_TERRAIN_SHEET;
+                TestingVars.renderType = LodestoneWorldParticleRenderType.ADDITIVE_TERRAIN_SHEET;
                 break;
             case "VANILLA_TERRAIN_SHEET":
-                LodestoneVars.renderType = ParticleRenderType.TERRAIN_SHEET;
+                TestingVars.renderType = ParticleRenderType.TERRAIN_SHEET;
                 break;
             case "VANILLA_PARTICLE_SHEET_OPAQUE":
-                LodestoneVars.renderType = ParticleRenderType.PARTICLE_SHEET_OPAQUE;
+                TestingVars.renderType = ParticleRenderType.PARTICLE_SHEET_OPAQUE;
                 break;
             case "VANILLA_PARTICLE_SHEET_TRANSLUCENT":
-                LodestoneVars.renderType = ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+                TestingVars.renderType = ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
                 break;
             case "VANILLA_PARTICLE_SHEET_LIT":
-                LodestoneVars.renderType = ParticleRenderType.PARTICLE_SHEET_LIT;
+                TestingVars.renderType = ParticleRenderType.PARTICLE_SHEET_LIT;
                 break;
             case "VANILLA_CUSTOM":
-                LodestoneVars.renderType = ParticleRenderType.CUSTOM;
+                TestingVars.renderType = ParticleRenderType.CUSTOM;
                 break;
             case "VANILLA_NO_RENDER":
-                LodestoneVars.renderType = ParticleRenderType.NO_RENDER;
+                TestingVars.renderType = ParticleRenderType.NO_RENDER;
                 break;
             case "CUSTOM":
-                LodestoneVars.renderType = CustomRenderTypes.particleType;
+                TestingVars.renderType = ForgottenRenderTypes.particleType;
                 break;
         }
     }
@@ -153,10 +154,10 @@ public class Lodestone {
     private static void executeRenderTarget(String value) {
         switch (value) {
             case "DELAYED_RENDER":
-                LodestoneVars.renderTarget = RenderHandler.DELAYED_RENDER;
+                TestingVars.renderTarget = RenderHandler.DELAYED_RENDER;
                 break;
             case "LATE_DELAYED_RENDER":
-                LodestoneVars.renderTarget = RenderHandler.LATE_DELAYED_RENDER;
+                TestingVars.renderTarget = RenderHandler.LATE_DELAYED_RENDER;
                 break;
         }
     }

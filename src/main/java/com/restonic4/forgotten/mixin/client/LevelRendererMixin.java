@@ -2,11 +2,8 @@ package com.restonic4.forgotten.mixin.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.restonic4.forgotten.util.MathHelper;
-import com.restonic4.forgotten.util.RenderingHelper;
-import com.restonic4.forgotten.registries.client.CustomRenderTypes;
-import com.restonic4.forgotten.util.CircleGenerator;
-import com.restonic4.forgotten.util.VertexArrayStack;
+import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
+import com.restonic4.forgotten.util.helpers.RenderingHelper;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -21,8 +18,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.List;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
@@ -48,7 +43,7 @@ public class LevelRendererMixin {
         RenderSystem.depthMask(false);
         RenderSystem.setShaderColor((float)vec3.x, (float)vec3.y, (float)vec3.z, 1.0F);
 
-        ShaderInstance shaderInstance = CustomRenderTypes.WAVE_SHADER.getInstance().get();
+        ShaderInstance shaderInstance = ForgottenShaderHolders.WAVE_SHADER.getInstance().get();
         updateSkyShaderData(shaderInstance);
 
         RenderSystem.enableBlend();
@@ -88,15 +83,8 @@ public class LevelRendererMixin {
 
     @Inject(method = "renderLevel", at = @At("TAIL"))
     private void renderBeams(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
-
         for (int i = 0; i < 5; i++) {
             RenderingHelper.renderComplexBeam(poseStack, matrix4f, camera, new Vector3f(), 1 + i, 500);
         }
-
-        /*RenderingHelper.renderComplexBeam(poseStack, matrix4f, camera, new Vector3f(), 1, 100);
-
-        RenderingHelper.renderComplexBeam(poseStack, matrix4f, camera, new Vector3f(),2, 100);*/
-
-        //RenderingHelper.renderBeam(poseStack, camera, new Vec3(0, 0, 0), new Vec3(0, 100, 0), 20);
     }
 }

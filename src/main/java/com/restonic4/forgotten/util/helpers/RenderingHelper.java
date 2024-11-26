@@ -1,8 +1,10 @@
-package com.restonic4.forgotten.util;
+package com.restonic4.forgotten.util.helpers;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.restonic4.forgotten.registries.client.CustomRenderTypes;
+import com.restonic4.forgotten.registries.client.ForgottenRenderTypeTokens;
+import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
+import com.restonic4.forgotten.registries.client.custom.RenderShapes;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
@@ -20,7 +22,7 @@ public class RenderingHelper {
     public static void renderBeamFromEntity(PoseStack poseStack, Vec3 startPos, Vec3 endPos, float width) {
         renderBeamFromEntity(
                 poseStack,
-                LodestoneRenderTypeRegistry.ADDITIVE_TEXTURE.applyAndCache(CustomRenderTypes.BEAM_THINGY_TEXTURE),
+                LodestoneRenderTypeRegistry.ADDITIVE_TEXTURE.applyAndCache(ForgottenRenderTypeTokens.BEAM_THINGY_TEXTURE),
                 RenderHandler.LATE_DELAYED_RENDER,
                 startPos, endPos, width
         );
@@ -53,7 +55,7 @@ public class RenderingHelper {
         renderBeam(
                 poseStack,
                 camera,
-                LodestoneRenderTypeRegistry.ADDITIVE_TEXTURE.applyAndCache(CustomRenderTypes.BEAM_THINGY_TEXTURE),
+                LodestoneRenderTypeRegistry.ADDITIVE_TEXTURE.applyAndCache(ForgottenRenderTypeTokens.BEAM_THINGY_TEXTURE),
                 RenderHandler.LATE_DELAYED_RENDER,
                 startPos, endPos, width
         );
@@ -88,7 +90,7 @@ public class RenderingHelper {
         poseStack.translate(-camera.getPosition().x, -camera.getPosition().y, -camera.getPosition().z);
 
         vertexBuffer.bind();
-        vertexBuffer.drawWithShader(poseStack.last().pose(), matrix4f, CustomRenderTypes.QUAD_SHADER.getInstance().get());
+        vertexBuffer.drawWithShader(poseStack.last().pose(), matrix4f, ForgottenShaderHolders.QUAD_SHADER.getInstance().get());
 
         VertexBuffer.unbind();
 

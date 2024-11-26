@@ -2,7 +2,7 @@ package com.restonic4.forgotten.mixin.client;
 
 import com.restonic4.forgotten.client.DeathUtils;
 import com.restonic4.forgotten.util.EasingSystem;
-import com.restonic4.forgotten.util.LodestoneVars;
+import com.restonic4.forgotten.util.trash.TestingVars;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,7 +38,7 @@ public class GameRendererMixin {
 
     @Inject(method = "getDepthFar", at = @At("HEAD"), cancellable = true)
     public void getDepthFar(CallbackInfoReturnable<Float> cir) {
-        cir.setReturnValue(LodestoneVars.FAR_PLANE);
+        cir.setReturnValue(TestingVars.FAR_PLANE);
         cir.cancel();
     }
 }

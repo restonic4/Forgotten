@@ -1,4 +1,4 @@
-package com.restonic4.forgotten.util;
+package com.restonic4.forgotten.util.helpers;
 
 import net.minecraft.world.phys.Vec3;
 

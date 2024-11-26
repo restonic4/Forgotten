@@ -1,4 +1,4 @@
-package com.restonic4.forgotten.registries;
+package com.restonic4.forgotten.registries.common;
 
 import com.restonic4.forgotten.Forgotten;
 import net.minecraft.core.Registry;

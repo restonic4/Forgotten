@@ -1,8 +1,7 @@
 package com.restonic4.forgotten.mixin;
 
 import com.restonic4.forgotten.Forgotten;
-import com.restonic4.forgotten.util.Effects;
-import me.drex.vanish.util.VanishManager;
+import com.restonic4.forgotten.util.helpers.SimpleEffectHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -43,7 +42,7 @@ public class ItemFrameMixin {
         if (itemStack.getItem() instanceof PlayerHeadItem) {
             if (!player.level().isClientSide()) {
                 ItemFrame current = (ItemFrame) (Object) this;
-                Effects.invalidHeadPlacement((ServerLevel) player.level(), current.blockPosition());
+                SimpleEffectHelper.invalidHeadPlacement((ServerLevel) player.level(), current.blockPosition());
             }
 
             cir.setReturnValue(InteractionResult.FAIL);

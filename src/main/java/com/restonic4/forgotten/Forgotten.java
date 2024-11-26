@@ -5,9 +5,10 @@ import com.restonic4.forgotten.commdands.TestBeam;
 import com.restonic4.forgotten.commdands.TestDeath;
 import com.restonic4.forgotten.compatibility.voicechat.Plugin;
 import com.restonic4.forgotten.networking.PacketManager;
-import com.restonic4.forgotten.registries.ForgottenEntities;
-import com.restonic4.forgotten.registries.ForgottenSounds;
-import com.restonic4.forgotten.registries.client.CustomRenderTypes;
+import com.restonic4.forgotten.registries.common.ForgottenEntities;
+import com.restonic4.forgotten.registries.common.ForgottenParticleTypes;
+import com.restonic4.forgotten.registries.common.ForgottenSounds;
+import com.restonic4.forgotten.registries.client.ForgottenRenderTypes;
 import com.restonic4.forgotten.saving.JsonDataManager;
 import me.drex.vanish.api.VanishEvents;
 import me.drex.vanish.config.ConfigManager;
@@ -15,10 +16,8 @@ import me.drex.vanish.util.VanishManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -27,15 +26,10 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -47,7 +41,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -62,7 +55,7 @@ public class Forgotten implements ModInitializer {
         ForgottenSounds.register();
         registerEvents();
         ForgottenEntities.register();
-        CustomRenderTypes.registerSParticles();
+        ForgottenParticleTypes.registerCommon();
     }
 
     private void registerEvents() {

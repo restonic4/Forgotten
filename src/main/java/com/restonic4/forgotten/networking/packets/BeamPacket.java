@@ -44,15 +44,15 @@ public class BeamPacket {
             float velocity = 0.01f;
 
             Minecraft.getInstance().execute(() -> {
-                ForgottenShaderHolders.WAVE_SHADER.getInstance().get().safeGetUniform("BeamCenter").set(new float[] {(float) beamCenter.x, (float) beamCenter.y, (float) beamCenter.z});
-                ForgottenShaderHolders.WAVE_SHADER.getInstance().get().safeGetUniform("Time").set(0);
-                ForgottenShaderHolders.WAVE_SHADER.getInstance().get().safeGetUniform("Alpha").set(1f);
+                ForgottenShaderHolders.SKY_WAVE.getInstance().get().safeGetUniform("BeamCenter").set(new float[] {(float) beamCenter.x, (float) beamCenter.y, (float) beamCenter.z});
+                ForgottenShaderHolders.SKY_WAVE.getInstance().get().safeGetUniform("Time").set(0);
+                ForgottenShaderHolders.SKY_WAVE.getInstance().get().safeGetUniform("Alpha").set(1f);
             });
 
             while (time < Integer.MAX_VALUE && time >= 0) {
                 int finalTime = time;
                 Minecraft.getInstance().execute(() -> {
-                    ForgottenShaderHolders.WAVE_SHADER.getInstance().get().safeGetUniform("Time").set(finalTime);
+                    ForgottenShaderHolders.SKY_WAVE.getInstance().get().safeGetUniform("Time").set(finalTime);
                 });
 
                 time += Math.max((int) (time * velocity), 1);
@@ -66,7 +66,7 @@ public class BeamPacket {
             while (alpha > 0) {
                 float finalAlpha = alpha;
                 Minecraft.getInstance().execute(() -> {
-                    ForgottenShaderHolders.WAVE_SHADER.getInstance().get().safeGetUniform("Alpha").set(Math.max(finalAlpha, 0));
+                    ForgottenShaderHolders.SKY_WAVE.getInstance().get().safeGetUniform("Alpha").set(Math.max(finalAlpha, 0));
                 });
 
                 alpha -= 0.01f;

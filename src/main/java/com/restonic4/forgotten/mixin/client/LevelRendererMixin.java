@@ -43,7 +43,7 @@ public class LevelRendererMixin {
         RenderSystem.depthMask(false);
         RenderSystem.setShaderColor((float)vec3.x, (float)vec3.y, (float)vec3.z, 1.0F);
 
-        ShaderInstance shaderInstance = ForgottenShaderHolders.WAVE_SHADER.getInstance().get();
+        ShaderInstance shaderInstance = ForgottenShaderHolders.SKY_WAVE.getInstance().get();
         updateSkyShaderData(shaderInstance);
 
         RenderSystem.enableBlend();

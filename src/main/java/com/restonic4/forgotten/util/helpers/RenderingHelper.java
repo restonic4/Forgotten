@@ -22,7 +22,7 @@ public class RenderingHelper {
     public static void renderBeamFromEntity(PoseStack poseStack, Vec3 startPos, Vec3 endPos, float width) {
         renderBeamFromEntity(
                 poseStack,
-                LodestoneRenderTypeRegistry.ADDITIVE_TEXTURE.applyAndCache(ForgottenRenderTypeTokens.BEAM_THINGY_TEXTURE),
+                LodestoneRenderTypeRegistry.ADDITIVE_TEXTURE.applyAndCache(ForgottenRenderTypeTokens.BEAM),
                 RenderHandler.LATE_DELAYED_RENDER,
                 startPos, endPos, width
         );
@@ -55,7 +55,7 @@ public class RenderingHelper {
         renderBeam(
                 poseStack,
                 camera,
-                LodestoneRenderTypeRegistry.ADDITIVE_TEXTURE.applyAndCache(ForgottenRenderTypeTokens.BEAM_THINGY_TEXTURE),
+                LodestoneRenderTypeRegistry.ADDITIVE_TEXTURE.applyAndCache(ForgottenRenderTypeTokens.BEAM),
                 RenderHandler.LATE_DELAYED_RENDER,
                 startPos, endPos, width
         );
@@ -90,7 +90,7 @@ public class RenderingHelper {
         poseStack.translate(-camera.getPosition().x, -camera.getPosition().y, -camera.getPosition().z);
 
         vertexBuffer.bind();
-        vertexBuffer.drawWithShader(poseStack.last().pose(), matrix4f, ForgottenShaderHolders.QUAD_SHADER.getInstance().get());
+        vertexBuffer.drawWithShader(poseStack.last().pose(), matrix4f, ForgottenShaderHolders.SIMPLE_COLOR.getInstance().get());
 
         VertexBuffer.unbind();
 

@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.restonic4.forgotten.registries.client.ForgottenLodestoneWorldParticleRenderType;
 import com.restonic4.forgotten.registries.client.ForgottenRenderTypes;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
 import com.restonic4.forgotten.util.trash.TestingVars;
@@ -85,7 +86,7 @@ public class Lodestone {
                 break;
             case "time":
                 Minecraft.getInstance().execute(() -> {
-                    ForgottenShaderHolders.WAVE_SHADER.getInstance().get().safeGetUniform("Time").set(Integer.parseInt(value));
+                    ForgottenShaderHolders.SKY_WAVE.getInstance().get().safeGetUniform("Time").set(Integer.parseInt(value));
                 });
                 break;
             case "rotX":
@@ -146,7 +147,7 @@ public class Lodestone {
                 TestingVars.renderType = ParticleRenderType.NO_RENDER;
                 break;
             case "CUSTOM":
-                TestingVars.renderType = ForgottenRenderTypes.particleType;
+                TestingVars.renderType = ForgottenLodestoneWorldParticleRenderType.LUMITRANSPARENT_NO_FOG;
                 break;
         }
     }

@@ -4,8 +4,8 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "forgotten:particle/cool_particle",
-  "fragment": "forgotten:particle/cool_particle",
+  "vertex": "forgotten:particle/lumitransparent_no_fog_particle",
+  "fragment": "forgotten:particle/lumitransparent_no_fog_particle",
   "attributes": [
     "Position",
     "UV0",

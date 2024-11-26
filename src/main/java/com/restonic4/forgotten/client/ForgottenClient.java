@@ -65,7 +65,7 @@ public class ForgottenClient implements ClientModInitializer {
         float radius = 20;
         int precision = 100;
 
-        String string = ForgottenShaderHolders.COOL_PARTICLE.getInstance().get().getName();
+        String string = ForgottenShaderHolders.LUMITRANSPARENT_NO_FOG_PARTICLE.getInstance().get().getName();
         //ResourceLocation thing = new ResourceLocation("shaders/core/" + string + ".json");
 
         List<CircleGenerator.CirclePoint> circle = CircleGenerator.generateCircle(radius, precision);

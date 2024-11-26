@@ -4,8 +4,8 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "forgotten:program/wave",
-  "fragment": "forgotten:program/wave",
+  "vertex": "forgotten:program/sky_wave",
+  "fragment": "forgotten:program/sky_wave",
   "attributes": [
   ],
   "samplers": [

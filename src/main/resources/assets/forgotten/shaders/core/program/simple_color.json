@@ -4,8 +4,8 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "forgotten:program/quad",
-  "fragment": "forgotten:program/quad",
+  "vertex": "forgotten:program/simple_color",
+  "fragment": "forgotten:program/simple_color",
   "attributes": [
   ],
   "samplers": [

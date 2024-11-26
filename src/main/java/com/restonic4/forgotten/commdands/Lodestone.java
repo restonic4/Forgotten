@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class Lodestone {
-    private static final List<String> TYPES = Arrays.asList("render_type", "render_target", "far_plane", "time");
+    private static final List<String> TYPES = Arrays.asList("render_type", "render_target", "far_plane", "time", "rotX", "rotY", "rotZ");
 
     private static final List<String> RENDER_TYPES = Arrays.asList(
             "ADDITIVE", "TRANSPARENT", "LUMITRANSPARENT",
@@ -87,6 +87,21 @@ public class Lodestone {
                     CustomRenderTypes.WAVE_SHADER.getInstance().get().safeGetUniform("Time").set(Integer.parseInt(value));
                 });
                 break;
+            case "rotX":
+                Minecraft.getInstance().execute(() -> {
+                    LodestoneVars.ROTX = Float.parseFloat(value);
+                });
+                break;
+            case "rotY":
+                Minecraft.getInstance().execute(() -> {
+                    LodestoneVars.ROTY = Float.parseFloat(value);
+                });
+                break;
+            case "rotZ":
+                Minecraft.getInstance().execute(() -> {
+                    LodestoneVars.ROTZ = Float.parseFloat(value);
+                });
+                break;
             default:
                 context.getSource().sendFailure(Component.literal("Unknown type: " + type));
         }
@@ -145,4 +160,5 @@ public class Lodestone {
                 break;
         }
     }
+
 }

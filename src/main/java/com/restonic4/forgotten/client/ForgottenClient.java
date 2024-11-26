@@ -49,7 +49,7 @@ public class ForgottenClient implements ClientModInitializer {
 
             if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
                 configured = true;
-                //configureWindow();
+                configureWindow();
             }
 
             if (System.currentTimeMillis() > lastTimeSpawned + 3000 && Minecraft.getInstance().level != null) {

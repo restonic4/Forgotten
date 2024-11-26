@@ -20,4 +20,8 @@ public class LodestoneVars {
     public static ParticleRenderType renderType = CustomRenderTypes.particleType;
     public static RenderHandler.LodestoneRenderLayer renderTarget = RenderHandler.DELAYED_RENDER;
     public static float FAR_PLANE = 10000;
+
+    public static float ROTX = 0;
+    public static float ROTY = 0;
+    public static float ROTZ = 0;
 }

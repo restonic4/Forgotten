@@ -3,15 +3,19 @@ package com.restonic4.forgotten.mixin.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.restonic4.forgotten.client.RenderingHelper;
+import com.restonic4.forgotten.registries.BeamRenderType;
 import com.restonic4.forgotten.registries.client.CustomRenderTypes;
 import com.restonic4.forgotten.util.CircleGenerator;
+import com.restonic4.forgotten.util.LodestoneVars;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,6 +23,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import team.lodestar.lodestone.registry.client.LodestoneShaderRegistry;
+import team.lodestar.lodestone.systems.rendering.VFXBuilders;
 
 import java.awt.*;
 import java.util.List;
@@ -36,6 +42,7 @@ public class LevelRendererMixin {
 
 
     @Unique private VertexBuffer waveBuffer;
+    @Unique private VertexBuffer quadBuffer;
 
     @Inject(method = "renderSky", at = @At("RETURN"))
     private void addSky(PoseStack poseStack, Matrix4f matrix4f, float f, Camera camera, boolean bl, Runnable runnable, CallbackInfo ci) {
@@ -91,8 +98,51 @@ public class LevelRendererMixin {
         for (int i = 0; i < circle.size(); i++) {
             CircleGenerator.CirclePoint point = circle.get(i);
 
-            RenderingHelper.renderBeam(poseStack, camera, new Vec3(0, 0, 0), point.position, 5);
+            //RenderingHelper.renderBeam(poseStack, camera, new Vec3(0, 0, 0), point.position, 5);
         }
+
+        /*Vector3f[] positions = new Vector3f[4];
+        positions[0] = new Vector3f(0, 0, 0);
+        positions[1] = new Vector3f(10, 0, 0);
+        positions[2] = new Vector3f(10, 0, 10);
+        positions[3] = new Vector3f(0, 0, 10);
+
+        VFXBuilders.WorldVFXBuilder builder = VFXBuilders.createWorld();
+        builder.setRenderType(BeamRenderType.MY_RENDERTYPE);
+        builder.renderQuad(matrix4f, positions);*/
+
+        /*if (this.quadBuffer == null) {
+            Vector3f[] vertices = RenderingHelper.getQuadVertices();
+            RenderingHelper.scaleVertices(vertices, 1, 1, 100);
+            RenderingHelper.translateVertices(vertices, 0, 0, 1);
+            RenderingHelper.rotateVerticesX(vertices, -180);
+            RenderingHelper.rotateVerticesY(vertices, 0);
+
+            BufferBuilder.RenderedBuffer renderedBuffer = RenderingHelper.buildGeometry(Tesselator.getInstance().getBuilder(), vertices);
+
+            this.quadBuffer = RenderingHelper.generateBuffer(renderedBuffer);
+        }
+
+        RenderingHelper.renderQuad(this.quadBuffer, poseStack, matrix4f, camera);
+
+        this.quadBuffer = null;*/
+
+        Vector3f[] vertices = RenderingHelper.getQuadVertices();
+        RenderingHelper.scaleVertices(vertices, 1, 1, 100);
+        RenderingHelper.translateVertices(vertices, 0, 0, 1);
+        RenderingHelper.rotateVerticesX(vertices, -180);
+        RenderingHelper.rotateVerticesY(vertices, 0);
+
+        RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vertices);
+
+        RenderingHelper.rotateVerticesY(vertices, 90);
+        RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vertices);
+
+        RenderingHelper.rotateVerticesY(vertices, 90);
+        RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vertices);
+
+        RenderingHelper.rotateVerticesY(vertices, 90);
+        RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vertices);
 
         //RenderingHelper.renderBeam(poseStack, camera, new Vec3(0, 0, 0), new Vec3(0, 100, 0), 20);
     }

@@ -1,12 +1,14 @@
 package com.restonic4.forgotten.registries.client;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.restonic4.forgotten.Forgotten;
 import io.github.fabricators_of_create.porting_lib.util.LazyRegistrar;
 import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
@@ -26,7 +28,9 @@ import team.lodestar.lodestone.systems.rendering.shader.ShaderHolder;
 import com.mojang.datafixers.util.Pair;
 
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.PARTICLE;
+import static com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_TEX;
 import static com.mojang.blaze3d.vertex.VertexFormat.Mode.QUADS;
+import static com.mojang.blaze3d.vertex.VertexFormat.Mode.TRIANGLES;
 
 public class CustomRenderTypes extends RenderStateShard {
     //public static ResourceLocation TEXTURE = new ResourceLocation(LodestoneLib.LODESTONE, "textures/particle/wisp.png");
@@ -56,6 +60,13 @@ public class CustomRenderTypes extends RenderStateShard {
             .setCullState(LodestoneRenderTypeRegistry.NO_CULL)
     );*/
 
+    /*public static RenderType MY_RENDERTYPE = create("my_rendertype", DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.TRIANGLES, 2097152, true, true,
+            RenderType.CompositeState.builder()
+                    .setShaderState(ShaderRegistry.MY_SHADER.getShard())
+                    .setCullState(NO_CULL)
+                    .createCompositeState(true)
+    );*/
+
     public static final RenderTypeToken BEAM_THINGY_TEXTURE = RenderTypeToken.createToken(new ResourceLocation(Forgotten.MOD_ID, "textures/vfx/concentrated_trail.png"));
 
     public static LazyRegistrar<ParticleType<?>> PARTICLES = LazyRegistrar.create(BuiltInRegistries.PARTICLE_TYPE, Forgotten.MOD_ID);
@@ -64,6 +75,7 @@ public class CustomRenderTypes extends RenderStateShard {
 
     public static ShaderHolder COOL_PARTICLE = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "particle/cool_particle"), DefaultVertexFormat.PARTICLE, "LumiTransparency", "DepthFade");
     public static ShaderHolder WAVE_SHADER = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "program/wave"), DefaultVertexFormat.POSITION, "Time", "Alpha", "BeamCenter", "PlayerPos");
+    public static ShaderHolder QUAD_SHADER = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "program/quad"), DefaultVertexFormat.POSITION);
 
     //public static final LodestoneRenderType RENDER_TYPE_CUSTOM = LodestoneRenderTypeRegistry.copyWithUniformChanges("forgotten:render_type_custom", LodestoneRenderTypeRegistry.TRANSPARENT_PARTICLE, ShaderUniformHandler.LUMITRANSPARENT);
 
@@ -93,6 +105,7 @@ public class CustomRenderTypes extends RenderStateShard {
         LodestoneShaderRegistrationEvent.EVENT.register((provider, shaderList) -> {
             shaderList.add(Pair.of(COOL_PARTICLE.createInstance(provider), LodestoneShaderRegistry.getConsumer()));
             shaderList.add(Pair.of(WAVE_SHADER.createInstance(provider), LodestoneShaderRegistry.getConsumer()));
+            shaderList.add(Pair.of(QUAD_SHADER.createInstance(provider), LodestoneShaderRegistry.getConsumer()));
         });
     }
 

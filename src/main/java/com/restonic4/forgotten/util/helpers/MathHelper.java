@@ -2,6 +2,8 @@ package com.restonic4.forgotten.util.helpers;
 
 import org.joml.Vector3f;
 
+import java.awt.*;
+
 public class MathHelper {
     public static Vector3f[] getQuadVertices() {
         return new Vector3f[] {
@@ -52,5 +54,40 @@ public class MathHelper {
             vertex.x = x * (float) Math.cos(angleRadians) - y * (float) Math.sin(angleRadians);
             vertex.y = x * (float) Math.sin(angleRadians) + y * (float) Math.cos(angleRadians);
         }
+    }
+
+    public static float calculateScale(Vector3f distance, float maxDistance, float maxValue) {
+        float lengthXZ = (float) Math.sqrt(distance.x * distance.x + distance.z * distance.z);
+
+        lengthXZ = Math.min(lengthXZ, maxDistance);
+
+        return (lengthXZ / maxDistance) * maxValue;
+    }
+
+    public static float[] getNormalizedColor(Color color) {
+        float[] colorData = new float[4];
+
+        colorData[0] = color.getRed() > 1 ? (color.getRed() / 255f) : color.getRed();
+        colorData[1] = color.getGreen() > 1 ? (color.getGreen() / 255f) : color.getGreen();
+        colorData[2] = color.getBlue() > 1 ? (color.getBlue() / 255f) : color.getBlue();
+        colorData[3] = color.getAlpha() > 1 ? (color.getAlpha() / 255f) : color.getAlpha();
+
+        return colorData;
+    }
+
+    public static float getNormalizedColorR(Color color) {
+        return color.getRed() > 1 ? (color.getRed() / 255f) : color.getRed();
+    }
+
+    public static float getNormalizedColorG(Color color) {
+        return color.getGreen() > 1 ? (color.getGreen() / 255f) : color.getGreen();
+    }
+
+    public static float getNormalizedColorB(Color color) {
+        return color.getBlue() > 1 ? (color.getBlue() / 255f) : color.getBlue();
+    }
+
+    public static float getNormalizedColorA(Color color) {
+        return color.getAlpha() > 1 ? (color.getAlpha() / 255f) : color.getAlpha();
     }
 }

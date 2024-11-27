@@ -3,6 +3,8 @@ package com.restonic4.forgotten.mixin.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.restonic4.forgotten.client.rendering.BeamEffectManager;
+import com.restonic4.forgotten.client.rendering.SkyWaveEffect;
+import com.restonic4.forgotten.client.rendering.SkyWaveEffectManager;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
 import com.restonic4.forgotten.util.helpers.RenderingHelper;
 import net.minecraft.client.Camera;
@@ -33,7 +35,7 @@ public class LevelRendererMixin {
 
     @Inject(method = "renderSky", at = @At("RETURN"))
     private void addSky(PoseStack poseStack, Matrix4f matrix4f, float f, Camera camera, boolean bl, Runnable runnable, CallbackInfo ci) {
-        Vec3 vec3 = this.level.getSkyColor(this.minecraft.gameRenderer.getMainCamera().getPosition(), 18000);
+        /*Vec3 vec3 = this.level.getSkyColor(this.minecraft.gameRenderer.getMainCamera().getPosition(), 18000);
 
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
 
@@ -59,23 +61,8 @@ public class LevelRendererMixin {
         VertexBuffer.unbind();
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.depthMask(true);
-    }
-
-    @Unique
-    private void updateSkyShaderData(ShaderInstance shader) {
-        if (this.minecraft.player == null || this.level == null) {
-            return;
-        }
-
-        Vec3 pos = this.minecraft.player.position();
-        float[] uniformPos = new float[3];
-
-        uniformPos[0] = (float) pos.x;
-        uniformPos[1] = (float) pos.y;
-        uniformPos[2] = (float) pos.z;
-
-        shader.safeGetUniform("PlayerPos").set(uniformPos);
+        RenderSystem.depthMask(true);*/
+        SkyWaveEffectManager.render(poseStack, matrix4f);
     }
 
     @Inject(method = "renderLevel", at = @At("TAIL"))

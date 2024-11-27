@@ -2,6 +2,8 @@ package com.restonic4.forgotten.client.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.restonic4.forgotten.util.EasingSystem;
+import com.restonic4.forgotten.util.helpers.MathHelper;
 import com.restonic4.forgotten.util.helpers.RenderingHelper;
 import net.minecraft.client.Camera;
 import org.joml.Matrix4f;
@@ -74,10 +76,10 @@ public class BeamEffect {
                 this.fadeOutAnimation.apply(currentAnimationContext, getFadeOutProgress());
             }
 
-            float r = currentAnimationContext.getColor().getRed() > 1 ? (currentAnimationContext.getColor().getRed() / 255f) : currentAnimationContext.getColor().getRed();
-            float g = currentAnimationContext.getColor().getGreen() > 1 ? (currentAnimationContext.getColor().getGreen() / 255f) : currentAnimationContext.getColor().getGreen();
-            float b = currentAnimationContext.getColor().getBlue() > 1 ? (currentAnimationContext.getColor().getBlue() / 255f) : currentAnimationContext.getColor().getBlue();
-            float a = currentAnimationContext.getColor().getAlpha() > 1 ? (currentAnimationContext.getColor().getAlpha() / 255f) : currentAnimationContext.getColor().getAlpha();
+            float r = MathHelper.getNormalizedColorR(currentAnimationContext.getColor());
+            float g = MathHelper.getNormalizedColorG(currentAnimationContext.getColor());
+            float b = MathHelper.getNormalizedColorB(currentAnimationContext.getColor());
+            float a = MathHelper.getNormalizedColorA(currentAnimationContext.getColor());
 
             RenderSystem.setShaderColor(r, g, b, a);
             RenderingHelper.renderComplexBeam(poseStack, matrix4f, camera, this.position, currentAnimationContext.getWidth(), currentAnimationContext.getHeight());
@@ -200,5 +202,21 @@ public class BeamEffect {
             this.color = color;
         }
     }
+
+    public static Animation EASED_SCALE_IN = (animationContext, progress) -> {
+        float easedProgress = EasingSystem.getEasedValue(
+                progress, 0f, 1f, EasingSystem.EasingType.BACK_OUT
+        );
+
+        animationContext.setWidth(animationContext.getWidth() * easedProgress);
+    };
+
+    public static Animation EASED_SCALE_OUT = (animationContext, progress) -> {
+        float easedProgress = EasingSystem.getEasedValue(
+                progress, 1f, 0f, EasingSystem.EasingType.BACK_IN
+        );
+
+        animationContext.setWidth(animationContext.getWidth() * easedProgress);
+    };
 }
 

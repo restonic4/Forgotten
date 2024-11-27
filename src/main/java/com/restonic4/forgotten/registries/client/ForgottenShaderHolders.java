@@ -10,7 +10,7 @@ import team.lodestar.lodestone.systems.rendering.shader.ShaderHolder;
 
 public class ForgottenShaderHolders {
     public static ShaderHolder LUMITRANSPARENT_NO_FOG_PARTICLE = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "particle/lumitransparent_no_fog_particle"), DefaultVertexFormat.PARTICLE, "LumiTransparency", "DepthFade");
-    public static ShaderHolder SKY_WAVE = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "program/sky_wave"), DefaultVertexFormat.POSITION, "Time", "Alpha", "BeamCenter", "PlayerPos");
+    public static ShaderHolder SKY_WAVE = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "program/sky_wave"), DefaultVertexFormat.POSITION, "Progress", "Alpha", "Center", "Height", "PlayerPos", "WaveColor");
     public static ShaderHolder SIMPLE_COLOR = new ShaderHolder(new ResourceLocation(Forgotten.MOD_ID, "program/simple_color"), DefaultVertexFormat.POSITION);
 
     public static void register() {

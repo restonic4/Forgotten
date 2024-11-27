@@ -20,6 +20,7 @@ public class SkyWaveEffectManager {
     public static void render(PoseStack poseStack, Matrix4f matrix4f) {
         for (int i = waves.size() - 1; i >= 0; i--) {
             if (waves.get(i).isFinished()) {
+                waves.get(i).cleanup();
                 waves.remove(i);
             } else {
                 waves.get(i).render(poseStack, matrix4f);

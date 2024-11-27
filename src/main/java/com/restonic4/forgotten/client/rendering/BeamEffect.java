@@ -92,6 +92,10 @@ public class BeamEffect {
         return System.currentTimeMillis() >= this.endTime;
     }
 
+    public void cleanup() {
+        this.layers.clear();
+    }
+
     public boolean isFadingIn() {
         long currentTime = System.currentTimeMillis();
         long midpoint = (startTime + endTime) / 2;

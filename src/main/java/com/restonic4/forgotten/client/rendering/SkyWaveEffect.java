@@ -184,4 +184,14 @@ public class SkyWaveEffect {
     public boolean isFinished() {
         return System.currentTimeMillis() >= this.endTime;
     }
+
+    public void cleanup() {
+        if (this.waveBuffer != null) {
+            this.waveBuffer.close();
+            this.waveBuffer = null;
+        }
+
+        this.actionExecutedBeforeAbovePlayerHead = null;
+        this.actionExecutedAbovePlayerHead = null;
+    }
 }

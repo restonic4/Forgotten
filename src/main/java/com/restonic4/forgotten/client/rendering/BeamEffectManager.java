@@ -23,6 +23,7 @@ public class BeamEffectManager {
     public static void render(PoseStack poseStack, Matrix4f matrix4f, Camera camera) {
         for (int i = beams.size() - 1; i >= 0; i--) {
             if (beams.get(i).isFinished()) {
+                beams.get(i).cleanup();
                 beams.remove(i);
             } else {
                 beams.get(i).render(poseStack, matrix4f, camera);

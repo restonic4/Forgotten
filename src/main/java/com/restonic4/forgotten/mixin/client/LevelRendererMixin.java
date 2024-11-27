@@ -24,44 +24,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
-    @Shadow private ClientLevel level;
-    @Final @Shadow private Minecraft minecraft;
-    @Shadow  private static BufferBuilder.RenderedBuffer buildSkyDisc(BufferBuilder bufferBuilder, float f) {
-        return null;
-    };
-
-
-    @Unique private VertexBuffer waveBuffer;
-
     @Inject(method = "renderSky", at = @At("RETURN"))
     private void addSky(PoseStack poseStack, Matrix4f matrix4f, float f, Camera camera, boolean bl, Runnable runnable, CallbackInfo ci) {
-        /*Vec3 vec3 = this.level.getSkyColor(this.minecraft.gameRenderer.getMainCamera().getPosition(), 18000);
-
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-
-        RenderSystem.depthMask(false);
-        RenderSystem.setShaderColor((float)vec3.x, (float)vec3.y, (float)vec3.z, 1.0F);
-
-        ShaderInstance shaderInstance = ForgottenShaderHolders.SKY_WAVE.getInstance().get();
-        updateSkyShaderData(shaderInstance);
-
-        RenderSystem.enableBlend();
-
-        if (this.waveBuffer == null) {
-            this.waveBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-            BufferBuilder.RenderedBuffer renderedBuffer = buildSkyDisc(bufferBuilder, 16.0F);
-            this.waveBuffer.bind();
-            this.waveBuffer.upload(renderedBuffer);
-            VertexBuffer.unbind();
-        }
-
-        this.waveBuffer.bind();
-        this.waveBuffer.drawWithShader(poseStack.last().pose(), matrix4f, shaderInstance);
-
-        VertexBuffer.unbind();
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.depthMask(true);*/
         SkyWaveEffectManager.render(poseStack, matrix4f);
     }
 

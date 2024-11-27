@@ -15,3 +15,5 @@ accessible field net/minecraft/client/renderer/LevelRenderer MOON_LOCATION Lnet/
 accessible method net/minecraft/client/gui/Gui renderPlayerHealth (Lnet/minecraft/client/gui/GuiGraphics;)V
 accessible class net/minecraft/client/gui/Gui$HeartType
 accessible field net/minecraft/client/gui/Gui GUI_ICONS_LOCATION Lnet/minecraft/resources/ResourceLocation;
+accessible method net/minecraft/client/gui/GuiGraphics innerBlit (Lnet/minecraft/resources/ResourceLocation;IIIIIFFFF)V
+accessible field net/minecraft/client/gui/GuiGraphics pose Lcom/mojang/blaze3d/vertex/PoseStack;

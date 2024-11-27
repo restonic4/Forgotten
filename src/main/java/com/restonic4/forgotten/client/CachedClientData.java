@@ -1,7 +1,9 @@
 package com.restonic4.forgotten.client;
 
-public class CachedClientData {
-    public static boolean haveHearthsBeingRenderedOnThisFrame;
+import java.util.ArrayList;
+import java.util.List;
 
-    public static long hearthsAnimationStartTime, hearthsAnimationEndTime;
+public class CachedClientData {
+    public static long hearthsShakeAnimationStartTime, hearthsShakeAnimationEndTime;
+    public static long hearthsRitualAnimationStartTime, hearthsRitualAnimationEndTime;
 }

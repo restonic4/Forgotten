@@ -26,6 +26,7 @@ public class SkyWaveEffect {
     private Runnable actionExecutedBeforeAbovePlayerHead;
     private boolean actionBeforeExecuted = false;
     private boolean actionExecuted = false;
+    private float actionBeforeHeadOffset;
 
     private VertexBuffer waveBuffer;
 
@@ -36,6 +37,7 @@ public class SkyWaveEffect {
     public SkyWaveEffect() {
         this.startTime = System.currentTimeMillis();
         this.position = new Vector3f();
+        actionBeforeHeadOffset = 0.2f;
     }
 
     public SkyWaveEffect lifetime(float lifetimeInSecs) {
@@ -65,6 +67,11 @@ public class SkyWaveEffect {
 
     public SkyWaveEffect color(Color color) {
         this.color = color;
+        return this;
+    }
+
+    public SkyWaveEffect offsetActionBeforeHead(float progressAmount) {
+        this.actionBeforeHeadOffset = progressAmount;
         return this;
     }
 
@@ -130,7 +137,7 @@ public class SkyWaveEffect {
             actionExecutionProgress = calculateActionProgressFactor(distance.length());
         }
 
-        if (getProgress() >= actionExecutionProgress - 0.25f && !actionBeforeExecuted) {
+        if (getProgress() >= actionExecutionProgress - actionBeforeHeadOffset && !actionBeforeExecuted) {
             actionBeforeExecuted = true;
             this.actionExecutedBeforeAbovePlayerHead.run();
         }
@@ -185,7 +192,7 @@ public class SkyWaveEffect {
     public static float calculateActionProgressFactor(float input) {
         float maxInput = 1000.0f;
         float minOutput = 0.2f;
-        float maxOutput = 0.75f;
+        float maxOutput = 0.6f;
 
         if (input >= maxInput) {
             return maxOutput;

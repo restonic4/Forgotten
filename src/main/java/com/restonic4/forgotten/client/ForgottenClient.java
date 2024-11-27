@@ -1,6 +1,7 @@
 package com.restonic4.forgotten.client;
 
 import com.restonic4.forgotten.client.gui.IrisScreen;
+import com.restonic4.forgotten.compatibility.exordium.Overrides;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.client.ForgottenEntityRenderers;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
@@ -46,9 +47,13 @@ public class ForgottenClient implements ClientModInitializer {
                 Minecraft.getInstance().forceSetScreen(new IrisScreen());
             }
 
+            if (FabricLoader.getInstance().isModLoaded("exordium")) {
+                Overrides.override();
+            }
+
             if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
                 configured = true;
-                configureWindow();
+                //configureWindow();
             }
 
             if (System.currentTimeMillis() > lastTimeSpawned + 3000 && Minecraft.getInstance().level != null) {

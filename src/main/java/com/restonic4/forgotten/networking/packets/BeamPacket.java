@@ -1,37 +1,24 @@
 package com.restonic4.forgotten.networking.packets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.restonic4.forgotten.client.CachedClientData;
 import com.restonic4.forgotten.client.rendering.BeamEffect;
 import com.restonic4.forgotten.client.rendering.BeamEffectManager;
 import com.restonic4.forgotten.client.rendering.SkyWaveEffectManager;
 import com.restonic4.forgotten.registries.common.ForgottenSounds;
-import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
-import com.restonic4.forgotten.util.EasingSystem;
-import com.restonic4.forgotten.util.helpers.CircleGenerator;
 import com.restonic4.forgotten.util.helpers.MathHelper;
-import com.restonic4.forgotten.util.trash.TestingVars;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import team.lodestar.lodestone.handlers.ScreenshakeHandler;
-import team.lodestar.lodestone.registry.common.particle.LodestoneParticleRegistry;
 import team.lodestar.lodestone.systems.easing.Easing;
-import team.lodestar.lodestone.systems.particle.builder.WorldParticleBuilder;
-import team.lodestar.lodestone.systems.particle.data.GenericParticleData;
-import team.lodestar.lodestone.systems.particle.data.color.ColorParticleData;
-import team.lodestar.lodestone.systems.particle.data.spin.SpinParticleData;
 import team.lodestar.lodestone.systems.screenshake.ScreenshakeInstance;
 
 import java.awt.*;
-import java.util.List;
 
 public class BeamPacket {
     public static void receive(Minecraft minecraft, ClientPacketListener clientPacketListener, FriendlyByteBuf friendlyByteBuf, PacketSender packetSender) {
@@ -42,36 +29,43 @@ public class BeamPacket {
         Vec3 beamCenter = new Vec3(0, 0, 0);
         Color beamColor = new Color(0.3f, 1, 1, 1);
 
-        spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 10);
-        spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 15);
+        spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 10, true);
+        spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 15, false);
 
         spawnBeam(minecraft, beamCenter.toVector3f(), beamColor);
 
-        CachedClientData.hearthsAnimationStartTime = System.currentTimeMillis();
-        CachedClientData.hearthsAnimationEndTime = CachedClientData.hearthsAnimationStartTime + 10000;
+        /*CachedClientData.hearthsShakeAnimationStartTime = System.currentTimeMillis();
+        CachedClientData.hearthsShakeAnimationEndTime = CachedClientData.hearthsShakeAnimationStartTime + 10000;*/
+
+        CachedClientData.hearthsRitualAnimationStartTime = System.currentTimeMillis();
+        CachedClientData.hearthsRitualAnimationEndTime = CachedClientData.hearthsRitualAnimationStartTime + 10000;
+
     }
 
-    private static void spawnSkyWave(Minecraft minecraft, Vector3f position, Color color, float lifetime) {
+    private static void spawnSkyWave(Minecraft minecraft, Vector3f position, Color color, float lifetime, boolean shouldPlaySound) {
         minecraft.execute(() -> {
             SkyWaveEffectManager.create()
                     .lifetime(lifetime)
                     .setPosition(position)
                     .height(1000)
                     .color(color)
+                    .offsetActionBeforeHead(0.15f)
                     .actionExecutedBeforeAbovePlayerHead(() -> {
                         ScreenshakeInstance roarScreenShake = new ScreenshakeInstance(5 * 20).setEasing(Easing.QUAD_IN_OUT).setIntensity(0.0f, 0.75f, 0.0f);
                         ScreenshakeHandler.addScreenshake(roarScreenShake);
                     })
                     .actionExecutedAbovePlayerHead(() -> {
-                        minecraft.execute(() -> {
-                            if (minecraft.player == null || minecraft.level == null) {
-                                return;
-                            }
+                        if (shouldPlaySound) {
+                            minecraft.execute(() -> {
+                                if (minecraft.player == null || minecraft.level == null) {
+                                    return;
+                                }
 
-                            BlockPos blockPos = minecraft.player.blockPosition();
+                                BlockPos blockPos = minecraft.player.blockPosition();
 
-                            minecraft.level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), ForgottenSounds.WAVE, SoundSource.AMBIENT, 1, 1, false);
-                        });
+                                minecraft.level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), ForgottenSounds.WAVE, SoundSource.AMBIENT, 1, 1, false);
+                            });
+                        }
                     });
         });
     }

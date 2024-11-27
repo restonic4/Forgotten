@@ -2,26 +2,30 @@ package com.restonic4.forgotten.mixin.client;
 
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.client.CachedClientData;
 import com.restonic4.forgotten.client.DeathUtils;
+import com.restonic4.forgotten.client.rendering.HearthPulseManager;
 import com.restonic4.forgotten.util.EasingSystem;
 import com.restonic4.forgotten.util.helpers.MathHelper;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
-import dev.tr7zw.exordium.BufferManager;
-import dev.tr7zw.exordium.mixin.GuiHealthMixin;
+import com.restonic4.forgotten.util.trash.OldCodeThatCouldBeUsefulAtSomePoint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import team.lodestar.lodestone.handlers.screenparticle.ScreenParticleHandler;
 
 @Mixin(Gui.class)
 public abstract class GuiMixin {
@@ -35,6 +39,11 @@ public abstract class GuiMixin {
 
     @Unique private static long iconShakingEasingStartTime = 0;
     @Unique private static long iconShakingEasingEndTime = 0;
+
+    @Unique
+    private int totalHeartsToRender = 0;
+    @Unique
+    private int currentHeartIndex = 0;
 
     @Inject(
             method = "render(Lnet/minecraft/client/gui/GuiGraphics;F)V",
@@ -154,47 +163,84 @@ public abstract class GuiMixin {
         RenderSystem.disableBlend();
     }
 
+    @Inject(method = "renderHearts", at = @At("HEAD"))
+    private void renderHearts(GuiGraphics guiGraphics, Player player, int i, int j, int k, int l, float f, int m, int n, int o, boolean bl, CallbackInfo ci) {
+        int normalHearths = Mth.ceil((double)f / 2.0);
+        int absorptionHearths = Mth.ceil((double)o / 2.0);
 
-    // Renders our custom hardcore hearths and animation making it compatible with Exordium
-
-    @Inject(
-            method = "render(Lnet/minecraft/client/gui/GuiGraphics;F)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderPlayerHealth(Lnet/minecraft/client/gui/GuiGraphics;)V"),
-            cancellable = false
-    )
-    private void onHeartsGoingToBeRenderer(GuiGraphics guiGraphics, float f, CallbackInfo ci) {
-        Gui current = (Gui) (Object) this;
-
-        float progress = MathHelper.getProgress(CachedClientData.hearthsAnimationStartTime, CachedClientData.hearthsAnimationEndTime);
-
-        if (progress > 0 && progress < 1) {
-            current.renderPlayerHealth(guiGraphics);
-        }
+        this.totalHeartsToRender = normalHearths + absorptionHearths;
+        this.currentHeartIndex = 0;
     }
 
-    @Inject(method = "renderPlayerHealth", at = @At("HEAD"), cancellable = true)
-    private void renderPlayerHealth(GuiGraphics guiGraphics, CallbackInfo ci) {
-        if (CachedClientData.haveHearthsBeingRenderedOnThisFrame) {
-            ci.cancel();
+    @Inject(method = "renderHearts", at = @At("TAIL"))
+    private void renderHeartsEnd(GuiGraphics guiGraphics, Player player, int i, int j, int k, int l, float f, int m, int n, int o, boolean bl, CallbackInfo ci) {
+        if (ScreenParticleHandler.canSpawnParticles) {
+            OldCodeThatCouldBeUsefulAtSomePoint.SCREEN_PARTICLES.tick();
         }
+        ScreenParticleHandler.renderParticles(OldCodeThatCouldBeUsefulAtSomePoint.SCREEN_PARTICLES);
     }
 
     @Inject(method = "renderHeart", at = @At("HEAD"), cancellable = true)
-    private void renderHeart(GuiGraphics guiGraphics, Gui.HeartType heartType, int i, int j, int k, boolean bl, boolean bl2, CallbackInfo ci) {
-        float progress = MathHelper.getProgress(CachedClientData.hearthsAnimationStartTime, CachedClientData.hearthsAnimationEndTime);
+    private void renderHeart(GuiGraphics guiGraphics, Gui.HeartType heartType, int i, int j, int k, boolean blinking, boolean halfHearth, CallbackInfo ci) {
+        float shakeProgress = MathHelper.getProgress(CachedClientData.hearthsShakeAnimationStartTime, CachedClientData.hearthsShakeAnimationEndTime);
+        float ritualProgress = MathHelper.getProgress(CachedClientData.hearthsRitualAnimationStartTime, CachedClientData.hearthsRitualAnimationEndTime);
 
-        if (progress > 0 && progress < 1) {
-            int intensity = (int) (progress * 10);
+        if (ritualProgress > 0 && ritualProgress < 1) {
+            int intensity = Math.min(Math.max((int) (ritualProgress * 4), 1), 4);
+
+            float progressPerHeart = 1.0f / totalHeartsToRender;
+            float heartActivationThreshold = (totalHeartsToRender - currentHeartIndex - 1) * progressPerHeart;
+
+            boolean shouldThisBeHardcore = ritualProgress >= heartActivationThreshold;
+
+            int desiredX = shouldThisBeHardcore ? i: RandomUtil.randomBetween(i - intensity, i + intensity);
+            int desiredY = shouldThisBeHardcore ? j: RandomUtil.randomBetween(j - intensity, j + intensity);
+            int v = 9 * (shouldThisBeHardcore ? 5 : 0);
+
+            guiGraphics.blit(
+                    Gui.GUI_ICONS_LOCATION,
+                    desiredX,
+                    desiredY,
+                    heartType.getX(halfHearth, blinking),
+                    v,
+                    9,
+                    9
+            );
+
+            if (shouldThisBeHardcore) {
+                HearthPulseManager.create(currentHeartIndex).lifetime(2);
+
+                if (heartType != Gui.HeartType.CONTAINER) {
+                    // This gets the pulse because its already created, and updates it hearth type to the good one
+                    HearthPulseManager.create(currentHeartIndex).lifetime(2).hearthType(heartType);
+                }
+
+                HearthPulseManager.render(guiGraphics, currentHeartIndex, desiredX, desiredY, heartType.getX(halfHearth, blinking), v);
+            }
+
+            if (heartType != Gui.HeartType.CONTAINER) {
+                this.currentHeartIndex++;
+            }
+
+            ci.cancel();
+            return;
+        } else {
+            HearthPulseManager.reset();
+        }
+
+        if (shakeProgress > 0 && shakeProgress < 1) {
+            int intensity = (int) MathHelper.calculatePeak(shakeProgress, 0, 10);
 
             guiGraphics.blit(
                     Gui.GUI_ICONS_LOCATION,
                     RandomUtil.randomBetween(i - intensity, i + intensity),
                     RandomUtil.randomBetween(j - intensity, j + intensity),
-                    heartType.getX(bl2, bl),
+                    heartType.getX(halfHearth, blinking),
                     k,
                     9,
                     9
             );
+
             ci.cancel();
         }
     }

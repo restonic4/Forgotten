@@ -104,4 +104,14 @@ public class MathHelper {
 
         return (float) (currentTime - startTime) / (endTime - startTime);
     }
+
+    public static double calculatePeak(float normalizedValue, double min, double max) {
+        if (normalizedValue < 0 || normalizedValue > 1) {
+            throw new IllegalArgumentException("The normalized value should be between 0 and 1.");
+        }
+
+        double peakValue = -4 * (normalizedValue - 0.5) * (normalizedValue - 0.5) + 1;
+
+        return min + (max - min) * peakValue;
+    }
 }

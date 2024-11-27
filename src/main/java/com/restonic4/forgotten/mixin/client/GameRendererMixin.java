@@ -43,9 +43,4 @@ public class GameRendererMixin {
         cir.setReturnValue(TestingVars.FAR_PLANE);
         cir.cancel();
     }
-
-    @Inject(method = "render", at = @At("HEAD"))
-    public void render(float f, long l, boolean bl, CallbackInfo ci) {
-        CachedClientData.haveHearthsBeingRenderedOnThisFrame = false;
-    }
 }

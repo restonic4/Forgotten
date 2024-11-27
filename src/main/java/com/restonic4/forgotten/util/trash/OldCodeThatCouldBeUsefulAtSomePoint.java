@@ -1,6 +1,10 @@
 package com.restonic4.forgotten.util.trash;
 
+import team.lodestar.lodestone.systems.particle.screen.ScreenParticleHolder;
+
 public class OldCodeThatCouldBeUsefulAtSomePoint {
+    public static final ScreenParticleHolder SCREEN_PARTICLES = new ScreenParticleHolder();
+
     //public static ResourceLocation TEXTURE = new ResourceLocation(LodestoneLib.LODESTONE, "textures/particle/wisp.png");
 
     /*public static RenderTypeProvider MY_PROVIDER = new RenderTypeProvider(token ->

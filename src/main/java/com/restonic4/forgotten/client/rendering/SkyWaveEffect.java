@@ -18,9 +18,8 @@ import org.joml.Vector3f;
 import java.awt.*;
 
 public class SkyWaveEffect {
-    private static final float MAX_BEAM_SOUND_DISTANCE = 1000;
-
-    private long startTime, endTime, actionTime;
+    private long startTime, endTime;
+    private float actionExecutionProgress;
     private Vector3f position;
     private float height;
     private Color color;
@@ -111,18 +110,19 @@ public class SkyWaveEffect {
             return;
         }
 
-        Vector3f distance = position.sub(Minecraft.getInstance().player.position().toVector3f());
+        if (actionExecutionProgress == 0) {
+            Vector3f playerPos = Minecraft.getInstance().player.position().toVector3f();
+            Vector3f distance = new Vector3f(position.x - playerPos.x, position.y - playerPos.y,position.z - playerPos.z);
 
-        if (actionTime == 0) {
-            actionTime = (long) (Math.max(4, MathHelper.calculateScale(distance, MAX_BEAM_SOUND_DISTANCE, 9)) * 1000);
+            actionExecutionProgress = calculateActionProgressFactor(distance.length());
         }
 
-        if (System.currentTimeMillis() >= actionTime - 1.5f && !actionBeforeExecuted) {
+        if (getProgress() >= actionExecutionProgress - 0.25f && !actionBeforeExecuted) {
             actionBeforeExecuted = true;
             this.actionExecutedBeforeAbovePlayerHead.run();
         }
 
-        if (System.currentTimeMillis() >= actionTime && !actionExecuted) {
+        if (getProgress() >= actionExecutionProgress && !actionExecuted) {
             actionExecuted = true;
             this.actionExecutedAbovePlayerHead.run();
         }
@@ -169,6 +169,17 @@ public class SkyWaveEffect {
         return Math.min(Math.max(progress, 0.0f), 1.0f);
     }
 
+    public static float calculateActionProgressFactor(float input) {
+        float maxInput = 1000.0f;
+        float minOutput = 0.2f;
+        float maxOutput = 0.75f;
+
+        if (input >= maxInput) {
+            return maxOutput;
+        }
+
+        return minOutput + (maxOutput - minOutput) * (input / maxInput);
+    }
 
     public boolean isFinished() {
         return System.currentTimeMillis() >= this.endTime;

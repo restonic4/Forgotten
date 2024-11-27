@@ -41,15 +41,16 @@ public class BeamPacket {
         Vec3 beamCenter = new Vec3(0, 0, 0);
         Color beamColor = new Color(0.3f, 1, 1, 1);
 
-        spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor);
+        spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 10);
+        spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 15);
 
         spawnBeam(minecraft, beamCenter.toVector3f(), beamColor);
     }
 
-    private static void spawnSkyWave(Minecraft minecraft, Vector3f position, Color color) {
+    private static void spawnSkyWave(Minecraft minecraft, Vector3f position, Color color, float lifetime) {
         minecraft.execute(() -> {
             SkyWaveEffectManager.create()
-                    .lifetime(10)
+                    .lifetime(lifetime)
                     .setPosition(position)
                     .height(1000)
                     .color(color)

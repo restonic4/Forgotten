@@ -22,8 +22,8 @@ void main() {
     distance.x = clamp(distance.x, -limit, limit);
     distance.z = clamp(distance.z, -limit, limit);
 
-    float maxScale = 100000.0;
-    float base = 20;
+    float maxScale = 100.0;
+    float base = 1000;
     float scale = (pow(base, Progress) - 1.0) / (base - 1.0) * maxScale;
 
     vec3 scaledPosition = vec3(Position.x * scale, Position.y, Position.z * scale);

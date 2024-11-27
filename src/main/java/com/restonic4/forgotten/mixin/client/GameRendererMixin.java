@@ -1,5 +1,6 @@
 package com.restonic4.forgotten.mixin.client;
 
+import com.restonic4.forgotten.client.CachedClientData;
 import com.restonic4.forgotten.client.DeathUtils;
 import com.restonic4.forgotten.util.EasingSystem;
 import com.restonic4.forgotten.util.trash.TestingVars;
@@ -9,6 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
@@ -40,5 +42,10 @@ public class GameRendererMixin {
     public void getDepthFar(CallbackInfoReturnable<Float> cir) {
         cir.setReturnValue(TestingVars.FAR_PLANE);
         cir.cancel();
+    }
+
+    @Inject(method = "render", at = @At("HEAD"))
+    public void render(float f, long l, boolean bl, CallbackInfo ci) {
+        CachedClientData.haveHearthsBeingRenderedOnThisFrame = false;
     }
 }

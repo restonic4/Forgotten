@@ -90,4 +90,18 @@ public class MathHelper {
     public static float getNormalizedColorA(Color color) {
         return color.getAlpha() > 1 ? (color.getAlpha() / 255f) : color.getAlpha();
     }
+
+    public static float getProgress(long startTime, long endTime) {
+        long currentTime = System.currentTimeMillis();
+
+        if (currentTime < startTime) {
+            return 0f;
+        }
+
+        if (currentTime > endTime) {
+            return 1f;
+        }
+
+        return (float) (currentTime - startTime) / (endTime - startTime);
+    }
 }

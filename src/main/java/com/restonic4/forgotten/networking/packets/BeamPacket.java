@@ -1,6 +1,7 @@
 package com.restonic4.forgotten.networking.packets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.restonic4.forgotten.client.CachedClientData;
 import com.restonic4.forgotten.client.rendering.BeamEffect;
 import com.restonic4.forgotten.client.rendering.BeamEffectManager;
 import com.restonic4.forgotten.client.rendering.SkyWaveEffectManager;
@@ -45,6 +46,9 @@ public class BeamPacket {
         spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 15);
 
         spawnBeam(minecraft, beamCenter.toVector3f(), beamColor);
+
+        CachedClientData.hearthsAnimationStartTime = System.currentTimeMillis();
+        CachedClientData.hearthsAnimationEndTime = CachedClientData.hearthsAnimationStartTime + 10000;
     }
 
     private static void spawnSkyWave(Minecraft minecraft, Vector3f position, Color color, float lifetime) {

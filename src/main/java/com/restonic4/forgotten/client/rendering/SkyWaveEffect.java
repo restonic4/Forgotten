@@ -1,16 +1,15 @@
 package com.restonic4.forgotten.client.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexBuffer;
+import com.mojang.blaze3d.vertex.*;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
 import com.restonic4.forgotten.util.helpers.MathHelper;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -90,7 +89,7 @@ public class SkyWaveEffect {
 
         if (this.waveBuffer == null) {
             this.waveBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-            BufferBuilder.RenderedBuffer renderedBuffer = LevelRenderer.buildSkyDisc(bufferBuilder, 16.0F);
+            BufferBuilder.RenderedBuffer renderedBuffer = buildSkyDisc(bufferBuilder, 16.0F);
             this.waveBuffer.bind();
             this.waveBuffer.upload(renderedBuffer);
             VertexBuffer.unbind();
@@ -103,6 +102,20 @@ public class SkyWaveEffect {
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.depthMask(true);
+    }
+
+    public static BufferBuilder.RenderedBuffer buildSkyDisc(BufferBuilder bufferBuilder, float f) {
+        float g = Math.signum(f) * 512.0F;
+        float h = 512.0F;
+        RenderSystem.setShader(GameRenderer::getPositionShader);
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION);
+        bufferBuilder.vertex(0.0, (double)f, 0.0).endVertex();
+
+        for(int i = -180; i <= 180; i += 45) {
+            bufferBuilder.vertex((double)(g * Mth.cos((float)i * 0.017453292F)), (double)f, (double)(512.0F * Mth.sin((float)i * 0.017453292F))).endVertex();
+        }
+
+        return bufferBuilder.end();
     }
 
     private void executeAction() {

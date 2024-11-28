@@ -188,8 +188,6 @@ public abstract class GuiMixin {
 
         if (shouldResetHearthPulses(shakeProgress, ritualProgress, ritualFinishProgress)) {
             HearthPulseManager.reset();
-        } else {
-            System.out.println(shakeProgress + ", " + ritualProgress + ", " + ritualFinishProgress);
         }
 
         if (ritualProgress > 0 && ritualProgress < 1) {

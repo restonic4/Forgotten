@@ -7,6 +7,8 @@ public class EasingSystem {
         LINEAR,
         QUAD_IN, QUAD_OUT, QUAD_IN_OUT,
         CUBIC_IN, CUBIC_OUT, CUBIC_IN_OUT,
+        EXPONENTIAL_IN, EXPONENTIAL_OUT, EXPONENTIAL_IN_OUT,
+        CIRC_IN, CIRC_OUT, CIRC_IN_OUT,
         BACK_IN, BACK_OUT, BACK_IN_OUT,
         BOUNCE_IN, BOUNCE_OUT, BOUNCE_IN_OUT,
     }
@@ -46,6 +48,21 @@ public class EasingSystem {
             case CUBIC_IN_OUT -> t -> t < 0.5
                     ? 4 * t * t * t
                     : 1 - (float) Math.pow(-2 * t + 2, 3) / 2;
+
+            case EXPONENTIAL_IN -> t -> t == 0 ? 0 : (float) Math.pow(2, 10 * t - 10);
+            case EXPONENTIAL_OUT -> t -> t == 1 ? 1 : (float) (1 - Math.pow(2, -10 * t));
+            case EXPONENTIAL_IN_OUT -> t -> t == 0
+                    ? 0
+                    : (float) (t == 1
+                    ? 1
+                    : t < 0.5 ? Math.pow(2, 20 * t - 10) / 2
+                    : (2 - Math.pow(2, -20 * t + 10)) / 2);
+
+            case CIRC_IN -> t -> (float) (1 - Math.sqrt(1 - Math.pow(t, 2)));
+            case CIRC_OUT -> t -> (float) Math.sqrt(1 - Math.pow(t - 1, 2));
+            case CIRC_IN_OUT -> t -> (float) (t < 0.5
+                                ? (1 - Math.sqrt(1 - Math.pow(2 * t, 2))) / 2
+                                : (Math.sqrt(1 - Math.pow(-2 * t + 2, 2)) + 1) / 2);
 
             case BACK_IN -> t -> (float) ((1.70158f + 1) * t * t * t - 1.70158 * t * t);
             case BACK_OUT -> t -> (float) (1 + (1.70158 + 1) * Math.pow(t - 1, 3) + 1.70158f * Math.pow(t - 1, 2));

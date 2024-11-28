@@ -186,12 +186,14 @@ public abstract class GuiMixin {
         float ritualProgress = MathHelper.getProgress(CachedClientData.hearthsRitualAnimationStartTime, CachedClientData.hearthsRitualAnimationEndTime);
 
         if (ritualProgress > 0 && ritualProgress < 1) {
-            int intensity = Math.min(Math.max((int) (ritualProgress * 4), 1), 4);
+            float easedProgress = EasingSystem.getEasedValue(ritualProgress, 0, 1, EasingSystem.EasingType.CIRC_IN);
+
+            int intensity = Math.min(Math.max((int) (easedProgress * 4), 1), 4);
 
             float progressPerHeart = 1.0f / totalHeartsToRender;
             float heartActivationThreshold = (totalHeartsToRender - currentHeartIndex - 1) * progressPerHeart;
 
-            boolean shouldThisBeHardcore = ritualProgress >= heartActivationThreshold;
+            boolean shouldThisBeHardcore = easedProgress >= heartActivationThreshold;
 
             int desiredX = shouldThisBeHardcore ? i: RandomUtil.randomBetween(i - intensity, i + intensity);
             int desiredY = shouldThisBeHardcore ? j: RandomUtil.randomBetween(j - intensity, j + intensity);

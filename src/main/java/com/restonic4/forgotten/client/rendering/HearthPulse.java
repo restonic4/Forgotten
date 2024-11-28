@@ -1,9 +1,13 @@
 package com.restonic4.forgotten.client.rendering;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.restonic4.forgotten.Forgotten;
+import com.restonic4.forgotten.util.helpers.MathHelper;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
 import com.restonic4.forgotten.util.trash.OldCodeThatCouldBeUsefulAtSomePoint;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -26,6 +30,7 @@ import java.util.random.RandomGenerator;
 public class HearthPulse {
     private int index;
     private long startTime, endTime;
+    private long whiteEndTime;
     private boolean didParticlesSpawned = false;
     private Gui.HeartType heartType;
 
@@ -45,6 +50,7 @@ public class HearthPulse {
 
     public HearthPulse lifetime(float lifetimeInSecs) {
         this.endTime = this.startTime + (long) (lifetimeInSecs * 1000);
+        this.whiteEndTime = this.startTime + (long) ((lifetimeInSecs/3) * 1000);
         return this;
     }
 
@@ -64,14 +70,31 @@ public class HearthPulse {
         int centeredX = x - offsetX;
         int centeredY = y - offsetY;
 
+        int totalTextureSize = 256;
+
+        ResourceLocation texture = Gui.GUI_ICONS_LOCATION;
+
+        if (System.currentTimeMillis() <= this.whiteEndTime) {
+            texture = new ResourceLocation(Forgotten.MOD_ID, "textures/gui/white_hearth.png");
+            u = 0;
+            v = 0;
+            totalTextureSize = 9;
+
+            RenderSystem.setShaderColor(1, 1, 1, 1 - MathHelper.getProgress(this.startTime, this.whiteEndTime));
+        }
+
         renderHeartWithScale(
                 guiGraphics,
+                texture,
                 centeredX,
                 centeredY,
                 effectSize,
                 u,
-                v
+                v,
+                totalTextureSize
         );
+
+        RenderSystem.setShaderColor(1, 1, 1, 1);
 
         if (!didParticlesSpawned && heartType != null) {
             didParticlesSpawned = true;
@@ -79,9 +102,9 @@ public class HearthPulse {
         }
     }
 
-    public void renderHeartWithScale(GuiGraphics guiGraphics, int x, int y, int size, int u, int v) {
+    public void renderHeartWithScale(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int size, int u, int v, int totalTextureSize) {
         guiGraphics.blit(
-                Gui.GUI_ICONS_LOCATION,
+                texture,
                 x,
                 y,
                 size,
@@ -90,8 +113,8 @@ public class HearthPulse {
                 v,
                 9,
                 9,
-                256,
-                256
+                totalTextureSize,
+                totalTextureSize
         );
     }
 

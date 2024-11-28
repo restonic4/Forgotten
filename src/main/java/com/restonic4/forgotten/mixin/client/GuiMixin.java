@@ -184,11 +184,18 @@ public abstract class GuiMixin {
     private void renderHeart(GuiGraphics guiGraphics, Gui.HeartType heartType, int i, int j, int k, boolean blinking, boolean halfHearth, CallbackInfo ci) {
         float shakeProgress = MathHelper.getProgress(CachedClientData.hearthsShakeAnimationStartTime, CachedClientData.hearthsShakeAnimationEndTime);
         float ritualProgress = MathHelper.getProgress(CachedClientData.hearthsRitualAnimationStartTime, CachedClientData.hearthsRitualAnimationEndTime);
+        float ritualFinishProgress = MathHelper.getProgress(CachedClientData.hearthsRitualFinishAnimationStartTime, CachedClientData.hearthsRitualFinishAnimationEndTime);
+
+        if (shouldResetHearthPulses(shakeProgress, ritualProgress, ritualFinishProgress)) {
+            HearthPulseManager.reset();
+        } else {
+            System.out.println(shakeProgress + ", " + ritualProgress + ", " + ritualFinishProgress);
+        }
 
         if (ritualProgress > 0 && ritualProgress < 1) {
-            float easedProgress = EasingSystem.getEasedValue(ritualProgress, 0, 1, EasingSystem.EasingType.CIRC_IN);
+            float easedProgress = EasingSystem.getEasedValue(ritualProgress, 0, 1, EasingSystem.EasingType.CUBIC_IN);
 
-            int intensity = Math.min(Math.max((int) (easedProgress * 4), 1), 4);
+            int intensity = Math.min(Math.max((int) (easedProgress * 4), 2), 4);
 
             float progressPerHeart = 1.0f / totalHeartsToRender;
             float heartActivationThreshold = (totalHeartsToRender - currentHeartIndex - 1) * progressPerHeart;
@@ -226,17 +233,46 @@ public abstract class GuiMixin {
 
             ci.cancel();
             return;
-        } else {
-            HearthPulseManager.reset();
         }
 
-        if (shakeProgress > 0 && shakeProgress < 1) {
-            int intensity = (int) MathHelper.calculatePeak(shakeProgress, 0, 10);
+        if (ritualFinishProgress > 0 && ritualFinishProgress < 1) {
+            int v = 9 * 5;
 
             guiGraphics.blit(
                     Gui.GUI_ICONS_LOCATION,
-                    RandomUtil.randomBetween(i - intensity, i + intensity),
-                    RandomUtil.randomBetween(j - intensity, j + intensity),
+                    i,
+                    j,
+                    heartType.getX(halfHearth, blinking),
+                    v,
+                    9,
+                    9
+            );
+
+            HearthPulseManager.create(currentHeartIndex).lifetime(2).noParticles();
+
+            if (heartType != Gui.HeartType.CONTAINER) {
+                // This gets the pulse because its already created, and updates it hearth type to the good one
+                HearthPulseManager.create(currentHeartIndex).hearthType(heartType);
+            }
+
+            HearthPulseManager.render(guiGraphics, currentHeartIndex, i, j, heartType.getX(halfHearth, blinking), v);
+
+            ci.cancel();
+            return;
+        }
+
+        if (shakeProgress > 0 && shakeProgress < 1) {
+            float easedProgress = EasingSystem.getEasedValue(shakeProgress, 0, 1, EasingSystem.EasingType.CIRC_IN);
+
+            int intensity = Math.min(Math.max((int) (easedProgress * 2), 1), 2);
+
+            int desiredX = RandomUtil.randomBetween(i - intensity, i + intensity);
+            int desiredY = RandomUtil.randomBetween(j - intensity, j + intensity);
+
+            guiGraphics.blit(
+                    Gui.GUI_ICONS_LOCATION,
+                    desiredX,
+                    desiredY,
                     heartType.getX(halfHearth, blinking),
                     k,
                     9,
@@ -244,6 +280,37 @@ public abstract class GuiMixin {
             );
 
             ci.cancel();
+            return;
         }
+
+        if (CachedClientData.hardcoreStartTime != -1 && System.currentTimeMillis() > CachedClientData.hardcoreStartTime) {
+            int v = 9 * 5;
+
+            guiGraphics.blit(
+                    Gui.GUI_ICONS_LOCATION,
+                    i,
+                    j,
+                    heartType.getX(halfHearth, blinking),
+                    v,
+                    9,
+                    9
+            );
+
+            ci.cancel();
+            return;
+        }
+    }
+
+    @Unique
+    private boolean shouldResetHearthPulses(float... progressArray) {
+        boolean atLeastOneOnProgress = false;
+
+        for (int i = 0; i < progressArray.length; i++) {
+            if (progressArray[i] > 0 && progressArray[i] < 1) {
+                atLeastOneOnProgress = true;
+            }
+        }
+
+        return !atLeastOneOnProgress;
     }
 }

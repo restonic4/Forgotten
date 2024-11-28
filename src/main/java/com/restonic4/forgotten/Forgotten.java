@@ -3,6 +3,7 @@ package com.restonic4.forgotten;
 import com.restonic4.forgotten.commdands.Lodestone;
 import com.restonic4.forgotten.commdands.TestBeam;
 import com.restonic4.forgotten.commdands.TestDeath;
+import com.restonic4.forgotten.commdands.TestMainRitual;
 import com.restonic4.forgotten.compatibility.voicechat.Plugin;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.common.ForgottenEntities;
@@ -66,6 +67,7 @@ public class Forgotten implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             TestDeath.register(dispatcher);
             TestBeam.register(dispatcher);
+            TestMainRitual.register(dispatcher);
             Lodestone.register(dispatcher);
         });
 

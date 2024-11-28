@@ -59,6 +59,11 @@ public class HearthPulse {
         return this;
     }
 
+    public HearthPulse noParticles() {
+        this.didParticlesSpawned = true;
+        return this;
+    }
+
     public void render(GuiGraphics guiGraphics, int x, int y, int u, int v) {
         float scale = 1.5f - getProgress() * 0.5f;
 

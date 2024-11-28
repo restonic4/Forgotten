@@ -16,6 +16,14 @@ public class ForgottenSounds {
     public static SoundEvent WAVE;
     public static SoundEvent EXPLOSION;
 
+    public static SoundEvent FIREBALL1;
+    public static SoundEvent FIREBALL2;
+
+    public static SoundEvent MAIN_RITUAL_BACKGROUND;
+
+    public static SoundEvent BEAM;
+    public static SoundEvent BEAM_STEREO;
+
     public static SoundEvent WHISPER1;
     public static SoundEvent WHISPER2;
     public static SoundEvent WHISPER3;
@@ -37,6 +45,19 @@ public class ForgottenSounds {
 
         ResourceLocation explosionLocation = new ResourceLocation(Forgotten.MOD_ID, "explosion");
         EXPLOSION = Registry.register(BuiltInRegistries.SOUND_EVENT, explosionLocation, SoundEvent.createVariableRangeEvent(explosionLocation));
+
+        ResourceLocation fireball1Location = new ResourceLocation(Forgotten.MOD_ID, "fireball1");
+        FIREBALL1 = Registry.register(BuiltInRegistries.SOUND_EVENT, fireball1Location, SoundEvent.createVariableRangeEvent(fireball1Location));
+        ResourceLocation fireball2Location = new ResourceLocation(Forgotten.MOD_ID, "fireball2");
+        FIREBALL2 = Registry.register(BuiltInRegistries.SOUND_EVENT, fireball2Location, SoundEvent.createVariableRangeEvent(fireball2Location));
+
+        ResourceLocation mainRitualBackgroundLocation = new ResourceLocation(Forgotten.MOD_ID, "main_ritual_background");
+        MAIN_RITUAL_BACKGROUND = Registry.register(BuiltInRegistries.SOUND_EVENT, mainRitualBackgroundLocation, SoundEvent.createVariableRangeEvent(mainRitualBackgroundLocation));
+
+        ResourceLocation beamLocation = new ResourceLocation(Forgotten.MOD_ID, "beam");
+        BEAM = Registry.register(BuiltInRegistries.SOUND_EVENT, beamLocation, SoundEvent.createVariableRangeEvent(beamLocation));
+        ResourceLocation beamStereoLocation = new ResourceLocation(Forgotten.MOD_ID, "beam_stereo");
+        BEAM_STEREO = Registry.register(BuiltInRegistries.SOUND_EVENT, beamStereoLocation, SoundEvent.createVariableRangeEvent(beamStereoLocation));
 
         WHISPER1 = registerWhisper(1);
         WHISPER2 = registerWhisper(2);

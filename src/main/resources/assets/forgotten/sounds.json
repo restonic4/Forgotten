@@ -35,6 +35,51 @@
     ]
   },
 
+  "fireball1": {
+    "sounds": [
+      {
+        "name": "forgotten:fireball1",
+        "stream": false
+      }
+    ]
+  },
+
+  "fireball2": {
+    "sounds": [
+      {
+        "name": "forgotten:fireball2",
+        "stream": false
+      }
+    ]
+  },
+
+  "beam": {
+    "sounds": [
+      {
+        "name": "forgotten:beam",
+        "stream": false
+      }
+    ]
+  },
+
+  "beam_stereo": {
+    "sounds": [
+      {
+        "name": "forgotten:beam_stereo",
+        "stream": false
+      }
+    ]
+  },
+
+  "main_ritual_background": {
+    "sounds": [
+      {
+        "name": "forgotten:main_ritual_background",
+        "stream": false
+      }
+    ]
+  },
+
   "whisper1": {
     "sounds": [
       {

@@ -27,26 +27,47 @@ public class MainRitualPacket {
         }
 
         Vec3 beamCenter = new Vec3(0, 0, 0);
-        Color beamColor = new Color(1, 0.169f, 0.169f, 1);
+        //Color beamColor = new Color(1, 0.169f, 0.169f, 1);
 
-        spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 10, true);
+        //Color beamColor = new Color(1, 0, 0.31f, 1);
+        Color beamColor = new Color(1, 0, 0.227f, 1);
 
-        for (int i = 0; i < 10; i++) {
-            spawnSkyWave(minecraft, beamCenter.toVector3f().sub(0, 10, 0), beamColor, 12 + 2 * i, false);
-        }
+        minecraft.execute(() -> {
+            if (minecraft.player == null || minecraft.level == null) {
+                return;
+            }
 
-        spawnBeam(minecraft, beamCenter.toVector3f(), beamColor);
+            BlockPos blockPos = minecraft.player.blockPosition();
 
-        CachedClientData.hearthsShakeAnimationStartTime = System.currentTimeMillis();
-        CachedClientData.hearthsShakeAnimationEndTime = CachedClientData.hearthsShakeAnimationStartTime + 5000;
+            minecraft.level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), ForgottenSounds.MAIN_RITUAL_BACKGROUND, SoundSource.AMBIENT, 1, 1, false);
+            minecraft.level.playLocalSound(beamCenter.x, beamCenter.y, beamCenter.z, ForgottenSounds.BEAM, SoundSource.AMBIENT, 1, 1, false);
+            minecraft.level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), ForgottenSounds.BEAM_STEREO, SoundSource.AMBIENT, 0.25f, 1, false);
+        });
 
-        CachedClientData.hearthsRitualAnimationStartTime = CachedClientData.hearthsShakeAnimationEndTime;
-        CachedClientData.hearthsRitualAnimationEndTime = CachedClientData.hearthsRitualAnimationStartTime + 10000;
+        spawnBeam(minecraft, beamCenter.toVector3f(), 30, beamColor);
 
-        CachedClientData.hearthsRitualFinishAnimationStartTime = CachedClientData.hearthsRitualAnimationEndTime;
-        CachedClientData.hearthsRitualFinishAnimationEndTime = CachedClientData.hearthsRitualFinishAnimationStartTime + 2000;
+        new Thread(() -> {
+            try {
+                Thread.sleep(15000);
+            } catch (Exception ignored) {}
 
-        CachedClientData.hardcoreStartTime = CachedClientData.hearthsRitualFinishAnimationEndTime;
+            spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 10, true);
+
+            for (int i = 0; i < 10; i++) {
+                spawnSkyWave(minecraft, beamCenter.toVector3f().sub(0, 10, 0), beamColor, 12 + 2 * i, false);
+            }
+
+            CachedClientData.hearthsShakeAnimationStartTime = System.currentTimeMillis();
+            CachedClientData.hearthsShakeAnimationEndTime = CachedClientData.hearthsShakeAnimationStartTime + 5000;
+
+            CachedClientData.hearthsRitualAnimationStartTime = CachedClientData.hearthsShakeAnimationEndTime;
+            CachedClientData.hearthsRitualAnimationEndTime = CachedClientData.hearthsRitualAnimationStartTime + 10000;
+
+            CachedClientData.hearthsRitualFinishAnimationStartTime = CachedClientData.hearthsRitualAnimationEndTime;
+            CachedClientData.hearthsRitualFinishAnimationEndTime = CachedClientData.hearthsRitualFinishAnimationStartTime + 2000;
+
+            CachedClientData.hardcoreStartTime = CachedClientData.hearthsRitualFinishAnimationEndTime;
+        }).start();
     }
 
     private static void spawnSkyWave(Minecraft minecraft, Vector3f position, Color color, float lifetime, boolean shouldPlaySound) {
@@ -79,7 +100,7 @@ public class MainRitualPacket {
         });
     }
 
-    private static void spawnBeam(Minecraft minecraft, Vector3f center, Color color) {
+    private static void spawnBeam(Minecraft minecraft, Vector3f center, float lifetime, Color color) {
         minecraft.execute(() -> {
             if (minecraft.level != null && minecraft.player != null) {
                 float beamR = MathHelper.getNormalizedColorR(color);
@@ -87,7 +108,7 @@ public class MainRitualPacket {
                 float beamB = MathHelper.getNormalizedColorB(color);
 
                 BeamEffectManager.create()
-                        .lifetime(16)
+                        .lifetime(lifetime)
                         .setPosition(center)
                         .timeBetweenFades(4f)
                         .setFadeInAnimation(BeamEffect.EASED_SCALE_IN)

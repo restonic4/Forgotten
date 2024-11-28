@@ -2,12 +2,17 @@ package com.restonic4.forgotten.client.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.restonic4.forgotten.Forgotten;
+import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import com.restonic4.forgotten.util.helpers.MathHelper;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
 import com.restonic4.forgotten.util.trash.OldCodeThatCouldBeUsefulAtSomePoint;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -130,6 +135,18 @@ public class HearthPulse {
         createParticleBuilder(target, color).spawn(x, y).spawn(x, y).spawn(x, y).spawn(x, y);
         createParticleBuilder(target, color).spawn(x, y).spawn(x, y).spawn(x, y).spawn(x, y);
         createParticleBuilder(target, color).spawn(x, y).spawn(x, y).spawn(x, y).spawn(x, y);
+
+        Minecraft.getInstance().execute(() -> {
+            if (Minecraft.getInstance().player == null || Minecraft.getInstance().level == null) {
+                return;
+            }
+
+            BlockPos blockPos = Minecraft.getInstance().player.blockPosition();
+
+            SoundEvent randomSound = RandomUtil.getRandomFromTwo(ForgottenSounds.FIREBALL1, ForgottenSounds.FIREBALL2);
+            float pitch = RandomUtil.randomBetween(0.75f, 1.25f);
+            Minecraft.getInstance().level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), randomSound, SoundSource.AMBIENT, 1, pitch, false);
+        });
     }
 
     @NotNull

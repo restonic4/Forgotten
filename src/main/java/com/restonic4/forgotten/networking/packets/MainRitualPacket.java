@@ -114,9 +114,10 @@ public class MainRitualPacket {
                         .setFadeInAnimation(BeamEffect.EASED_SCALE_IN)
                         .setFadeOutAnimation(BeamEffect.EASED_SCALE_OUT)
                         .addLayer(4, 1020, new Color(beamR, beamG, beamB, 1))
-                        .addLayer(6, 1020, new Color(beamR, beamG, beamB, 0.75f))
-                        .addLayer(8, 1020, new Color(beamR, beamG, beamB, 0.5f))
-                        .addLayer(10, 1020, new Color(beamR, beamG, beamB, 0.25f));
+                        .addLayer(8, 1020, new Color(beamR, beamG, beamB, 0.75f))
+                        .addLayer(12, 1020, new Color(beamR, beamG, beamB, 0.5f))
+                        .addLayer(16, 1020, new Color(beamR, beamG, beamB, 0.25f))
+                        .addLayer(20, 1020, new Color(beamR, beamG, beamB, 0.1f));
 
                 BlockPos blockPos = minecraft.player.blockPosition();
 

@@ -2,6 +2,7 @@ package com.restonic4.forgotten.registries.common;
 
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.entity.common.BlockGeoEntity;
+import com.restonic4.forgotten.entity.common.SmallCoreEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.core.Registry;
@@ -20,7 +21,16 @@ public class ForgottenEntities {
                     .build()
     );
 
+    public static final EntityType<SmallCoreEntity> SMALL_CORE = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            new ResourceLocation(Forgotten.MOD_ID, "small_core"),
+            FabricEntityTypeBuilder.create(MobCategory.CREATURE, SmallCoreEntity::new)
+                    .dimensions(EntityDimensions.fixed(1f, 1f))
+                    .build()
+    );
+
     public static void register() {
         FabricDefaultAttributeRegistry.register(BLOCK_GEO, BlockGeoEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(SMALL_CORE, SmallCoreEntity.createAttributes());
     }
 }

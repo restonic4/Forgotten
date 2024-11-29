@@ -33,8 +33,6 @@ public class BlockGeoRenderer extends MobRenderer<BlockGeoEntity, BlockGeo<Block
             poseStack.scale(1f, 1f, 1f);
         }
 
-        RenderType renderType = LodestoneRenderTypeRegistry.ADDITIVE_TEXTURE.applyAndCache(ForgottenRenderTypeTokens.BEAM);
-
         Vec3 startPos = entity.position();
         Vec3 endPos = new Vec3(0, 10, 0);
 

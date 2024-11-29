@@ -34,6 +34,7 @@ public class BlockGeo<T extends BlockGeoEntity> extends HierarchicalModel<T> {
 
 	@Override
 	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+		root().getAllParts().forEach(ModelPart::resetPose);
 		this.animate(entity.idleAnimationState, BlockAnim.ANIMATIONYES, ageInTicks);
 		/*if (entity.idleAnimationState.isStarted()) {
 			//this.animate(entity.idleAnimationState, BlockAnim.ANIMATIONYES, ageInTicks, 1f);

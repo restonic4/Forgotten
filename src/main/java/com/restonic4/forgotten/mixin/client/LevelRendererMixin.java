@@ -3,6 +3,7 @@ package com.restonic4.forgotten.mixin.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.restonic4.forgotten.client.rendering.BeamEffectManager;
+import com.restonic4.forgotten.client.rendering.EnergyOrbEffectManager;
 import com.restonic4.forgotten.client.rendering.SkyWaveEffect;
 import com.restonic4.forgotten.client.rendering.SkyWaveEffectManager;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
@@ -30,7 +31,8 @@ public class LevelRendererMixin {
     }
 
     @Inject(method = "renderLevel", at = @At("TAIL"))
-    private void renderBeams(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
+    private void renderManagers(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
         BeamEffectManager.render(poseStack, matrix4f, camera);
+        EnergyOrbEffectManager.render(poseStack, matrix4f, camera);
     }
 }

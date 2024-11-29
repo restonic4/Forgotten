@@ -3,6 +3,8 @@ package com.restonic4.forgotten.util.helpers;
 import org.joml.Vector3f;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MathHelper {
     public static Vector3f[] getQuadVertices() {
@@ -12,6 +14,58 @@ public class MathHelper {
                 new Vector3f(1, 0, 1),
                 new Vector3f(0, 0, 1)
         };
+    }
+
+    public static Vector3f[] getSphereVertices() {
+        return generateSphere(1, 15, 15).toArray(new Vector3f[0]);
+    }
+
+    public static java.util.List<Vector3f> generateSphere(float radius, int longs, int lats) {
+        java.util.List<Vector3f> vertices = new ArrayList<>();
+
+        float startU = 0.0f;                   // Comienzo en U (longitud)
+        float startV = 0.0f;                   // Comienzo en V (latitud)
+        float endU = (float) (2 * Math.PI);    // Fin en U
+        float endV = (float) Math.PI;          // Fin en V
+
+        float stepU = (endU - startU) / longs; // Incremento en U
+        float stepV = (endV - startV) / lats;  // Incremento en V
+
+        for (int i = 0; i < longs; i++) {
+            for (int j = 0; j < lats; j++) {
+                // Coordenadas U y V para este segmento
+                float u = i * stepU + startU;
+                float v = j * stepV + startV;
+
+                // Coordenadas U y V para el siguiente segmento
+                float un = (i + 1 == longs) ? endU : (i + 1) * stepU + startU;
+                float vn = (j + 1 == lats) ? endV : (j + 1) * stepV + startV;
+
+                // Generar los puntos paramétricos
+                Vector3f p0 = parametricSphere(u, v, radius);
+                Vector3f p1 = parametricSphere(u, vn, radius);
+                Vector3f p2 = parametricSphere(un, v, radius);
+                Vector3f p3 = parametricSphere(un, vn, radius);
+
+                // Agregar los triángulos para este segmento
+                vertices.add(p0);
+                vertices.add(p2);
+                vertices.add(p1);
+
+                vertices.add(p3);
+                vertices.add(p1);
+                vertices.add(p2);
+            }
+        }
+
+        return vertices;
+    }
+
+    private static Vector3f parametricSphere(float u, float v, float radius) {
+        float x = (float) (radius * Math.sin(v) * Math.cos(u));
+        float y = (float) (radius * Math.cos(v));
+        float z = (float) (radius * Math.sin(v) * Math.sin(u));
+        return new Vector3f(x, y, z);
     }
 
     public static void scaleVertices(Vector3f[] vertices, float scaleX, float scaleY, float scaleZ) {

@@ -1,9 +1,7 @@
 package com.restonic4.forgotten.networking.packets;
 
 import com.restonic4.forgotten.client.CachedClientData;
-import com.restonic4.forgotten.client.rendering.BeamEffect;
-import com.restonic4.forgotten.client.rendering.BeamEffectManager;
-import com.restonic4.forgotten.client.rendering.SkyWaveEffectManager;
+import com.restonic4.forgotten.client.rendering.*;
 import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import com.restonic4.forgotten.util.helpers.MathHelper;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -46,6 +44,7 @@ public class MainRitualPacket {
         });
 
         spawnBeam(minecraft, beamCenter.toVector3f(), 30, beamColor);
+        spawnEnergyOrb(minecraft, beamCenter.toVector3f().setComponent(1, 2000), 100, 15, 4, beamColor);
 
         new Thread(() -> {
             Vector3f playerPos = minecraft.player.position().toVector3f();
@@ -58,7 +57,13 @@ public class MainRitualPacket {
             }
 
             try {
-                Thread.sleep(15000);
+                Thread.sleep(14000);
+            } catch (Exception ignored) {}
+
+            spawnEnergyOrb(minecraft, beamCenter.toVector3f().setComponent(1, 2000), 300, 2, 0, beamColor);
+
+            try {
+                Thread.sleep(1000);
             } catch (Exception ignored) {}
 
             spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 10, true);
@@ -79,7 +84,14 @@ public class MainRitualPacket {
             CachedClientData.hardcoreStartTime = CachedClientData.hearthsRitualFinishAnimationEndTime;
 
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
+            } catch (Exception ignored) {}
+
+            ScreenshakeInstance orbShake = new ScreenshakeInstance(4 * 20).setEasing(Easing.CUBIC_IN, Easing.QUAD_IN_OUT).setIntensity(0.75f, 1f, 0.45f);
+            ScreenshakeHandler.addScreenshake(orbShake);
+
+            try {
+                Thread.sleep(1000);
             } catch (Exception ignored) {}
 
             ScreenshakeInstance waveShake = new ScreenshakeInstance(20 * 20).setEasing(Easing.CUBIC_IN, Easing.QUAD_IN_OUT).setIntensity(0.45f, 0.65f, 0.45f);
@@ -92,7 +104,7 @@ public class MainRitualPacket {
             SkyWaveEffectManager.create()
                     .lifetime(lifetime)
                     .setPosition(position)
-                    .height(1000)
+                    .height(2000)
                     .color(color)
                     .offsetActionBeforeHead(0.15f)
                     .actionExecutedAbovePlayerHead(() -> {
@@ -124,16 +136,37 @@ public class MainRitualPacket {
                         .timeBetweenFades(4f)
                         .setFadeInAnimation(BeamEffect.EASED_SCALE_IN)
                         .setFadeOutAnimation(BeamEffect.EASED_SCALE_OUT)
-                        .addLayer(4, 1020, new Color(beamR, beamG, beamB, 1))
-                        .addLayer(8, 1020, new Color(beamR, beamG, beamB, 0.75f))
-                        .addLayer(12, 1020, new Color(beamR, beamG, beamB, 0.5f))
-                        .addLayer(16, 1020, new Color(beamR, beamG, beamB, 0.25f))
-                        .addLayer(20, 1020, new Color(beamR, beamG, beamB, 0.1f));
+                        .addLayer(4, 2020, new Color(beamR, beamG, beamB, 1))
+                        .addLayer(8, 2020, new Color(beamR, beamG, beamB, 0.75f))
+                        .addLayer(12, 2020, new Color(beamR, beamG, beamB, 0.5f))
+                        .addLayer(16, 2020, new Color(beamR, beamG, beamB, 0.25f))
+                        .addLayer(20, 2020, new Color(beamR, beamG, beamB, 0.1f));
 
                 BlockPos blockPos = minecraft.player.blockPosition();
-
                 minecraft.level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), ForgottenSounds.EXPLOSION, SoundSource.AMBIENT, 1, 1, false);
             }
         });
+    }
+
+    private static void spawnEnergyOrb(Minecraft minecraft, Vector3f center, float radius, float lifetime, float timeBetweenFades, Color color) {
+        minecraft.execute(() -> {
+            float beamR = MathHelper.getNormalizedColorR(color);
+            float beamG = MathHelper.getNormalizedColorG(color);
+            float beamB = MathHelper.getNormalizedColorB(color);
+
+            if (minecraft.level != null && minecraft.player != null) {
+                EnergyOrbEffectManager.create()
+                        .lifetime(lifetime)
+                        .setPosition(center)
+                        .timeBetweenFades(timeBetweenFades)
+                        .setFadeInAnimation(EnergyOrbEffect.EASED_SCALE_IN)
+                        .setFadeOutAnimation(EnergyOrbEffect.EASED_SCALE_OUT)
+                        .addLayer(radius, new Color(beamR, beamG, beamB, 1))
+                        .addLayer(radius + 100, new Color(beamR, beamG, beamB, 0.75f))
+                        .addLayer(radius + 200, new Color(beamR, beamG, beamB, 0.5f))
+                        .addLayer(radius + 300, new Color(beamR, beamG, beamB, 0.25f));
+            }
+        });
+
     }
 }

@@ -75,8 +75,8 @@ public class RenderingHelper {
         poseStack.popPose();
     }
 
-    public static void renderDynamicGeometry(PoseStack poseStack, Matrix4f matrix4f, Camera camera, Vector3f[] vertices) {
-        BufferBuilder.RenderedBuffer renderedBuffer = RenderingHelper.buildGeometry(Tesselator.getInstance().getBuilder(), vertices);
+    public static void renderDynamicGeometry(PoseStack poseStack, Matrix4f matrix4f, Camera camera, VertexFormat.Mode mode, Vector3f[] vertices) {
+        BufferBuilder.RenderedBuffer renderedBuffer = RenderingHelper.buildGeometry(Tesselator.getInstance().getBuilder(), mode, vertices);
         renderQuad(generateBuffer(renderedBuffer), poseStack, matrix4f, camera);
     }
 
@@ -109,10 +109,10 @@ public class RenderingHelper {
         return buffer;
     }
 
-    public static BufferBuilder.RenderedBuffer buildGeometry(BufferBuilder bufferBuilder, Vector3f[] positions) {
+    public static BufferBuilder.RenderedBuffer buildGeometry(BufferBuilder bufferBuilder, VertexFormat.Mode mode, Vector3f[] positions) {
         RenderSystem.setShader(GameRenderer::getPositionShader);
 
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION);
+        bufferBuilder.begin(mode, DefaultVertexFormat.POSITION);
 
         for (int i = 0; i < positions.length; i++) {
             bufferBuilder.vertex(positions[i].x, positions[i].y, positions[i].z).endVertex();
@@ -120,6 +120,8 @@ public class RenderingHelper {
 
         return bufferBuilder.end();
     }
+
+
 
     public static void renderComplexBeam(PoseStack poseStack, Matrix4f matrix4f, Camera camera, Vector3f position, float width, float height) {
         List<Vector3f[]> vector3fList = RenderShapes.BEAM.getVertices();
@@ -129,7 +131,19 @@ public class RenderingHelper {
 
             MathHelper.scaleVertices(vector3fs, width, height, width);
             MathHelper.translateVertices(vector3fs, position.x - width/2, position.y, position.z - width/2);
-            RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, vector3fs);
+            RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, VertexFormat.Mode.TRIANGLE_FAN, vector3fs);
+        }
+    }
+
+    public static void renderSphere(PoseStack poseStack, Matrix4f matrix4f, Camera camera, Vector3f position, float radius) {
+        List<Vector3f[]> vector3fList = RenderShapes.SPHERE.getVertices();
+
+        for (int i = 0; i < vector3fList.size(); i++) {
+            Vector3f[] vector3fs = vector3fList.get(i);
+
+            MathHelper.scaleVertices(vector3fs, radius, radius, radius);
+            MathHelper.translateVertices(vector3fs, position.x, position.y, position.z);
+            RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, VertexFormat.Mode.TRIANGLES, vector3fs);
         }
     }
 }

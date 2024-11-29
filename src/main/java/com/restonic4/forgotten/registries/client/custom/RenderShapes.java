@@ -53,9 +53,11 @@ public class RenderShapes {
     }
 
     public static final RenderShapes BEAM;
+    public static final RenderShapes SPHERE;
 
     static {
         BEAM = new RenderShapes(buildBeamVertices());
+        SPHERE = new RenderShapes(buildSphereVertices());
     }
 
     private static List<Vector3f[]> buildBeamVertices() {
@@ -97,6 +99,15 @@ public class RenderShapes {
         verticesToSave.add(vertexArrayStack.last());
 
         vertexArrayStack.popStack();
+
+        return verticesToSave;
+    }
+
+    private static List<Vector3f[]> buildSphereVertices() {
+        List<Vector3f[]> verticesToSave = new ArrayList<>();
+
+        Vector3f[] vertices = MathHelper.getSphereVertices();
+        verticesToSave.add(vertices);
 
         return verticesToSave;
     }

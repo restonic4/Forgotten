@@ -39,7 +39,7 @@ public class BeamPacket {
             SkyWaveEffectManager.create()
                     .lifetime(lifetime)
                     .setPosition(position)
-                    .height(1000)
+                    .height(2000)
                     .color(color)
                     .offsetActionBeforeHead(0.15f)
                     .actionExecutedBeforeAbovePlayerHead(() -> {
@@ -75,10 +75,10 @@ public class BeamPacket {
                         .timeBetweenFades(4f)
                         .setFadeInAnimation(BeamEffect.EASED_SCALE_IN)
                         .setFadeOutAnimation(BeamEffect.EASED_SCALE_OUT)
-                        .addLayer(2, 1020, new Color(beamR, beamG, beamB, 1))
-                        .addLayer(4, 1020, new Color(beamR, beamG, beamB, 0.75f))
-                        .addLayer(6, 1020, new Color(beamR, beamG, beamB, 0.5f))
-                        .addLayer(8, 1020, new Color(beamR, beamG, beamB, 0.25f));
+                        .addLayer(2, 2020, new Color(beamR, beamG, beamB, 1))
+                        .addLayer(4, 2020, new Color(beamR, beamG, beamB, 0.75f))
+                        .addLayer(6, 2020, new Color(beamR, beamG, beamB, 0.5f))
+                        .addLayer(8, 2020, new Color(beamR, beamG, beamB, 0.25f));
 
                 BlockPos blockPos = minecraft.player.blockPosition();
 

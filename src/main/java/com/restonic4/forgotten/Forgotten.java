@@ -68,7 +68,7 @@ public class Forgotten implements ModInitializer {
             TestDeath.register(dispatcher);
             TestBeam.register(dispatcher);
             TestMainRitual.register(dispatcher);
-            Lodestone.register(dispatcher);
+            //Lodestone.register(dispatcher);
         });
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {

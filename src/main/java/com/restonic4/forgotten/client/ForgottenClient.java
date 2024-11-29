@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
 import team.lodestar.lodestone.systems.easing.Easing;
@@ -53,7 +54,7 @@ public class ForgottenClient implements ClientModInitializer {
 
             if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
                 configured = true;
-                configureWindow();
+                //configureWindow();
             }
 
             if (System.currentTimeMillis() > lastTimeSpawned + 3000 && Minecraft.getInstance().level != null) {

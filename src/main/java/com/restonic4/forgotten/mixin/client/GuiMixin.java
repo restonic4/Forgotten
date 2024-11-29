@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.client.CachedClientData;
 import com.restonic4.forgotten.client.DeathUtils;
+import com.restonic4.forgotten.client.ForgottenClient;
 import com.restonic4.forgotten.client.rendering.HearthPulseManager;
 import com.restonic4.forgotten.util.EasingSystem;
 import com.restonic4.forgotten.util.helpers.MathHelper;

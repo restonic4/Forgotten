@@ -30,7 +30,6 @@ public class BeamPacket {
         Color beamColor = new Color(0.3f, 1, 1, 1);
 
         spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 10, true);
-        spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 15, false);
 
         spawnBeam(minecraft, beamCenter.toVector3f(), beamColor);
     }

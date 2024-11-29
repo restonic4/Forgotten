@@ -1,7 +1,6 @@
 package com.restonic4.forgotten.registries.common;
 
 import com.restonic4.forgotten.Forgotten;
-import com.restonic4.forgotten.entity.common.BlockGeoEntity;
 import com.restonic4.forgotten.entity.common.SmallCoreEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -18,6 +17,7 @@ public class ForgottenEntities {
             new ResourceLocation(Forgotten.MOD_ID, "small_core"),
             FabricEntityTypeBuilder.create(MobCategory.CREATURE, SmallCoreEntity::new)
                     .dimensions(EntityDimensions.fixed(1f, 1f))
+                    .fireImmune()
                     .build()
     );
 

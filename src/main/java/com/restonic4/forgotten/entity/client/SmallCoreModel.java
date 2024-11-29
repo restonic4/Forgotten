@@ -42,6 +42,9 @@ public class SmallCoreModel<T extends SmallCoreEntity> extends HierarchicalModel
     @Override
     public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         root().getAllParts().forEach(ModelPart::resetPose);
-        this.animate(entity.idleAnimationState, SmallCoreAnim.BROKE, ageInTicks);
+
+        if (entity.getDeSpawnTime() != 0) {
+            this.animate(entity.idleAnimationState, SmallCoreAnim.BROKE, ageInTicks);
+        }
     }
 }

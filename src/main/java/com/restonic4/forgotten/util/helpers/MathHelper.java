@@ -114,4 +114,12 @@ public class MathHelper {
 
         return min + (max - min) * peakValue;
     }
+
+    public static double normalize(double value, double min, double max) {
+        if (min >= max) {
+            throw new IllegalArgumentException("The minimum value should be bigger than the max value.");
+        }
+
+        return (value - min) / (max - min);
+    }
 }

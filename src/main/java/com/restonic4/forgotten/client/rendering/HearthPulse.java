@@ -2,6 +2,7 @@ package com.restonic4.forgotten.client.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.restonic4.forgotten.Forgotten;
+import com.restonic4.forgotten.client.ForgottenClient;
 import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import com.restonic4.forgotten.util.helpers.MathHelper;
 import com.restonic4.forgotten.util.helpers.RandomUtil;

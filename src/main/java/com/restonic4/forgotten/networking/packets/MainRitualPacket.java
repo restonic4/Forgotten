@@ -16,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import team.lodestar.lodestone.handlers.ScreenshakeHandler;
 import team.lodestar.lodestone.systems.easing.Easing;
+import team.lodestar.lodestone.systems.screenshake.PositionedScreenshakeInstance;
 import team.lodestar.lodestone.systems.screenshake.ScreenshakeInstance;
 
 import java.awt.*;
@@ -47,6 +48,15 @@ public class MainRitualPacket {
         spawnBeam(minecraft, beamCenter.toVector3f(), 30, beamColor);
 
         new Thread(() -> {
+            Vector3f playerPos = minecraft.player.position().toVector3f();
+            float distance = playerPos.distance(beamCenter.toVector3f());
+            float maxBeamShakeDistance = 500;
+
+            if (distance < maxBeamShakeDistance) {
+                ScreenshakeInstance beamShake = new PositionedScreenshakeInstance(30 * 20, beamCenter, 100, maxBeamShakeDistance).setEasing(Easing.CUBIC_IN, Easing.QUAD_IN_OUT).setIntensity(0.0f, 0.75f, 0.0f);
+                ScreenshakeHandler.addScreenshake(beamShake);
+            }
+
             try {
                 Thread.sleep(15000);
             } catch (Exception ignored) {}
@@ -67,6 +77,13 @@ public class MainRitualPacket {
             CachedClientData.hearthsRitualFinishAnimationEndTime = CachedClientData.hearthsRitualFinishAnimationStartTime + 2000;
 
             CachedClientData.hardcoreStartTime = CachedClientData.hearthsRitualFinishAnimationEndTime;
+
+            try {
+                Thread.sleep(2000);
+            } catch (Exception ignored) {}
+
+            ScreenshakeInstance waveShake = new ScreenshakeInstance(20 * 20).setEasing(Easing.CUBIC_IN, Easing.QUAD_IN_OUT).setIntensity(0.45f, 0.65f, 0.45f);
+            ScreenshakeHandler.addScreenshake(waveShake);
         }).start();
     }
 
@@ -78,12 +95,6 @@ public class MainRitualPacket {
                     .height(1000)
                     .color(color)
                     .offsetActionBeforeHead(0.15f)
-                    .actionExecutedBeforeAbovePlayerHead(() -> {
-                        if (shouldPlaySound) {
-                            ScreenshakeInstance roarScreenShake = new ScreenshakeInstance(15 * 20).setEasing(Easing.CUBIC_IN, Easing.QUAD_IN_OUT).setIntensity(0.0f, 0.75f, 0.0f);
-                            ScreenshakeHandler.addScreenshake(roarScreenShake);
-                        }
-                    })
                     .actionExecutedAbovePlayerHead(() -> {
                         if (shouldPlaySound) {
                             minecraft.execute(() -> {

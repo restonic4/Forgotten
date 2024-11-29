@@ -137,12 +137,12 @@ public class SkyWaveEffect {
             actionExecutionProgress = calculateActionProgressFactor(distance.length());
         }
 
-        if (getProgress() >= actionExecutionProgress - actionBeforeHeadOffset && !actionBeforeExecuted) {
+        if (this.actionExecutedBeforeAbovePlayerHead != null && getProgress() >= actionExecutionProgress - actionBeforeHeadOffset && !actionBeforeExecuted) {
             actionBeforeExecuted = true;
             this.actionExecutedBeforeAbovePlayerHead.run();
         }
 
-        if (getProgress() >= actionExecutionProgress && !actionExecuted) {
+        if (this.actionExecutedAbovePlayerHead != null && getProgress() >= actionExecutionProgress && !actionExecuted) {
             actionExecuted = true;
             this.actionExecutedAbovePlayerHead.run();
         }

@@ -13,14 +13,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
 public class ForgottenEntities {
-    public static final EntityType<BlockGeoEntity> BLOCK_GEO = Registry.register(
-            BuiltInRegistries.ENTITY_TYPE,
-            new ResourceLocation(Forgotten.MOD_ID, "block_geo"),
-            FabricEntityTypeBuilder.create(MobCategory.CREATURE, BlockGeoEntity::new)
-                    .dimensions(EntityDimensions.fixed(1f, 1f))
-                    .build()
-    );
-
     public static final EntityType<SmallCoreEntity> SMALL_CORE = Registry.register(
             BuiltInRegistries.ENTITY_TYPE,
             new ResourceLocation(Forgotten.MOD_ID, "small_core"),
@@ -30,7 +22,6 @@ public class ForgottenEntities {
     );
 
     public static void register() {
-        FabricDefaultAttributeRegistry.register(BLOCK_GEO, BlockGeoEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(SMALL_CORE, SmallCoreEntity.createAttributes());
     }
 }

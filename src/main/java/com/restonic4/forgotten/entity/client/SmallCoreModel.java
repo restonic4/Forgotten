@@ -3,9 +3,8 @@ package com.restonic4.forgotten.entity.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.restonic4.forgotten.Forgotten;
-import com.restonic4.forgotten.entity.animations.BlockAnim;
 import com.restonic4.forgotten.entity.animations.SmallCoreAnim;
-import com.restonic4.forgotten.entity.common.BlockGeoEntity;
+import com.restonic4.forgotten.entity.common.SmallCoreEntity;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -21,7 +20,7 @@ public class SmallCoreModel<T extends SmallCoreEntity> extends HierarchicalModel
         this.root = root.getChild("root");
     }
 
-    public static LayerDefinition createBodyLayer() {
+    public static LayerDefinition getTexturedModelData() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
 
@@ -31,22 +30,17 @@ public class SmallCoreModel<T extends SmallCoreEntity> extends HierarchicalModel
     }
 
     @Override
-    public void setupAnim(SmallCoreEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
-    }
-
-    @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         root.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
     @Override
     public ModelPart root() {
-        return null;
+        return root;
     }
 
     @Override
-    public void setupAnim(T entity, float f, float g, float h, float i, float j) {
+    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         root().getAllParts().forEach(ModelPart::resetPose);
         this.animate(entity.idleAnimationState, SmallCoreAnim.BROKE, ageInTicks);
     }

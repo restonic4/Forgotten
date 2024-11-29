@@ -19,7 +19,7 @@ public class SmallCoreRenderer extends MobRenderer<SmallCoreEntity, SmallCoreMod
     }
 
     @Override
-    public ResourceLocation getTextureLocation(BlockGeoEntity entity) {
+    public ResourceLocation getTextureLocation(SmallCoreEntity entity) {
         return TEXTURE;
     }
 

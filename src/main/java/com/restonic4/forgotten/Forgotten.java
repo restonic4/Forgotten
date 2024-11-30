@@ -6,9 +6,7 @@ import com.restonic4.forgotten.commdands.TestDeath;
 import com.restonic4.forgotten.commdands.TestMainRitual;
 import com.restonic4.forgotten.compatibility.voicechat.Plugin;
 import com.restonic4.forgotten.networking.PacketManager;
-import com.restonic4.forgotten.registries.common.ForgottenEntities;
-import com.restonic4.forgotten.registries.common.ForgottenParticleTypes;
-import com.restonic4.forgotten.registries.common.ForgottenSounds;
+import com.restonic4.forgotten.registries.common.*;
 import com.restonic4.forgotten.registries.client.ForgottenRenderTypes;
 import com.restonic4.forgotten.saving.JsonDataManager;
 import me.drex.vanish.api.VanishEvents;
@@ -57,6 +55,8 @@ public class Forgotten implements ModInitializer {
         registerEvents();
         ForgottenEntities.register();
         ForgottenParticleTypes.registerCommon();
+        ForgottenItems.register();
+        ForgottenCreativeTabs.register();
     }
 
     private void registerEvents() {

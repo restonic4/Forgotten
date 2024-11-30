@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "forgotten:item/player_soul_top",
+    "side": "forgotten:item/player_soul_side"
+  }
+}

@@ -20,15 +20,25 @@ import team.lodestar.lodestone.systems.screenshake.ScreenshakeInstance;
 import java.awt.*;
 
 public class MainRitualPacket {
+    private static final float MAX_DISTANCE = 5000;
+
     public static void receive(Minecraft minecraft, ClientPacketListener clientPacketListener, FriendlyByteBuf friendlyByteBuf, PacketSender packetSender) {
         if (minecraft.player == null || minecraft.level == null) {
             return;
         }
 
-        Vec3 beamCenter = new Vec3(0, 0, 0);
-        //Color beamColor = new Color(1, 0.169f, 0.169f, 1);
+        Vec3 receivedCenter = new Vec3(0, 0, 0);
+        Vec3 playerPos = minecraft.player.position();
 
-        //Color beamColor = new Color(1, 0, 0.31f, 1);
+        Vec3 directionToCenter = receivedCenter.subtract(playerPos);
+        double distanceToCenter = directionToCenter.length();
+
+        if (distanceToCenter > MAX_DISTANCE) {
+            directionToCenter = directionToCenter.normalize().scale(MAX_DISTANCE);
+        }
+
+        Vec3 beamCenter = playerPos.add(directionToCenter);
+
         Color beamColor = new Color(1, 0, 0.227f, 1);
 
         minecraft.execute(() -> {
@@ -47,8 +57,8 @@ public class MainRitualPacket {
         spawnEnergyOrb(minecraft, beamCenter.toVector3f().setComponent(1, 2000), 100, 15, 4, beamColor);
 
         new Thread(() -> {
-            Vector3f playerPos = minecraft.player.position().toVector3f();
-            float distance = playerPos.distance(beamCenter.toVector3f());
+            Vector3f playerPosVec = minecraft.player.position().toVector3f();
+            float distance = playerPosVec.distance(beamCenter.toVector3f());
             float maxBeamShakeDistance = 500;
 
             if (distance < maxBeamShakeDistance) {
@@ -60,7 +70,7 @@ public class MainRitualPacket {
                 Thread.sleep(14000);
             } catch (Exception ignored) {}
 
-            spawnEnergyOrb(minecraft, beamCenter.toVector3f().setComponent(1, 2000), 300, 2, 0, beamColor);
+            spawnEnergyOrb(minecraft, beamCenter.toVector3f().setComponent(1, 2000), 400, 2, 0, beamColor);
 
             try {
                 Thread.sleep(1000);
@@ -87,14 +97,34 @@ public class MainRitualPacket {
                 Thread.sleep(1000);
             } catch (Exception ignored) {}
 
-            ScreenshakeInstance orbShake = new ScreenshakeInstance(4 * 20).setEasing(Easing.CUBIC_IN, Easing.QUAD_IN_OUT).setIntensity(0.75f, 1f, 0.45f);
+            ScreenshakeInstance orbShake = new ScreenshakeInstance(4 * 20).setEasing(Easing.CUBIC_IN, Easing.QUAD_IN_OUT).setIntensity(0.75f, 0.8f, 0.6f);
             ScreenshakeHandler.addScreenshake(orbShake);
+
+            minecraft.execute(() -> {
+                if (minecraft.player == null || minecraft.level == null) {
+                    return;
+                }
+
+                BlockPos blockPos = minecraft.player.blockPosition();
+
+                minecraft.level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), ForgottenSounds.EXPLOSION, SoundSource.AMBIENT, 1, 1, false);
+            });
 
             try {
                 Thread.sleep(1000);
             } catch (Exception ignored) {}
 
-            ScreenshakeInstance waveShake = new ScreenshakeInstance(20 * 20).setEasing(Easing.CUBIC_IN, Easing.QUAD_IN_OUT).setIntensity(0.45f, 0.65f, 0.45f);
+            minecraft.execute(() -> {
+                if (minecraft.player == null || minecraft.level == null) {
+                    return;
+                }
+
+                BlockPos blockPos = minecraft.player.blockPosition();
+
+                minecraft.level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), ForgottenSounds.WAVE_EXPLOSION, SoundSource.AMBIENT, 1, 1, false);
+            });
+
+            ScreenshakeInstance waveShake = new ScreenshakeInstance(20 * 20).setEasing(Easing.CUBIC_IN, Easing.QUAD_IN_OUT).setIntensity(0.6f, 0.65f, 0.45f);
             ScreenshakeHandler.addScreenshake(waveShake);
         }).start();
     }

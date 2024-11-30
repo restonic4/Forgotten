@@ -160,8 +160,8 @@ public class SkyWaveEffect {
         playerUniformPosCache[2] = (float) playerPos.z;
 
         beamUniformPosCache[0] = position.x;
-        beamUniformPosCache[1] = position.x;
-        beamUniformPosCache[2] = position.x;
+        beamUniformPosCache[1] = position.y;
+        beamUniformPosCache[2] = position.z;
 
         beamUniformColorCache[0] = MathHelper.getNormalizedColorR(color);
         beamUniformColorCache[1] = MathHelper.getNormalizedColorG(color);

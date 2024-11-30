@@ -16,11 +16,7 @@ out float vertexDistance;
 out vec3 vPosition;
 
 void main() {
-    float limit = 5000;
-
     vec3 distance = Center - PlayerPos;
-    distance.x = clamp(distance.x, -limit, limit);
-    distance.z = clamp(distance.z, -limit, limit);
 
     float maxScale = 100.0;
     float base = 1000;
@@ -28,9 +24,9 @@ void main() {
 
     vec3 scaledPosition = vec3(Position.x * scale, Position.y, Position.z * scale);
 
-    vec3 testPos = scaledPosition + vec3(distance.x, distance.y + Height, distance.z);
+    vec3 finalPos = scaledPosition + vec3(distance.x, distance.y + Height, distance.z);
 
-    gl_Position = ProjMat * ModelViewMat * vec4(testPos, 1.0);
+    gl_Position = ProjMat * ModelViewMat * vec4(finalPos, 1.0);
 
     vertexDistance = fog_distance(ModelViewMat, Position, FogShape);
     vPosition = Position;

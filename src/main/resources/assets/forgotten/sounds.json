@@ -71,6 +71,15 @@
     ]
   },
 
+  "wave_explosion": {
+    "sounds": [
+      {
+        "name": "forgotten:wave_explosion",
+        "stream": false
+      }
+    ]
+  },
+
   "main_ritual_background": {
     "sounds": [
       {

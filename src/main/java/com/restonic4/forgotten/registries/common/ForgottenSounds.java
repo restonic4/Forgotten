@@ -15,6 +15,7 @@ public class ForgottenSounds {
     public static SoundEvent REJECT;
     public static SoundEvent WAVE;
     public static SoundEvent EXPLOSION;
+    public static SoundEvent WAVE_EXPLOSION;
 
     public static SoundEvent FIREBALL1;
     public static SoundEvent FIREBALL2;
@@ -58,6 +59,9 @@ public class ForgottenSounds {
         BEAM = Registry.register(BuiltInRegistries.SOUND_EVENT, beamLocation, SoundEvent.createVariableRangeEvent(beamLocation));
         ResourceLocation beamStereoLocation = new ResourceLocation(Forgotten.MOD_ID, "beam_stereo");
         BEAM_STEREO = Registry.register(BuiltInRegistries.SOUND_EVENT, beamStereoLocation, SoundEvent.createVariableRangeEvent(beamStereoLocation));
+
+        ResourceLocation waveExplosionLocation = new ResourceLocation(Forgotten.MOD_ID, "wave_explosion");
+        WAVE_EXPLOSION = Registry.register(BuiltInRegistries.SOUND_EVENT, waveExplosionLocation, SoundEvent.createVariableRangeEvent(waveExplosionLocation));
 
         WHISPER1 = registerWhisper(1);
         WHISPER2 = registerWhisper(2);

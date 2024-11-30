@@ -21,12 +21,25 @@ import team.lodestar.lodestone.systems.screenshake.ScreenshakeInstance;
 import java.awt.*;
 
 public class BeamPacket {
+    private static final float MAX_DISTANCE = 5000;
+
     public static void receive(Minecraft minecraft, ClientPacketListener clientPacketListener, FriendlyByteBuf friendlyByteBuf, PacketSender packetSender) {
         if (minecraft.player == null || minecraft.level == null) {
             return;
         }
 
-        Vec3 beamCenter = new Vec3(0, 0, 0);
+        Vec3 receivedCenter = new Vec3(0, 0, 0);
+        Vec3 playerPos = minecraft.player.position();
+
+        Vec3 directionToCenter = receivedCenter.subtract(playerPos);
+        double distanceToCenter = directionToCenter.length();
+
+        if (distanceToCenter > MAX_DISTANCE) {
+            directionToCenter = directionToCenter.normalize().scale(MAX_DISTANCE);
+        }
+
+        Vec3 beamCenter = playerPos.add(directionToCenter);
+
         Color beamColor = new Color(0.3f, 1, 1, 1);
 
         spawnSkyWave(minecraft, beamCenter.toVector3f(), beamColor, 10, true);

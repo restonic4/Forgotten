@@ -31,6 +31,7 @@ public class ForgottenClient implements ClientModInitializer {
      */
     private boolean configured = false;
     private long lastTimeSpawned = System.currentTimeMillis();
+    public static long currentTime = System.currentTimeMillis();
 
     @Override
     public void onInitializeClient() {

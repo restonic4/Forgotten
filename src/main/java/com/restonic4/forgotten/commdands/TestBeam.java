@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -37,7 +38,7 @@ public class TestBeam {
 
         for (ServerPlayer serverPlayer : source.getServer().getPlayerList().getPlayers()) {
             FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
-            friendlyByteBuf.writeBoolean(true);
+            friendlyByteBuf.writeBlockPos(new BlockPos(0, 0, 0));
             ServerPlayNetworking.send(serverPlayer, PacketManager.BEAM, friendlyByteBuf);
         }
 

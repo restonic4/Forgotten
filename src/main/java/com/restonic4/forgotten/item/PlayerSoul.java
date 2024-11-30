@@ -6,6 +6,7 @@ import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -14,7 +15,7 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import java.util.UUID;
 
 public class PlayerSoul extends Item {
-    private static final String MAIN_TAG = "PlayerOwner";
+    public static final String MAIN_TAG = "PlayerOwner";
 
     public PlayerSoul(Properties properties) {
         super(properties);
@@ -51,5 +52,10 @@ public class PlayerSoul extends Item {
                 compoundTag.put(MAIN_TAG, NbtUtils.writeGameProfile(new CompoundTag(), gameProfilex));
             });
         }
+    }
+
+    @Override
+    public void onDestroyed(ItemEntity itemEntity) {
+        super.onDestroyed(itemEntity);
     }
 }

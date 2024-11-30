@@ -1,7 +1,12 @@
 {
-  "parent": "minecraft:block/cube_column",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "end": "forgotten:item/player_soul_top",
-    "side": "forgotten:item/player_soul_side"
+    "down": "forgotten:item/player_soul_bottom",
+    "east": "forgotten:item/player_soul_side",
+    "north": "forgotten:item/player_soul_side",
+    "particle": "forgotten:item/player_soul_side",
+    "south": "forgotten:item/player_soul_side",
+    "up": "forgotten:item/player_soul_top",
+    "west": "forgotten:item/player_soul_side"
   }
 }

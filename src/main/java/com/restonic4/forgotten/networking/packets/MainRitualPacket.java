@@ -27,7 +27,7 @@ public class MainRitualPacket {
             return;
         }
 
-        Vec3 receivedCenter = new Vec3(0, 0, 0);
+        Vec3 receivedCenter = friendlyByteBuf.readBlockPos().getCenter();
         Vec3 playerPos = minecraft.player.position();
 
         Vec3 directionToCenter = receivedCenter.subtract(playerPos);
@@ -121,7 +121,7 @@ public class MainRitualPacket {
 
                 BlockPos blockPos = minecraft.player.blockPosition();
 
-                minecraft.level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), ForgottenSounds.WAVE_EXPLOSION, SoundSource.AMBIENT, 1, 1, false);
+                minecraft.level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), ForgottenSounds.WAVE_EXPLOSION, SoundSource.AMBIENT, 0.6f, 1, false);
             });
 
             ScreenshakeInstance waveShake = new ScreenshakeInstance(20 * 20).setEasing(Easing.CUBIC_IN, Easing.QUAD_IN_OUT).setIntensity(0.6f, 0.65f, 0.45f);

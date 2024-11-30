@@ -2,6 +2,7 @@ package com.restonic4.forgotten.mixin.client;
 
 import com.restonic4.forgotten.client.CachedClientData;
 import com.restonic4.forgotten.client.DeathUtils;
+import com.restonic4.forgotten.client.ForgottenClient;
 import com.restonic4.forgotten.util.EasingSystem;
 import com.restonic4.forgotten.util.trash.TestingVars;
 import net.minecraft.client.Camera;
@@ -18,6 +19,11 @@ public class GameRendererMixin {
     @Unique
     private static long easingStartTime = 0;
     @Unique private static long easingEndTime = 0;
+
+    @Inject(method = "render", at = @At("HEAD"))
+    private void render(float f, long l, boolean bl, CallbackInfo ci) {
+        ForgottenClient.currentTime = System.currentTimeMillis();
+    }
 
     @Inject(method = "getFov", at = @At("HEAD"), cancellable = true)
     private void getFov(Camera camera, float f, boolean bl, CallbackInfoReturnable<Double> cir) {

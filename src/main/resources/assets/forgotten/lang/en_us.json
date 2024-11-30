@@ -3,6 +3,6 @@
   "gui.forgotten.incompatibility.message.iris": "Iris changes how Minecraft renders certain things, and most importantly, it does not allow the use of CORE/VANILLA type shaders, which breaks the visual effects of Forgotten. If you really want to play Forgotten with shaders, you will need to create a MIXIN to the ForgottenClient class to remove this alert. I don’t provide the option here because people tend not to read these messages and then complain that the mod doesn’t work.",
   "gui.forgotten.incompatibility.close": "Close Minecraft",
   "creative_mode_tab.forgotten": "Forgotten",
-  "item.forgotten.player_soul": "Soul",
-  "item.forgotten.player_soul.named": "%s's soul"
+  "item.forgotten.player_soul": "Spectral remnant",
+  "item.forgotten.player_soul.named": "%s's spectral remnant"
 }

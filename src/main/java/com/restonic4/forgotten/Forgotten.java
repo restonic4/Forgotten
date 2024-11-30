@@ -1,14 +1,18 @@
 package com.restonic4.forgotten;
 
+import com.mojang.authlib.GameProfile;
 import com.restonic4.forgotten.commdands.Lodestone;
 import com.restonic4.forgotten.commdands.TestBeam;
 import com.restonic4.forgotten.commdands.TestDeath;
 import com.restonic4.forgotten.commdands.TestMainRitual;
 import com.restonic4.forgotten.compatibility.voicechat.Plugin;
+import com.restonic4.forgotten.item.PlayerSoul;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.common.*;
 import com.restonic4.forgotten.registries.client.ForgottenRenderTypes;
 import com.restonic4.forgotten.saving.JsonDataManager;
+import io.github.fabricators_of_create.porting_lib.entity.events.PlayerInteractionEvents;
+import io.github.fabricators_of_create.porting_lib.event.client.InteractEvents;
 import me.drex.vanish.api.VanishEvents;
 import me.drex.vanish.config.ConfigManager;
 import me.drex.vanish.util.VanishManager;
@@ -25,20 +29,28 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 
 import java.util.List;
 import java.util.Random;
@@ -57,6 +69,7 @@ public class Forgotten implements ModInitializer {
         ForgottenParticleTypes.registerCommon();
         ForgottenItems.register();
         ForgottenCreativeTabs.register();
+        PacketManager.registerClientToServer();
     }
 
     private void registerEvents() {
@@ -86,12 +99,26 @@ public class Forgotten implements ModInitializer {
             }
         });
 
+        InteractEvents.ATTACK.register((minecraft, hitResult) -> {
+            if (hitResult.getType() == HitResult.Type.ENTITY) {
+                Entity entity = ((EntityHitResult)hitResult).getEntity();
+
+                System.out.println("Attacked " + entity.getName());
+
+                return InteractionResult.PASS;
+            }
+
+            return InteractionResult.PASS;
+        });
+
         ServerLivingEntityEvents.ALLOW_DEATH.register((livingEntity, damageSource, damageAmount) -> {
             if (livingEntity instanceof ServerPlayer serverPlayer && isVanishLoaded() && !isPlayerGoingToUseTotem(serverPlayer)) {
                 regeneratePlayer(serverPlayer);
 
                 if (!VanishManager.isVanished(serverPlayer)) {
-                    placePlayerHead(serverPlayer);
+                    //placePlayerHead(serverPlayer);
+                    placePlayerSoul(serverPlayer);
+
                     serverPlayer.getInventory().dropAll();
 
                     if (serverPlayer.level() instanceof ServerLevel && !serverPlayer.wasExperienceConsumed()) {
@@ -213,6 +240,29 @@ public class Forgotten implements ModInitializer {
         Random random = new Random();
         int randomNumber = random.nextInt(1000);
         return randomNumber < 8;
+    }
+
+    private static void placePlayerSoul(ServerPlayer victim) {
+        Level level = victim.serverLevel();
+
+        ItemStack playerSoulItem = new ItemStack(ForgottenItems.PLAYER_SOUL);
+        CompoundTag tag = playerSoulItem.getOrCreateTag();
+        tag.putString(PlayerSoul.MAIN_TAG, victim.getName().getString());
+
+        GameProfile profile = victim.getGameProfile();
+        tag.put(PlayerSoul.MAIN_TAG, NbtUtils.writeGameProfile(new CompoundTag(), profile));
+
+        ItemEntity droppedItem = new ItemEntity(
+                level,
+                victim.getX(),
+                victim.getY(),
+                victim.getZ(),
+                playerSoulItem
+        );
+
+        droppedItem.setDefaultPickUpDelay();
+
+        level.addFreshEntity(droppedItem);
     }
 
     private static void placePlayerHead(ServerPlayer serverPlayer) {

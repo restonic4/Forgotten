@@ -5,14 +5,18 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BiomeMixin",
+    "EntityMixin",
+    "ItemEntityMixin",
     "ItemFrameMixin",
     "LevelMixin",
     "MobMixin",
     "vanish.VanishManagerMixin"
   ],
   "client": [
+    "client.EntityRendererMixin",
     "client.GameRendererMixin",
     "client.GuiMixin",
+    "client.ItemEntityRendererMixin",
     "client.LevelRendererMixin",
     "client.MinecraftMixin"
   ],

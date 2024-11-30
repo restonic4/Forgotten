@@ -28,7 +28,7 @@ public class BeamPacket {
             return;
         }
 
-        Vec3 receivedCenter = new Vec3(0, 0, 0);
+        Vec3 receivedCenter = friendlyByteBuf.readBlockPos().getCenter();
         Vec3 playerPos = minecraft.player.position();
 
         Vec3 directionToCenter = receivedCenter.subtract(playerPos);

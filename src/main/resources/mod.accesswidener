@@ -19,3 +19,8 @@ accessible field net/minecraft/client/gui/GuiGraphics pose Lcom/mojang/blaze3d/v
 accessible field net/minecraft/client/gui/Gui GUI_ICONS_LOCATION Lnet/minecraft/resources/ResourceLocation;
 accessible field net/minecraft/world/entity/item/ItemEntity pickupDelay I
 accessible field net/minecraft/world/entity/item/ItemEntity target Ljava/util/UUID;
+accessible field net/minecraft/world/level/levelgen/structure/Structure settings Lnet/minecraft/world/level/levelgen/structure/Structure$StructureSettings;
+accessible field net/minecraft/server/level/WorldGenRegion firstPos Lnet/minecraft/world/level/ChunkPos;
+accessible field net/minecraft/server/level/WorldGenRegion cache Ljava/util/List;
+accessible field net/minecraft/server/level/WorldGenRegion size I
+accessible field net/minecraft/world/level/StructureManager level Lnet/minecraft/world/level/LevelAccessor;

@@ -8,8 +8,10 @@
     "EntityMixin",
     "ItemEntityMixin",
     "ItemFrameMixin",
+    "JigsawPlacementMixin",
     "LevelMixin",
     "MobMixin",
+    "StructureMixin",
     "vanish.VanishManagerMixin"
   ],
   "client": [

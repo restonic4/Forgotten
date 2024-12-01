@@ -37,7 +37,7 @@ public class JigsawPlacementMixin {
     )
     private static Rotation modifyRotation(Rotation original) {
         if (currentJigsawLocation != null && currentJigsawLocation.getNamespace().equals(Forgotten.MOD_ID)) {
-            if (currentJigsawLocation.getPath().equals("main_temple")) {
+            if (currentJigsawLocation.getPath().endsWith("_fixed")) {
                 return Rotation.NONE;
             }
         }

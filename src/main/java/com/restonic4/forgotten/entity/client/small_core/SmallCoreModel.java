@@ -1,4 +1,4 @@
-package com.restonic4.forgotten.entity.client;
+package com.restonic4.forgotten.entity.client.small_core;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

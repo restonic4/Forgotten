@@ -1,9 +1,8 @@
-package com.restonic4.forgotten.entity.client;
+package com.restonic4.forgotten.entity.client.small_core;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.entity.common.SmallCoreEntity;
-import com.restonic4.forgotten.util.helpers.MathHelper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;

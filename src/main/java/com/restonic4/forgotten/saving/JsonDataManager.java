@@ -2,7 +2,9 @@ package com.restonic4.forgotten.saving;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 
@@ -54,6 +56,11 @@ public class JsonDataManager {
 
     public Object get(String key) {
         return data.get(key);
+    }
+
+    public BlockPos getBlockPos(String key) {
+        LinkedTreeMap<String, Double> foundData = (LinkedTreeMap<String, Double>) data.get(key);
+        return new BlockPos(foundData.get("x").intValue(), foundData.get("y").intValue(), foundData.get("z").intValue());
     }
 
     public boolean contains(String key) {

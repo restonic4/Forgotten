@@ -33,4 +33,5 @@ accessible field net/minecraft/world/level/levelgen/structure/structures/JigsawS
 accessible field net/minecraft/world/level/levelgen/structure/structures/JigsawStructure useExpansionHack Z
 accessible field net/minecraft/world/level/levelgen/structure/structures/JigsawStructure projectStartToHeightmap Ljava/util/Optional;
 accessible method net/minecraft/world/level/levelgen/structure/structures/JigsawStructure verifyRange (Lnet/minecraft/world/level/levelgen/structure/structures/JigsawStructure;)Lcom/mojang/serialization/DataResult;
+accessible method net/minecraft/client/multiplayer/ClientLevel getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;
 

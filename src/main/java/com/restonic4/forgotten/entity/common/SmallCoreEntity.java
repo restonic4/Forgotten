@@ -1,5 +1,6 @@
 package com.restonic4.forgotten.entity.common;
 
+import com.restonic4.forgotten.registries.common.ForgottenEntities;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;

@@ -1,4 +1,4 @@
-package com.restonic4.forgotten.entity.client;
+package com.restonic4.forgotten.entity.client.small_core;
 
 import com.restonic4.forgotten.Forgotten;
 import net.minecraft.client.model.geom.ModelLayerLocation;

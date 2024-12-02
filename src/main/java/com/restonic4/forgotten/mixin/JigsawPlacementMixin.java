@@ -53,7 +53,7 @@ public class JigsawPlacementMixin {
             argsOnly = true)
     private static int modifyGenerateJigsawDepth(int depth) {
         if (shouldUpgrade()) {
-            return Math.max(depth, 15);
+            return Math.max(depth, 20);
         }
         return depth;
     }

@@ -9,6 +9,7 @@
     "ItemEntityMixin",
     "ItemFrameMixin",
     "JigsawPlacementMixin",
+    "JigsawPlacementPlacerMixin",
     "LevelMixin",
     "MobMixin",
     "StructureMixin",

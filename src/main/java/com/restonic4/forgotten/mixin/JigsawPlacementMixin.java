@@ -4,6 +4,7 @@ import com.restonic4.forgotten.Forgotten;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -13,8 +14,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.Optional;
 
@@ -36,12 +39,30 @@ public class JigsawPlacementMixin {
             ordinal = 0
     )
     private static Rotation modifyRotation(Rotation original) {
-        if (currentJigsawLocation != null && currentJigsawLocation.getNamespace().equals(Forgotten.MOD_ID)) {
-            if (currentJigsawLocation.getPath().endsWith("_fixed")) {
-                return Rotation.NONE;
-            }
+        if (shouldUpgrade()) {
+            return Rotation.NONE;
         }
 
         return original;
+    }
+
+    @ModifyVariable(
+            method = "generateJigsaw",
+            at = @At("HEAD"),
+            ordinal = 0,
+            argsOnly = true)
+    private static int modifyGenerateJigsawDepth(int depth) {
+        if (shouldUpgrade()) {
+            return Math.max(depth, 15);
+        }
+        return depth;
+    }
+
+    @Unique private static boolean shouldUpgrade() {
+        if (currentJigsawLocation != null && currentJigsawLocation.getNamespace().equals(Forgotten.MOD_ID)) {
+            return currentJigsawLocation.getPath().endsWith("_fixed");
+        }
+
+        return false;
     }
 }

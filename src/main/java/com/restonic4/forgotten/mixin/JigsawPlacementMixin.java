@@ -38,8 +38,7 @@ public class JigsawPlacementMixin {
             at = @At("HEAD")
     )
     private static void addPieces(Structure.GenerationContext generationContext, Holder<StructureTemplatePool> holder, Optional<ResourceLocation> optional, int i, BlockPos blockPos, boolean bl, Optional<Heightmap.Types> optional2, int j, CallbackInfoReturnable<Optional<Structure.GenerationStub>> cir) {
-        /*optional.ifPresent(resourceLocation -> currentJigsawLocation = (ResourceLocation) resourceLocation);
-        System.out.println("Level: " + i + ", Part: " + currentJigsawLocation);*/
+        System.out.println("Level: " + i + ", MaxDistance: " + j + ", Part: " + currentJigsawLocation);
     }
 
     @Inject(
@@ -61,6 +60,18 @@ public class JigsawPlacementMixin {
         }
 
         return original;
+    }
+
+    @ModifyVariable(
+            method = "addPieces(Lnet/minecraft/world/level/levelgen/structure/Structure$GenerationContext;Lnet/minecraft/core/Holder;Ljava/util/Optional;ILnet/minecraft/core/BlockPos;ZLjava/util/Optional;I)Ljava/util/Optional;",
+            at = @At("HEAD"),
+            ordinal = 1,
+            argsOnly = true)
+    private static int modifyAddPiecesMaxDistance(int maxDistanceFromCenter) {
+        if (shouldUpgrade()) {
+            return Math.max(maxDistanceFromCenter, 200);
+        }
+        return maxDistanceFromCenter;
     }
 
     @ModifyVariable(

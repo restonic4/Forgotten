@@ -68,9 +68,9 @@ public class JigsawPlacementMixin {
             ordinal = 1,
             argsOnly = true)
     private static int modifyAddPiecesMaxDistance(int maxDistanceFromCenter) {
-        if (shouldUpgrade()) {
+        /*if (shouldUpgrade()) {
             return Math.max(maxDistanceFromCenter, 200);
-        }
+        }*/
         return maxDistanceFromCenter;
     }
 
@@ -80,9 +80,9 @@ public class JigsawPlacementMixin {
             ordinal = 0,
             argsOnly = true)
     private static int modifyGenerateJigsawDepth(int depth) {
-        if (shouldUpgrade()) {
+        /*if (shouldUpgrade()) {
             return Math.max(depth, 20);
-        }
+        }*/
         return depth;
     }
 

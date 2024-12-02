@@ -10,9 +10,9 @@
 
     "salt": 1084230010,
 
-    "spacing": 150,
+    "spacing": 4096,
 
-    "separation": 125,
+    "separation": 2048,
 
     "exclusion_zone": {}
   }

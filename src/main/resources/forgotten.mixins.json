@@ -10,9 +10,11 @@
     "ItemFrameMixin",
     "JigsawPlacementMixin",
     "JigsawPlacementPlacerMixin",
+    "JigsawStructureMixin",
     "LevelMixin",
     "MobMixin",
     "StructureMixin",
+    "accessor.JigsawStructureAccessor",
     "vanish.VanishManagerMixin"
   ],
   "client": [

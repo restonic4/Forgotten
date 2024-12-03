@@ -166,7 +166,7 @@ public class MainRitualPacket {
                         .timeBetweenFades(4f)
                         .setFadeInAnimation(BeamEffect.EASED_SCALE_IN)
                         .setFadeOutAnimation(BeamEffect.EASED_SCALE_OUT)
-                        .addLayer(4, 2020, new Color(beamR, beamG, beamB, 1))
+                        .addLayer(4, 2020, new Color(1, 1, 1, 1))
                         .addLayer(8, 2020, new Color(beamR, beamG, beamB, 0.75f))
                         .addLayer(12, 2020, new Color(beamR, beamG, beamB, 0.5f))
                         .addLayer(16, 2020, new Color(beamR, beamG, beamB, 0.25f))
@@ -191,7 +191,7 @@ public class MainRitualPacket {
                         .timeBetweenFades(timeBetweenFades)
                         .setFadeInAnimation(EnergyOrbEffect.EASED_SCALE_IN)
                         .setFadeOutAnimation(EnergyOrbEffect.EASED_SCALE_OUT)
-                        .addLayer(radius, new Color(beamR, beamG, beamB, 1))
+                        .addLayer(radius, new Color(1, 1, 1, 1))
                         .addLayer(radius + 100, new Color(beamR, beamG, beamB, 0.75f))
                         .addLayer(radius + 200, new Color(beamR, beamG, beamB, 0.5f))
                         .addLayer(radius + 300, new Color(beamR, beamG, beamB, 0.25f));

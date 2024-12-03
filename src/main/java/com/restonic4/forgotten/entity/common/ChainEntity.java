@@ -1,6 +1,7 @@
 package com.restonic4.forgotten.entity.common;
 
 import com.restonic4.forgotten.networking.PacketManager;
+import com.restonic4.forgotten.saving.Components;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.nbt.CompoundTag;
@@ -19,10 +20,6 @@ import org.jetbrains.annotations.Nullable;
 public class ChainEntity extends Animal {
     public final AnimationState idleAnimationState = new AnimationState();
     private boolean clientSide = false;
-    private boolean isVertical;
-    private boolean isAlt;
-
-    private static final TrackedData<Boolean> IS_VERTICAL = TrackedDataHandlerRegistry.BOOLEAN.create();
 
     public ChainEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
@@ -82,58 +79,18 @@ public class ChainEntity extends Animal {
     }
 
     public boolean isVertical() {
-        return isVertical;
+        return Components.CHAIN_STATE.get(this).isVertical();
     }
 
     public void setVertical(boolean vertical) {
-        isVertical = vertical;
-
-        if (!clientSide) {
-            updateClients();
-        }
+        Components.CHAIN_STATE.get(this).setVertical(vertical);
     }
 
     public boolean isAlt() {
-        return isAlt;
+        return Components.CHAIN_STATE.get(this).isAlt();
     }
 
     public void setAlt(boolean alt) {
-        isAlt = alt;
-
-        if (!clientSide) {
-            updateClients();
-        }
-    }
-
-    private void updateClients() {
-        if (this.getServer() == null) {
-            return;
-        }
-
-        for (ServerPlayer serverPlayer : this.getServer().getPlayerList().getPlayers()) {
-            FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
-            friendlyByteBuf.writeUUID(this.getUUID());
-            friendlyByteBuf.writeBoolean(isAlt);
-            friendlyByteBuf.writeBoolean(isVertical);
-            ServerPlayNetworking.send(serverPlayer, PacketManager.CHAIN_STATE, friendlyByteBuf);
-        }
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putBoolean("IsVertical", this.isVertical);
-        compound.putBoolean("IsAlt", this.isAlt);
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains("IsVertical")) {
-            setVertical(compound.getBoolean("IsVertical"));
-        }
-        if (compound.contains("IsAlt")) {
-            setAlt(compound.getBoolean("IsAlt"));
-        }
+        Components.CHAIN_STATE.get(this).setAlt(alt);
     }
 }

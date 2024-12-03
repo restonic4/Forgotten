@@ -20,6 +20,9 @@
     ],
     "voicechat": [
       "com.restonic4.forgotten.compatibility.voicechat.Plugin"
+    ],
+    "cardinal-components-entity": [
+      "com.restonic4.forgotten.saving.Components"
     ]
   },
   "mixins": [
@@ -30,5 +33,10 @@
     "fabric": "*",
     "minecraft": "${minecraft_version}"
   },
-  "accessWidener": "mod.accesswidener"
+  "accessWidener": "mod.accesswidener",
+  "custom": {
+    "cardinal-components": [
+      "forgotten:chain_state"
+    ]
+  }
 }

@@ -66,7 +66,7 @@ public class SetUpForgotten {
 
     private static void generateChain(ServerLevel serverLevel, BlockPos position, int length, boolean isVertical) {
         for (int i = 0; i < length; i++) {
-            generateChainPiece(serverLevel, new BlockPos(position).getCenter().add(0, 0, ((float) i/2)), isVertical, (i%2 == 0));
+            generateChainPiece(serverLevel, new BlockPos(position).getCenter().add(0, 0, ((float) i/2f) + 0.2f), isVertical, (i%2 == 0));
         }
     }
 
@@ -76,8 +76,7 @@ public class SetUpForgotten {
         entity.setAlt(isAlt);
 
         if (isAlt) {
-            System.out.println("ES ALT, AAAAAAAA");
-            position = position.add(0,0.25,0);
+            position = position.add(0.1,-0.2f,-0.09f);
         }
 
         serverLevel.addFreshEntity(entity);

@@ -6,9 +6,7 @@ import com.restonic4.forgotten.compatibility.voicechat.Plugin;
 import com.restonic4.forgotten.item.PlayerSoul;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.common.*;
-import com.restonic4.forgotten.registries.client.ForgottenRenderTypes;
 import com.restonic4.forgotten.saving.JsonDataManager;
-import io.github.fabricators_of_create.porting_lib.entity.events.PlayerInteractionEvents;
 import io.github.fabricators_of_create.porting_lib.event.client.InteractEvents;
 import me.drex.vanish.api.VanishEvents;
 import me.drex.vanish.config.ConfigManager;
@@ -79,6 +77,7 @@ public class Forgotten implements ModInitializer {
             TestBeam.register(dispatcher);
             TestMainRitual.register(dispatcher);
             SetUpForgotten.register(dispatcher);
+            CleanupForgotten.register(dispatcher);
             //Lodestone.register(dispatcher);
         });
 

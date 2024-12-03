@@ -59,8 +59,14 @@ public class JsonDataManager {
     }
 
     public BlockPos getBlockPos(String key) {
-        LinkedTreeMap<String, Double> foundData = (LinkedTreeMap<String, Double>) data.get(key);
-        return new BlockPos(foundData.get("x").intValue(), foundData.get("y").intValue(), foundData.get("z").intValue());
+        Object rawData = data.get(key);
+
+        if (rawData instanceof BlockPos blockPos) {
+            return blockPos;
+        } else {
+            LinkedTreeMap<String, Double> foundData = (LinkedTreeMap<String, Double>) data.get(key);
+            return new BlockPos(foundData.get("x").intValue(), foundData.get("y").intValue(), foundData.get("z").intValue());
+        }
     }
 
     public boolean contains(String key) {

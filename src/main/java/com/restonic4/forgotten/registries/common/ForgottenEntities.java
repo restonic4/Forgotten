@@ -17,7 +17,7 @@ public class ForgottenEntities {
             BuiltInRegistries.ENTITY_TYPE,
             new ResourceLocation(Forgotten.MOD_ID, "small_core"),
             FabricEntityTypeBuilder.create(MobCategory.CREATURE, SmallCoreEntity::new)
-                    .dimensions(EntityDimensions.fixed(1f, 1f))
+                    .dimensions(EntityDimensions.fixed(1.25f, 1.25f))
                     .fireImmune()
                     .build()
     );
@@ -26,7 +26,7 @@ public class ForgottenEntities {
             BuiltInRegistries.ENTITY_TYPE,
             new ResourceLocation(Forgotten.MOD_ID, "chain"),
             FabricEntityTypeBuilder.create(MobCategory.CREATURE, ChainEntity::new)
-                    .dimensions(EntityDimensions.fixed(1f, 1f))
+                    .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
                     .fireImmune()
                     .build()
     );

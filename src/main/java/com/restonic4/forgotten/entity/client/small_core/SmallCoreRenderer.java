@@ -35,6 +35,7 @@ public class SmallCoreRenderer extends MobRenderer<SmallCoreEntity, SmallCoreMod
 
     @Override
     public void render(SmallCoreEntity entity, float f, float g, PoseStack poseStack, MultiBufferSource vertexConsumerProvider, int i) {
+        poseStack.scale(1.25f, 1.25f, 1.25f);
         super.render(entity, f, g, poseStack, vertexConsumerProvider, i);
     }
 }

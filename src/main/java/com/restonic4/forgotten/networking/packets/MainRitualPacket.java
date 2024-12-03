@@ -167,9 +167,9 @@ public class MainRitualPacket {
                         .setFadeInAnimation(BeamEffect.EASED_SCALE_IN)
                         .setFadeOutAnimation(BeamEffect.EASED_SCALE_OUT)
                         .addLayer(4, 2020, new Color(1, 1, 1, 1))
-                        .addLayer(8, 2020, new Color(beamR, beamG, beamB, 0.75f))
-                        .addLayer(12, 2020, new Color(beamR, beamG, beamB, 0.5f))
-                        .addLayer(16, 2020, new Color(beamR, beamG, beamB, 0.25f))
+                        .addLayer(8, 2020, new Color(beamR, beamG, beamB, 0.6f))
+                        .addLayer(12, 2020, new Color(beamR, beamG, beamB, 0.4f))
+                        .addLayer(16, 2020, new Color(beamR, beamG, beamB, 0.2f))
                         .addLayer(20, 2020, new Color(beamR, beamG, beamB, 0.1f));
 
                 BlockPos blockPos = minecraft.player.blockPosition();
@@ -192,9 +192,9 @@ public class MainRitualPacket {
                         .setFadeInAnimation(EnergyOrbEffect.EASED_SCALE_IN)
                         .setFadeOutAnimation(EnergyOrbEffect.EASED_SCALE_OUT)
                         .addLayer(radius, new Color(1, 1, 1, 1))
-                        .addLayer(radius + 100, new Color(beamR, beamG, beamB, 0.75f))
-                        .addLayer(radius + 200, new Color(beamR, beamG, beamB, 0.5f))
-                        .addLayer(radius + 300, new Color(beamR, beamG, beamB, 0.25f));
+                        .addLayer(radius + 100, new Color(beamR, beamG, beamB, 0.6f))
+                        .addLayer(radius + 200, new Color(beamR, beamG, beamB, 0.4f))
+                        .addLayer(radius + 300, new Color(beamR, beamG, beamB, 0.2f));
             }
         });
 

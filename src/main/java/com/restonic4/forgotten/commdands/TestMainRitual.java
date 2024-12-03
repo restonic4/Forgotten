@@ -28,19 +28,24 @@ public class TestMainRitual {
 
     private static int execute(CommandContext<CommandSourceStack> context) {
         CommandSourceStack source = context.getSource();
+        try {
+            for (ServerPlayer serverPlayer : source.getServer().getPlayerList().getPlayers()) {
+                JsonDataManager dataManager = Forgotten.getDataManager();
 
-        for (ServerPlayer serverPlayer : source.getServer().getPlayerList().getPlayers()) {
-            JsonDataManager dataManager = Forgotten.getDataManager();
+                if (!dataManager.contains("center")) {
+                    source.sendSystemMessage(Component.literal("The mod has not been initialized"));
+                    return 1;
+                }
 
-            if (!dataManager.contains("center")) {
-                source.sendSystemMessage(Component.literal("The mod has not been initialized"));
-                return 1;
+                FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
+                friendlyByteBuf.writeBlockPos(dataManager.getBlockPos("center").offset(0, -8, 0));
+                ServerPlayNetworking.send(serverPlayer, PacketManager.MAIN_RITUAL, friendlyByteBuf);
             }
-
-            FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
-            friendlyByteBuf.writeBlockPos(dataManager.getBlockPos("center").offset(0, -8, 0));
-            ServerPlayNetworking.send(serverPlayer, PacketManager.MAIN_RITUAL, friendlyByteBuf);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+
 
         return 1;
     }

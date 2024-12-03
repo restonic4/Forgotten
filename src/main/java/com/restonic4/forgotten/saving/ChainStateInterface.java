@@ -7,4 +7,6 @@ public interface ChainStateInterface extends Component {
     void setAlt(boolean value);
     boolean isVertical();
     void setVertical(boolean value);
+    boolean isRotated();
+    void setRotated(boolean value);
 }

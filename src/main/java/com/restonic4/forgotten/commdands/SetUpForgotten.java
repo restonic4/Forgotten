@@ -45,9 +45,17 @@ public class SetUpForgotten {
         generateSmallCore(serverLevel, new BlockPos(pos).offset(-42, -2, 42));
         generateSmallCore(serverLevel, new BlockPos(pos).offset(-42, -2, -42));
 
-        generateBigCore(serverLevel, new BlockPos(pos).offset(0, 16, 0));
+        generateBigCore(serverLevel, new BlockPos(pos).offset(0, 22, 0));
 
-        generateChain(serverLevel, new BlockPos(pos).offset(0, 16, 0), 5, false);
+        generateChain(serverLevel, new BlockPos(pos).offset(1, 22, 0), 56, new Vec3(1, 0, 0));
+        generateChain(serverLevel, new BlockPos(pos).offset(-1, 22, 0), 56, new Vec3(-1, 0, 0));
+        generateChain(serverLevel, new BlockPos(pos).offset(0, 22, 1), 56, new Vec3(0, 0, 1));
+        generateChain(serverLevel, new BlockPos(pos).offset(0, 22, -1), 56, new Vec3(0, 0, -1));
+
+        /*
+        generateChain(serverLevel, new BlockPos(pos).offset(0, 17, 0), 15, new Vec3(0, 1, 0));
+        generateChain(serverLevel, new BlockPos(pos).offset(0, 15, 0), 15, new Vec3(0, -1, 0));
+        */
 
         return 1;
     }
@@ -64,19 +72,37 @@ public class SetUpForgotten {
         entity.setPos(position.getCenter());
     }
 
-    private static void generateChain(ServerLevel serverLevel, BlockPos position, int length, boolean isVertical) {
+    // This is complete garbage
+    private static void generateChain(ServerLevel serverLevel, BlockPos position, int length, Vec3 direction) {
         for (int i = 0; i < length; i++) {
-            generateChainPiece(serverLevel, new BlockPos(position).getCenter().add(0, 0, ((float) i/2f) + 0.2f), isVertical, (i%2 == 0));
+            if (direction.x == 1) {
+                generateChainPiece(serverLevel, new BlockPos(position).getCenter().add(((float) i/1.75f), 0, 0), false, (i%2 == 0), true);
+            } else if (direction.x == -1) {
+                generateChainPiece(serverLevel, new BlockPos(position).getCenter().add(-((float) i/1.75f), 0, 0), false, (i%2 == 0), true);
+            } else if (direction.y == 1) {
+                generateChainPiece(serverLevel, new BlockPos(position).getCenter().add(0, ((float) i/1.75f), 0), true, (i%2 == 0), false);
+            } else if (direction.y == -1) {
+                generateChainPiece(serverLevel, new BlockPos(position).getCenter().add(0, -((float) i/1.75f), 0), true, (i%2 == 0), false);
+            } else if (direction.z == 1) {
+                generateChainPiece(serverLevel, new BlockPos(position).getCenter().add(0, 0, ((float) i/1.75f)), false, (i%2 == 0), false);
+            } else if (direction.z == -1) {
+                generateChainPiece(serverLevel, new BlockPos(position).getCenter().add(0, 0, -((float) i/1.75f)), false, (i%2 == 0), false);
+            }
         }
     }
 
-    private static void generateChainPiece(ServerLevel serverLevel, Vec3 position, boolean isVertical, boolean isAlt) {
+    private static void generateChainPiece(ServerLevel serverLevel, Vec3 position, boolean isVertical, boolean isAlt, boolean isRotated) {
         ChainEntity entity = new ChainEntity(ForgottenEntities.CHAIN, serverLevel);
         entity.setVertical(isVertical);
         entity.setAlt(isAlt);
+        entity.setRotated(isRotated);
 
         if (isAlt) {
-            position = position.add(0.1,-0.2f,-0.09f);
+            if (isVertical) {
+                position = position.add(-0.1,0.2f,0);
+            }
+
+            position = position.add(0.1,-0.2f,0);
         }
 
         serverLevel.addFreshEntity(entity);

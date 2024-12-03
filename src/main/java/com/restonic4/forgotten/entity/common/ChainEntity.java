@@ -93,4 +93,23 @@ public class ChainEntity extends Animal {
     public void setAlt(boolean alt) {
         Components.CHAIN_STATE.get(this).setAlt(alt);
     }
+
+    public boolean isRotated() {
+        return Components.CHAIN_STATE.get(this).isRotated();
+    }
+
+    public void setRotated(boolean rotated) {
+        Components.CHAIN_STATE.get(this).setRotated(rotated);
+        this.setYRot(rotated ? 90 : 0);
+    }
+
+    @Override
+    public float getVisualRotationYInDegrees() {
+        return isRotated() ? 90 : 0;
+    }
+
+    @Override
+    public float getYHeadRot() {
+        return isRotated() ? 90 : 0;
+    }
 }

@@ -21,7 +21,9 @@ import org.jetbrains.annotations.Nullable;
 public class ChainEntity extends Animal {
     public final AnimationState idleAnimationState = new AnimationState();
     public final AnimationState dedAnimationState = new AnimationState();
-    private boolean clientSide, isDed = false;
+    private boolean clientSide;
+
+    public int currentDeathTickAnim = 0;
 
     public ChainEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
@@ -45,7 +47,7 @@ public class ChainEntity extends Animal {
     }
 
     public void destroy() {
-        this.isDed = true;
+        setDed(true);
 
         new Thread(() -> {
             try {
@@ -54,10 +56,6 @@ public class ChainEntity extends Animal {
 
             this.discard();
         }).start();
-    }
-
-    public boolean isDed() {
-        return this.isDed;
     }
 
     @Override
@@ -128,6 +126,14 @@ public class ChainEntity extends Animal {
 
     public void setIndex(int index) {
         Components.CHAIN_STATE.get(this).setIndex(index);
+    }
+
+    public boolean isDed() {
+        return Components.CHAIN_STATE.get(this).isDed();
+    }
+
+    public void setDed(boolean ded) {
+        Components.CHAIN_STATE.get(this).setDed(ded);
     }
 
     @Override

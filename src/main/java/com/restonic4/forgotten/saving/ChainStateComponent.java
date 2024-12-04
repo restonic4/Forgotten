@@ -5,7 +5,7 @@ import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import net.minecraft.nbt.CompoundTag;
 
 public class ChainStateComponent implements ChainStateInterface, AutoSyncedComponent {
-    private boolean isAlt, isVertical, isRotated;
+    private boolean isAlt, isVertical, isRotated, isDed;
     private int index;
 
     private final ChainEntity provider;
@@ -59,6 +59,17 @@ public class ChainStateComponent implements ChainStateInterface, AutoSyncedCompo
     }
 
     @Override
+    public boolean isDed() {
+        return this.isDed;
+    }
+
+    @Override
+    public void setDed(boolean value) {
+        this.isDed = value;
+        Components.CHAIN_STATE.sync(this.provider);
+    }
+
+    @Override
     public void readFromNbt(CompoundTag tag) {
         if (tag.contains("IsAlt")) {
             this.isAlt = tag.getBoolean("IsAlt");
@@ -76,6 +87,10 @@ public class ChainStateComponent implements ChainStateInterface, AutoSyncedCompo
             this.index = tag.getInt("Index");
         }
 
+        if (tag.contains("IsDed")) {
+            this.isDed = tag.getBoolean("IsDed");
+        }
+
         Components.CHAIN_STATE.sync(this.provider);
     }
 
@@ -85,5 +100,6 @@ public class ChainStateComponent implements ChainStateInterface, AutoSyncedCompo
         tag.putBoolean("IsAlt", isAlt());
         tag.putBoolean("IsRotated", isRotated());
         tag.putInt("Index", getIndex());
+        tag.putBoolean("IsDed", isDed());
     }
 }

@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ChainEntity extends Animal {
     public final AnimationState idleAnimationState = new AnimationState();
-    private boolean clientSide = false;
+    private boolean clientSide, isDed = false;
 
     public ChainEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
@@ -42,7 +42,12 @@ public class ChainEntity extends Animal {
     }
 
     public void destroy() {
+        this.isDed = true;
         this.discard();
+    }
+
+    public boolean isDed() {
+        return this.isDed;
     }
 
     @Override

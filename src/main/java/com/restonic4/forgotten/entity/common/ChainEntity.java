@@ -41,6 +41,10 @@ public class ChainEntity extends Animal {
         }
     }
 
+    public void destroy() {
+        this.discard();
+    }
+
     @Override
     public boolean hurt(DamageSource damageSource, float f) {
         return false;
@@ -103,6 +107,14 @@ public class ChainEntity extends Animal {
         this.setYRot(rotated ? 90 : 0);
     }
 
+    public int getIndex() {
+        return Components.CHAIN_STATE.get(this).getIndex();
+    }
+
+    public void setIndex(int index) {
+        Components.CHAIN_STATE.get(this).setIndex(index);
+    }
+
     @Override
     public float getVisualRotationYInDegrees() {
         return isRotated() ? 90 : 0;
@@ -111,5 +123,10 @@ public class ChainEntity extends Animal {
     @Override
     public float getYHeadRot() {
         return isRotated() ? 90 : 0;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "ChainEntity{index=" + getIndex() + "}";
     }
 }

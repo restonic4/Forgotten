@@ -1,6 +1,8 @@
 package com.restonic4.forgotten.entity.common;
 
+import com.restonic4.forgotten.commdands.SetUpForgotten;
 import com.restonic4.forgotten.registries.common.ForgottenEntities;
+import com.restonic4.forgotten.saving.Components;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -55,6 +57,11 @@ public class SmallCoreEntity extends Animal {
         if (deSpawnTime == 0 && this.getHealth() - 1 <= 0) {
             deSpawnTime = currentTime + 2000;
 
+            if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
+                SetUpForgotten.killChainRow(serverLevel, this.getIndex());
+            }
+
+
             return currentTime >= deSpawnTime;
         }
 
@@ -100,5 +107,13 @@ public class SmallCoreEntity extends Animal {
     @Override
     public boolean isPushable() {
         return false;
+    }
+
+    public int getIndex() {
+        return Components.SMALL_CORE.get(this).getIndex();
+    }
+
+    public void setIndex(int index) {
+        Components.SMALL_CORE.get(this).setIndex(index);
     }
 }

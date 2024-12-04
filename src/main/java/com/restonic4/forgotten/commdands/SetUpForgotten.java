@@ -18,9 +18,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 public class SetUpForgotten {
+    private static int currentIndex = 0;
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("setup_forgotten")
@@ -40,28 +47,35 @@ public class SetUpForgotten {
         JsonDataManager dataManager = Forgotten.getDataManager();
         dataManager.save("center", pos);
 
-        generateSmallCore(serverLevel, new BlockPos(pos).offset(42, -2, 42));
-        generateSmallCore(serverLevel, new BlockPos(pos).offset(42, -2, -42));
-        generateSmallCore(serverLevel, new BlockPos(pos).offset(-42, -2, 42));
-        generateSmallCore(serverLevel, new BlockPos(pos).offset(-42, -2, -42));
+        try {
+            generateSmallCore(serverLevel, new BlockPos(pos).offset(42, -2, 42));
+            generateChain(serverLevel, new BlockPos(pos).offset(1, 22, 0), 56, new Vec3(1, 0, 0));
 
-        generateBigCore(serverLevel, new BlockPos(pos).offset(0, 22, 0));
+            generateSmallCore(serverLevel, new BlockPos(pos).offset(42, -2, -42));
+            generateChain(serverLevel, new BlockPos(pos).offset(0, 22, -1), 56, new Vec3(0, 0, -1));
 
-        generateChain(serverLevel, new BlockPos(pos).offset(1, 22, 0), 56, new Vec3(1, 0, 0));
-        generateChain(serverLevel, new BlockPos(pos).offset(-1, 22, 0), 56, new Vec3(-1, 0, 0));
-        generateChain(serverLevel, new BlockPos(pos).offset(0, 22, 1), 56, new Vec3(0, 0, 1));
-        generateChain(serverLevel, new BlockPos(pos).offset(0, 22, -1), 56, new Vec3(0, 0, -1));
+            generateSmallCore(serverLevel, new BlockPos(pos).offset(-42, -2, 42));
+            generateChain(serverLevel, new BlockPos(pos).offset(-1, 22, 0), 56, new Vec3(-1, 0, 0));
 
-        /*
-        generateChain(serverLevel, new BlockPos(pos).offset(0, 17, 0), 15, new Vec3(0, 1, 0));
-        generateChain(serverLevel, new BlockPos(pos).offset(0, 15, 0), 15, new Vec3(0, -1, 0));
-        */
+            generateSmallCore(serverLevel, new BlockPos(pos).offset(-42, -2, -42));
+            generateChain(serverLevel, new BlockPos(pos).offset(0, 22, 1), 56, new Vec3(0, 0, 1));
+
+            generateBigCore(serverLevel, new BlockPos(pos).offset(0, 22, 0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
 
         return 1;
     }
 
     private static void generateSmallCore(ServerLevel serverLevel, BlockPos position) {
         SmallCoreEntity entity = new SmallCoreEntity(ForgottenEntities.SMALL_CORE, serverLevel);
+        entity.setIndex(currentIndex);
+
+        currentIndex++;
+
         serverLevel.addFreshEntity(entity);
         entity.setPos(position.getCenter());
 
@@ -98,6 +112,9 @@ public class SetUpForgotten {
         entity.setVertical(isVertical);
         entity.setAlt(isAlt);
         entity.setRotated(isRotated);
+        entity.setIndex(currentIndex);
+
+        currentIndex++;
 
         if (isAlt) {
             if (isVertical) {
@@ -109,5 +126,43 @@ public class SetUpForgotten {
 
         serverLevel.addFreshEntity(entity);
         entity.setPos(position);
+    }
+
+    public static void killChainRow(ServerLevel serverLevel, int coreIndex) {
+        Iterable<Entity> entities = serverLevel.getAllEntities();
+
+        List<ChainEntity> chains = new ArrayList<>();
+
+        for (Entity entity : entities) {
+            if (entity instanceof ChainEntity chainEntity) {
+                chains.add(chainEntity);
+            }
+        }
+
+        chains.sort(Comparator.comparingInt(ChainEntity::getIndex));
+
+        new Thread(() -> {
+            for (ChainEntity chainEntity : chains) {
+                if (chainEntity.getIndex() >= coreIndex && chainEntity.getIndex() <= coreIndex + 22) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (Exception ignored) {}
+
+                    chainEntity.destroy();
+                }
+            }
+
+            chains.sort(Comparator.comparingInt(ChainEntity::getIndex).reversed());
+
+            for (ChainEntity chainEntity : chains) {
+                if (chainEntity.getIndex() > coreIndex + 22 && chainEntity.getIndex() <= coreIndex + 78) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (Exception ignored) {}
+
+                    chainEntity.destroy();
+                }
+            }
+        }).start();
     }
 }

@@ -36,7 +36,8 @@
   "accessWidener": "mod.accesswidener",
   "custom": {
     "cardinal-components": [
-      "forgotten:chain_state"
+      "forgotten:chain_state",
+      "forgotten:small_core"
     ]
   }
 }

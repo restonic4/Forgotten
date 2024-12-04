@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 
 public class ChainStateComponent implements ChainStateInterface, AutoSyncedComponent {
     private boolean isAlt, isVertical, isRotated;
+    private int index;
 
     private final ChainEntity provider;
 
@@ -47,6 +48,17 @@ public class ChainStateComponent implements ChainStateInterface, AutoSyncedCompo
     }
 
     @Override
+    public int getIndex() {
+        return this.index;
+    }
+
+    @Override
+    public void setIndex(int value) {
+        this.index = value;
+        Components.CHAIN_STATE.sync(this.provider);
+    }
+
+    @Override
     public void readFromNbt(CompoundTag tag) {
         if (tag.contains("IsAlt")) {
             this.isAlt = tag.getBoolean("IsAlt");
@@ -60,6 +72,10 @@ public class ChainStateComponent implements ChainStateInterface, AutoSyncedCompo
             this.isRotated = tag.getBoolean("IsRotated");
         }
 
+        if (tag.contains("Index")) {
+            this.index = tag.getInt("Index");
+        }
+
         Components.CHAIN_STATE.sync(this.provider);
     }
 
@@ -68,5 +84,6 @@ public class ChainStateComponent implements ChainStateInterface, AutoSyncedCompo
         tag.putBoolean("IsVertical", isVertical());
         tag.putBoolean("IsAlt", isAlt());
         tag.putBoolean("IsRotated", isRotated());
+        tag.putInt("Index", getIndex());
     }
 }

@@ -83,8 +83,8 @@ public class ChainModel <T extends ChainEntity> extends HierarchicalModel<T> {
 
         this.animate(entity.idleAnimationState, animationDefinition, ageInTicks);
 
-        if (entity.isD) {
-
+        if (entity.isDed()) {
+            this.animate(entity.dedAnimationState, ChainAnim.BREAK, ageInTicks);
         }
     }
 }

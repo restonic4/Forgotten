@@ -4,6 +4,7 @@ import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.saving.Components;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ChainEntity extends Animal {
     public final AnimationState idleAnimationState = new AnimationState();
+    public final AnimationState dedAnimationState = new AnimationState();
     private boolean clientSide, isDed = false;
 
     public ChainEntity(EntityType<? extends Animal> entityType, Level level) {
@@ -27,6 +29,7 @@ public class ChainEntity extends Animal {
 
     private void setupAnimationStates() {
         this.idleAnimationState.animateWhen(true, this.tickCount);
+        this.dedAnimationState.animateWhen(true, this.tickCount);
     }
 
     @Override
@@ -43,7 +46,14 @@ public class ChainEntity extends Animal {
 
     public void destroy() {
         this.isDed = true;
-        this.discard();
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (Exception ignored) {}
+
+            this.discard();
+        }).start();
     }
 
     public boolean isDed() {

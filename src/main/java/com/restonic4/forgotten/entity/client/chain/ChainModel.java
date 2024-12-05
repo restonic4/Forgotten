@@ -85,7 +85,6 @@ public class ChainModel <T extends ChainEntity> extends HierarchicalModel<T> {
 
         if (entity.isDed()) {
             this.animate(entity.dedAnimationState, ChainAnim.BREAK, entity.currentDeathTickAnim);
-            entity.currentDeathTickAnim++;
         }
     }
 }

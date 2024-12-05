@@ -93,20 +93,22 @@ public class ItemInteractions {
 
     public static void playerPickup(ItemEntity entity, Player player) {
         if (!entity.level().isClientSide()) {
-            ItemStack itemStack = entity.getItem();
-            Item item = itemStack.getItem();
-            int count = itemStack.getCount();
+            Minecraft.getInstance().execute(() -> {
+                ItemStack itemStack = entity.getItem();
+                Item item = itemStack.getItem();
+                int count = itemStack.getCount();
 
-            if (entity.pickupDelay == 0 && (entity.target == null || entity.target.equals(player.getUUID())) && player.getInventory().add(itemStack)) {
-                player.take(entity, count);
-                if (itemStack.isEmpty()) {
-                    entity.discard();
-                    itemStack.setCount(count);
+                if (entity.pickupDelay == 0 && (entity.target == null || entity.target.equals(player.getUUID())) && player.getInventory().add(itemStack)) {
+                    player.take(entity, count);
+                    if (itemStack.isEmpty()) {
+                        entity.discard();
+                        itemStack.setCount(count);
+                    }
+
+                    player.awardStat(Stats.ITEM_PICKED_UP.get(item), count);
+                    player.onItemPickup(entity);
                 }
-
-                player.awardStat(Stats.ITEM_PICKED_UP.get(item), count);
-                player.onItemPickup(entity);
-            }
+            });
         }
     }
 

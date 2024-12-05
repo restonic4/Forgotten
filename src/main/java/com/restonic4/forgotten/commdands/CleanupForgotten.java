@@ -1,14 +1,19 @@
 package com.restonic4.forgotten.commdands;
 
+import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.restonic4.forgotten.entity.common.ChainEntity;
 import com.restonic4.forgotten.entity.common.SmallCoreEntity;
+import com.restonic4.forgotten.util.ServerCache;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CleanupForgotten {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -21,18 +26,17 @@ public class CleanupForgotten {
     private static int execute(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         CommandSourceStack source = context.getSource();
 
-        ServerLevel serverLevel = source.getLevel();
-
-        Iterable<Entity> entities = serverLevel.getAllEntities();
-
-        for (Entity entity : entities) {
-            if (entity instanceof ChainEntity chain) {
-                chain.discard();
+        try {
+            for (ChainEntity entity : ServerCache.chains) {
+                entity.discard();
             }
 
-            if (entity instanceof SmallCoreEntity smallCoreEntity) {
-                smallCoreEntity.discard();
+            for (SmallCoreEntity entity : ServerCache.cores) {
+                entity.discard();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
         }
 
         return 1;

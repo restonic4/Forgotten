@@ -1,29 +1,29 @@
 package com.restonic4.forgotten.commdands;
 
+import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.entity.common.ChainEntity;
 import com.restonic4.forgotten.entity.common.SmallCoreEntity;
-import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.common.ForgottenEntities;
 import com.restonic4.forgotten.saving.JsonDataManager;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import com.restonic4.forgotten.util.ServerCache;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class SetUpForgotten {
     private static int currentIndex = 0;
@@ -129,38 +129,38 @@ public class SetUpForgotten {
     }
 
     public static void killChainRow(ServerLevel serverLevel, int coreIndex) {
-        Iterable<Entity> entities = serverLevel.getAllEntities();
-
-        List<ChainEntity> chains = new ArrayList<>();
-
-        for (Entity entity : entities) {
-            if (entity instanceof ChainEntity chainEntity) {
-                chains.add(chainEntity);
-            }
-        }
-
-        chains.sort(Comparator.comparingInt(ChainEntity::getIndex));
-
         new Thread(() -> {
-            for (ChainEntity chainEntity : chains) {
-                if (chainEntity.getIndex() >= coreIndex && chainEntity.getIndex() <= coreIndex + 22) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (Exception ignored) {}
+            List<ChainEntity> chains = ServerCache.chains.stream()
+                    .filter(Objects::nonNull)
+                    .toList();
 
-                    chainEntity.destroy();
+            for (int i = coreIndex; i <= coreIndex + 22; i++) {
+                for (int j = 0; j < chains.size(); j++) {
+                    ChainEntity chainEntity = chains.get(j);
+
+                    if (chainEntity != null && chainEntity.getIndex() == i) {
+                        try {
+                            Thread.sleep(300);
+                            chainEntity.destroy();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
 
-            chains.sort(Comparator.comparingInt(ChainEntity::getIndex).reversed());
+            for (int i = coreIndex + 78; i >= coreIndex + 22; i--) {
+                for (int j = 0; j < chains.size(); j++) {
+                    ChainEntity chainEntity = chains.get(j);
 
-            for (ChainEntity chainEntity : chains) {
-                if (chainEntity.getIndex() > coreIndex + 22 && chainEntity.getIndex() <= coreIndex + 78) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (Exception ignored) {}
-
-                    chainEntity.destroy();
+                    if (chainEntity != null && chainEntity.getIndex() == i) {
+                        try {
+                            Thread.sleep(300);
+                            chainEntity.destroy();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }).start();

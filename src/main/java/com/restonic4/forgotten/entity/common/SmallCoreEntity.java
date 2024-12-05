@@ -3,6 +3,7 @@ package com.restonic4.forgotten.entity.common;
 import com.restonic4.forgotten.commdands.SetUpForgotten;
 import com.restonic4.forgotten.registries.common.ForgottenEntities;
 import com.restonic4.forgotten.saving.Components;
+import com.restonic4.forgotten.util.ServerCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -11,6 +12,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SmallCoreEntity extends Animal {
@@ -36,6 +39,8 @@ public class SmallCoreEntity extends Animal {
                 setupAnimationStates();
             }
         } else {
+            ServerCache.addCoreIfPossible(this);
+
             if (deSpawnTime != 0) {
                 long currentTime = System.currentTimeMillis();
 
@@ -47,7 +52,7 @@ public class SmallCoreEntity extends Animal {
     }
 
     @Override
-    public boolean hurt(DamageSource damageSource, float f) {
+    public boolean hurt(@NotNull DamageSource damageSource, float f) {
         long currentTime = System.currentTimeMillis();
 
         if (currentTime < recoverTime) {

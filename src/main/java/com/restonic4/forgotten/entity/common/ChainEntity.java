@@ -2,6 +2,7 @@ package com.restonic4.forgotten.entity.common;
 
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.saving.Components;
+import com.restonic4.forgotten.util.ServerCache;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -9,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -40,22 +42,22 @@ public class ChainEntity extends Animal {
 
         setNoAi(true);
 
+        if (isDed()) {
+            currentDeathTickAnim++;
+        }
+
         if (this.level().isClientSide()) {
             clientSide = true;
             setupAnimationStates();
+        } else {
+            ServerCache.addChainIfPossible(this);
         }
     }
 
     public void destroy() {
         setDed(true);
 
-        new Thread(() -> {
-            try {
-                Thread.sleep(500);
-            } catch (Exception ignored) {}
-
-            this.discard();
-        }).start();
+        this.playSound(SoundEvents.CHAIN_BREAK);
     }
 
     @Override

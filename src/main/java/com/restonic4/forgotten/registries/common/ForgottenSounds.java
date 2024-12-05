@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Random;
 
 public class ForgottenSounds {
+    public static SoundEvent ELD_UNKNOWN;
+
     public static SoundEvent DEATH_SOUND;
     public static SoundEvent REJECT;
     public static SoundEvent WAVE;
@@ -35,6 +37,9 @@ public class ForgottenSounds {
     public static SoundEvent WHISPER8;
 
     public static void register() {
+        ResourceLocation eldUnknownLocation = new ResourceLocation(Forgotten.MOD_ID, "eld_unknown");
+        ELD_UNKNOWN = Registry.register(BuiltInRegistries.SOUND_EVENT, eldUnknownLocation, SoundEvent.createVariableRangeEvent(eldUnknownLocation));
+
         ResourceLocation deathLocation = new ResourceLocation(Forgotten.MOD_ID, "death");
         DEATH_SOUND = Registry.register(BuiltInRegistries.SOUND_EVENT, deathLocation, SoundEvent.createVariableRangeEvent(deathLocation));
 

@@ -1,4 +1,13 @@
 {
+  "eld_unknown": {
+    "sounds": [
+      {
+        "name": "forgotten:eld_unknown",
+        "stream": false
+      }
+    ]
+  },
+
   "death": {
     "sounds": [
       {

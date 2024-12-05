@@ -23,7 +23,8 @@
     "client.GuiMixin",
     "client.ItemEntityRendererMixin",
     "client.LevelRendererMixin",
-    "client.MinecraftMixin"
+    "client.MinecraftMixin",
+    "client.TitleScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

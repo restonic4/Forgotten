@@ -51,7 +51,11 @@ public class JsonDataManager {
     }
 
     public void save(String key, Object value) {
-        data.put(key, value);
+        if (value instanceof BlockPos blockPos) {
+            data.put(key, new Vector3Wrapper(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+        } else {
+            data.put(key, value);
+        }
     }
 
     public Object get(String key) {
@@ -61,8 +65,8 @@ public class JsonDataManager {
     public BlockPos getBlockPos(String key) {
         Object rawData = data.get(key);
 
-        if (rawData instanceof BlockPos blockPos) {
-            return blockPos;
+        if (rawData instanceof Vector3Wrapper vector3Wrapper) {
+            return vector3Wrapper.toBlockPos();
         } else {
             LinkedTreeMap<String, Double> foundData = (LinkedTreeMap<String, Double>) data.get(key);
             return new BlockPos(foundData.get("x").intValue(), foundData.get("y").intValue(), foundData.get("z").intValue());
@@ -75,5 +79,37 @@ public class JsonDataManager {
 
     public void delete(String key) {
         data.remove(key);
+    }
+
+    private class Vector3Wrapper {
+        private float x, y, z;
+
+        public Vector3Wrapper(float x, float y, float z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public void set(float x, float y, float z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public float x() {
+            return this.x;
+        }
+
+        public float y() {
+            return this.y;
+        }
+
+        public float z() {
+            return this.z;
+        }
+
+        public BlockPos toBlockPos() {
+            return new BlockPos((int) this.x, (int) this.y, (int) this.z);
+        }
     }
 }

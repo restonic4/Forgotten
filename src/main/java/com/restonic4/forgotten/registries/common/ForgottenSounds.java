@@ -18,6 +18,7 @@ public class ForgottenSounds {
     public static SoundEvent WAVE;
     public static SoundEvent EXPLOSION;
     public static SoundEvent WAVE_EXPLOSION;
+    public static SoundEvent BRICK_EXPLOSION;
 
     public static SoundEvent FIREBALL1;
     public static SoundEvent FIREBALL2;
@@ -51,6 +52,9 @@ public class ForgottenSounds {
 
         ResourceLocation explosionLocation = new ResourceLocation(Forgotten.MOD_ID, "explosion");
         EXPLOSION = Registry.register(BuiltInRegistries.SOUND_EVENT, explosionLocation, SoundEvent.createVariableRangeEvent(explosionLocation));
+
+        ResourceLocation brickExplosionLocation = new ResourceLocation(Forgotten.MOD_ID, "brick_explosion");
+        BRICK_EXPLOSION = Registry.register(BuiltInRegistries.SOUND_EVENT, brickExplosionLocation, SoundEvent.createVariableRangeEvent(brickExplosionLocation));
 
         ResourceLocation fireball1Location = new ResourceLocation(Forgotten.MOD_ID, "fireball1");
         FIREBALL1 = Registry.register(BuiltInRegistries.SOUND_EVENT, fireball1Location, SoundEvent.createVariableRangeEvent(fireball1Location));

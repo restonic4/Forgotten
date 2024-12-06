@@ -62,6 +62,34 @@ public class JsonDataManager {
         return data.get(key);
     }
 
+    public int getInt(String key) {
+        Object dataObj = data.get(key);
+
+        if (dataObj == null) {
+            return 0;
+        }
+
+        if (dataObj instanceof Double d) {
+            return d.intValue();
+        }
+
+        return (int) dataObj;
+    }
+
+    public boolean getBoolean(String key) {
+        Object dataObj = data.get(key);
+
+        if (dataObj == null) {
+            return false;
+        }
+
+        if (dataObj instanceof Boolean b) {
+            return b;
+        }
+
+        return (boolean) dataObj;
+    }
+
     public BlockPos getBlockPos(String key) {
         Object rawData = data.get(key);
 

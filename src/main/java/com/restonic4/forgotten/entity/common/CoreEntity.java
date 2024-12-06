@@ -2,28 +2,30 @@ package com.restonic4.forgotten.entity.common;
 
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.commdands.SetUpForgotten;
-import com.restonic4.forgotten.registries.common.ForgottenEntities;
+import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.saving.Components;
 import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.util.ServerCache;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SmallCoreEntity extends Animal {
+public class CoreEntity extends Animal {
     public final AnimationState idleAnimationState = new AnimationState();
     private long recoverTime, deSpawnTime;
-    public boolean done = false;
 
-    public SmallCoreEntity(EntityType<? extends Animal> entityType, Level level) {
+    public CoreEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
     }
 
@@ -42,7 +44,7 @@ public class SmallCoreEntity extends Animal {
                 setupAnimationStates();
             }
         } else {
-            ServerCache.addCoreIfPossible(this);
+            ServerCache.addMainCoreIfPossible(this);
 
             if (deSpawnTime != 0) {
                 long currentTime = System.currentTimeMillis();
@@ -62,13 +64,15 @@ public class SmallCoreEntity extends Animal {
             return false;
         }
 
+        if (this.level() instanceof ServerLevel && Forgotten.isSmallCoreLeft()) {
+            return false;
+        }
+
         if (deSpawnTime == 0 && this.getHealth() - 1 <= 0) {
             deSpawnTime = currentTime + 2000;
 
-            if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel && !done) {
-                done = true;
-
-                SetUpForgotten.killChainRow(serverLevel, this.getIndex());
+            if (!this.level().isClientSide()) {
+                Forgotten.startMainRitual((ServerLevel) this.level());
             }
 
             return currentTime >= deSpawnTime;
@@ -86,6 +90,15 @@ public class SmallCoreEntity extends Animal {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 3)
                 .add(Attributes.MOVEMENT_SPEED, 0f);
+    }
+
+    public void startFallAnimation() {
+        this.setPos(new Vec3(this.position().x, this.position().y - 21.5f, this.position().z));
+
+        for (ServerPlayer serverPlayer : this.level().getServer().getPlayerList().getPlayers()) {
+            FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
+            ServerPlayNetworking.send(serverPlayer, PacketManager.CORE_FALL, friendlyByteBuf);
+        }
     }
 
     @Override

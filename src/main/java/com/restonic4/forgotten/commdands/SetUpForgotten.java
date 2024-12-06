@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.entity.common.ChainEntity;
+import com.restonic4.forgotten.entity.common.CoreEntity;
 import com.restonic4.forgotten.entity.common.SmallCoreEntity;
 import com.restonic4.forgotten.registries.common.ForgottenEntities;
 import com.restonic4.forgotten.saving.JsonDataManager;
@@ -46,6 +47,11 @@ public class SetUpForgotten {
 
         JsonDataManager dataManager = Forgotten.getDataManager();
         dataManager.save("center", pos);
+        dataManager.save("SmallCoresDefeated", 0);
+        dataManager.save("MainCoreFallAnimation", false);
+        dataManager.save("Hardcore", false);
+
+        Forgotten.resetCoreAnimation();
 
         try {
             generateSmallCore(serverLevel, new BlockPos(pos).offset(42, -2, 42));
@@ -60,12 +66,10 @@ public class SetUpForgotten {
             generateSmallCore(serverLevel, new BlockPos(pos).offset(-42, -2, -42));
             generateChain(serverLevel, new BlockPos(pos).offset(0, 22, 1), 56, new Vec3(0, 0, 1));
 
-            generateBigCore(serverLevel, new BlockPos(pos).offset(0, 22, 0));
+            generateBigCore(serverLevel, new BlockPos(pos).offset(0, 21, 0));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
 
         return 1;
     }
@@ -83,7 +87,7 @@ public class SetUpForgotten {
     }
 
     private static void generateBigCore(ServerLevel serverLevel, BlockPos position) {
-        SmallCoreEntity entity = new SmallCoreEntity(ForgottenEntities.SMALL_CORE, serverLevel);
+        CoreEntity entity = new CoreEntity(ForgottenEntities.CORE, serverLevel);
         serverLevel.addFreshEntity(entity);
         entity.setPos(position.getCenter());
     }
@@ -163,6 +167,12 @@ public class SetUpForgotten {
                     }
                 }
             }
+
+            JsonDataManager dataManager = Forgotten.getDataManager();
+
+            int defeated = dataManager.getInt("SmallCoresDefeated");
+
+            dataManager.save("SmallCoresDefeated", defeated + 1);
         }).start();
     }
 }

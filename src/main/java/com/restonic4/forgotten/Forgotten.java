@@ -3,10 +3,14 @@ package com.restonic4.forgotten;
 import com.mojang.authlib.GameProfile;
 import com.restonic4.forgotten.commdands.*;
 import com.restonic4.forgotten.compatibility.voicechat.Plugin;
+import com.restonic4.forgotten.entity.common.ChainEntity;
+import com.restonic4.forgotten.entity.common.SmallCoreEntity;
 import com.restonic4.forgotten.item.PlayerSoul;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.common.*;
 import com.restonic4.forgotten.saving.JsonDataManager;
+import com.restonic4.forgotten.util.GriefingPrevention;
+import com.restonic4.forgotten.util.ServerCache;
 import io.github.fabricators_of_create.porting_lib.event.client.InteractEvents;
 import me.drex.vanish.api.VanishEvents;
 import me.drex.vanish.config.ConfigManager;
@@ -27,6 +31,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,6 +51,7 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Random;
@@ -56,6 +62,7 @@ public class Forgotten implements ModInitializer {
     private static final JsonDataManager dataManager = new JsonDataManager();
     int ticksLeft = 0;
     int tickSaveCounter = 0;
+
     @Override
     public void onInitialize() {
         ForgottenSounds.register();
@@ -65,6 +72,7 @@ public class Forgotten implements ModInitializer {
         ForgottenItems.register();
         ForgottenCreativeTabs.register();
         PacketManager.registerClientToServer();
+        GriefingPrevention.register();
     }
 
     private void registerEvents() {
@@ -78,6 +86,7 @@ public class Forgotten implements ModInitializer {
             TestMainRitual.register(dispatcher);
             SetUpForgotten.register(dispatcher);
             CleanupForgotten.register(dispatcher);
+            KillOne.register(dispatcher);
             //Lodestone.register(dispatcher);
         });
 
@@ -86,6 +95,20 @@ public class Forgotten implements ModInitializer {
             if (tickSaveCounter >= 3000) {
                 dataManager.saveToDisk(server);
                 tickSaveCounter = 0;
+            }
+
+            if (!isSmallCoreLeft() && ServerCache.getMainCore() != null && !dataManager.getBoolean("MainCoreFallAnimation")) {
+                dataManager.save("MainCoreFallAnimation", true);
+
+                for (ChainEntity entity : ServerCache.chains) {
+                    entity.discard();
+                }
+
+                for (SmallCoreEntity entity : ServerCache.cores) {
+                    entity.discard();
+                }
+
+                ServerCache.getMainCore().startFallAnimation();
             }
         });
 
@@ -96,20 +119,8 @@ public class Forgotten implements ModInitializer {
             }
         });
 
-        InteractEvents.ATTACK.register((minecraft, hitResult) -> {
-            if (hitResult.getType() == HitResult.Type.ENTITY) {
-                Entity entity = ((EntityHitResult)hitResult).getEntity();
-
-                System.out.println("Attacked " + entity.getName());
-
-                return InteractionResult.PASS;
-            }
-
-            return InteractionResult.PASS;
-        });
-
         ServerLivingEntityEvents.ALLOW_DEATH.register((livingEntity, damageSource, damageAmount) -> {
-            if (livingEntity instanceof ServerPlayer serverPlayer && isVanishLoaded() && !isPlayerGoingToUseTotem(serverPlayer)) {
+            if (livingEntity instanceof ServerPlayer serverPlayer && isVanishLoaded() && !isPlayerGoingToUseTotem(serverPlayer) && dataManager.getBoolean("Hardcore")) {
                 regeneratePlayer(serverPlayer);
 
                 if (!VanishManager.isVanished(serverPlayer)) {
@@ -149,41 +160,68 @@ public class Forgotten implements ModInitializer {
                 friendlyByteBuf.writeBoolean(true);
                 ServerPlayNetworking.send(serverPlayer, PacketManager.DEATH, friendlyByteBuf);
             }
+
+            FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
+            friendlyByteBuf.writeBoolean(dataManager.getBoolean("Hardcore"));
+            ServerPlayNetworking.send(serverPlayer, PacketManager.HARDCORE, friendlyByteBuf);
         });
 
         ServerTickEvents.START_SERVER_TICK.register((server) -> {
-            if (!isVanishLoaded()) {
-                return;
-            }
-
-            if (shouldPlayRareCreepySound()) {
+            if (!ServerCache.repulsionPoints.isEmpty()) {
                 List<ServerPlayer> players = server.getPlayerList().getPlayers();
                 for (int i = 0; i < players.size(); i++) {
                     ServerPlayer serverPlayer = players.get(i);
+                    Vec3 playerPos = serverPlayer.position();
 
-                    if (VanishManager.isVanished(serverPlayer)) {
-                        int finalI = i;
+                    for (Vec3 vec3 : ServerCache.repulsionPoints) {
+                        double distance = playerPos.distanceTo(vec3);
 
-                        new Thread(() -> {
-                            try {
-                                Thread.sleep(new Random().nextInt(1000 * finalI));
-                                server.execute(() -> {
-                                    serverPlayer.level().playSound(null, serverPlayer.blockPosition(), ForgottenSounds.getRandomWhisper(), SoundSource.PLAYERS, 0.25f, 1);
-                                });
-                            } catch (InterruptedException ignored) {}
-                        }).start();
+                        if (distance < 8) {
+                            Vec3 direction = playerPos.subtract(vec3).normalize();
+
+                            double forceMagnitude = Math.pow((8 - distance) / 8, 2);
+
+                            double pushStrength = forceMagnitude * 10;
+
+                            Vec3 pushForce = direction.multiply(new Vec3(pushStrength, pushStrength, pushStrength));
+
+                            serverPlayer.hurtMarked = true;
+                            serverPlayer.addDeltaMovement(pushForce);
+                        }
                     }
                 }
             }
 
-            if (ticksLeft > 0) {
-                ticksLeft--;
-                return;
+            if (isVanishLoaded()) {
+                if (shouldPlayRareCreepySound()) {
+                    List<ServerPlayer> players = server.getPlayerList().getPlayers();
+                    for (int i = 0; i < players.size(); i++) {
+                        ServerPlayer serverPlayer = players.get(i);
+
+                        if (VanishManager.isVanished(serverPlayer)) {
+                            int finalI = i;
+
+                            new Thread(() -> {
+                                try {
+                                    Thread.sleep(new Random().nextInt(1000 * finalI));
+                                    server.execute(() -> {
+                                        serverPlayer.level().playSound(null, serverPlayer.blockPosition(), ForgottenSounds.getRandomWhisper(), SoundSource.PLAYERS, 0.25f, 1);
+                                    });
+                                } catch (InterruptedException ignored) {}
+                            }).start();
+                        }
+                    }
+                }
+
+                if (ticksLeft > 0) {
+                    ticksLeft--;
+                    return;
+                }
+
+                ticksLeft = 10;
+
+                applyVanishEffects(server);
             }
-
-            ticksLeft = 10;
-
-            applyVanishEffects(server);
         });
 
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((livingEntity, damageSource, amount) -> {
@@ -227,6 +265,16 @@ public class Forgotten implements ModInitializer {
         }
     }
 
+    public static void resetCoreAnimation() {
+        dataManager.save("MainCoreFallAnimation", false);
+    }
+
+    public static boolean isSmallCoreLeft() {
+        JsonDataManager dataManager = Forgotten.getDataManager();
+
+        return dataManager.getInt("SmallCoresDefeated") < 4;
+    }
+
     private static boolean shouldPlayRareCreepySound() {
         Random random = new Random();
         int randomNumber = random.nextInt(3000);
@@ -237,6 +285,34 @@ public class Forgotten implements ModInitializer {
         Random random = new Random();
         int randomNumber = random.nextInt(1000);
         return randomNumber < 8;
+    }
+
+    public static void startMainRitual(ServerLevel serverLevel) {
+        if (!dataManager.getBoolean("Hardcore")) {
+            dataManager.save("Hardcore", true);
+
+            ServerCache.addRepulsionPointIfPossible(dataManager.getBlockPos("center").getCenter());
+
+            for (ServerPlayer serverPlayer : serverLevel.getServer().getPlayerList().getPlayers()) {
+                JsonDataManager dataManager = Forgotten.getDataManager();
+
+                if (!dataManager.contains("center")) {
+                    throw new RuntimeException("Forgotten has not been initialized correctly");
+                }
+
+                FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
+                friendlyByteBuf.writeBlockPos(dataManager.getBlockPos("center").offset(0, -8, 0));
+                ServerPlayNetworking.send(serverPlayer, PacketManager.MAIN_RITUAL, friendlyByteBuf);
+            }
+
+            new Thread(() -> {
+                try {
+                    Thread.sleep(30000);
+                } catch (Exception ignored) {}
+
+                ServerCache.removeRepulsionPointIfPossible(dataManager.getBlockPos("center").getCenter());
+            }).start();
+        }
     }
 
     private static void placePlayerSoul(ServerPlayer victim) {

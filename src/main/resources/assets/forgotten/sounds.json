@@ -8,6 +8,15 @@
     ]
   },
 
+  "brick_explosion": {
+    "sounds": [
+      {
+        "name": "forgotten:brick_explosion",
+        "stream": false
+      }
+    ]
+  },
+
   "death": {
     "sounds": [
       {

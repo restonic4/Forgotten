@@ -5,6 +5,7 @@ import com.restonic4.forgotten.client.DeathUtils;
 import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.util.GriefingPrevention;
 import com.restonic4.forgotten.util.ServerCache;
+import com.restonic4.forgotten.util.helpers.RandomUtil;
 import com.restonic4.forgotten.util.helpers.SimpleEffectHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -86,13 +87,15 @@ public abstract class LevelMixin {
                 if (blockState != originalBlockState) {
                     new Thread(() -> {
                         try {
-                            Thread.sleep(2000);
+                            Thread.sleep(RandomUtil.randomBetween(2000, 8000));
                         } catch (Exception ignored) {}
 
-                        serverLevel.getServer().execute(() -> {
-                            SimpleEffectHelper.invalidHeadPlacement(serverLevel, blockPos);
-                            serverLevel.setBlockAndUpdate(blockPos, originalBlockState);
-                        });
+                        if (serverLevel != null) {
+                            serverLevel.getServer().execute(() -> {
+                                SimpleEffectHelper.invalidHeadPlacement(serverLevel, blockPos);
+                                serverLevel.setBlockAndUpdate(blockPos, originalBlockState);
+                            });
+                        }
                     }).start();
                 }
             }

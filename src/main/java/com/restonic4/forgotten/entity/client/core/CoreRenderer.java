@@ -15,8 +15,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import team.lodestar.lodestone.handlers.ScreenshakeHandler;
 import team.lodestar.lodestone.systems.easing.Easing;
@@ -65,11 +71,76 @@ public class CoreRenderer extends MobRenderer<CoreEntity, CoreModel<CoreEntity>>
                 ScreenshakeHandler.addScreenshake(beamShake);
 
                 entity.level().playLocalSound(entity.position().x, entity.position().y, entity.position().z, ForgottenSounds.BRICK_EXPLOSION, SoundSource.BLOCKS, 2, 1, false);
+
+                spawnParticles(entity);
+
+                spawnParticles(entity.level(), entity.position().add(0, 0, 1));
+                spawnParticles(entity.level(), entity.position().add(1, 0, 1));
+                spawnParticles(entity.level(), entity.position().add(1, 0, 0));
+                spawnParticles(entity.level(), entity.position().add(1, 0, -1));
+                spawnParticles(entity.level(), entity.position().add(0, 0, -1));
+                spawnParticles(entity.level(), entity.position().add(-1, 0, -1));
+                spawnParticles(entity.level(), entity.position().add(-1, 0, 0));
+                spawnParticles(entity.level(), entity.position().add(-1, 0, 1));
             }
         }
 
         poseStack.scale(1.5f, 1.5f, 1.5f);
 
         super.render(entity, f, g, poseStack, vertexConsumerProvider, i);
+    }
+
+    private void spawnParticles(Level level, Vec3 origin) {
+        int particleCount = 100;
+
+        BlockPos blockBelow = new BlockPos((int) origin.x, (int) origin.y, (int) origin.z).below();
+        BlockState blockStateBelow = level.getBlockState(blockBelow);
+
+        for (int i = 0; i < particleCount; i++) {
+            double theta = Math.random() * 2 * Math.PI;
+            double phi = Math.acos(2 * Math.random() - 1);
+            double r = Math.random() * 0.5;
+
+            double dx = r * Math.sin(phi) * Math.cos(theta);
+            double dy = r * Math.sin(phi) * Math.sin(theta);
+            double dz = r * Math.cos(phi);
+
+            double speedMultiplier = 1;
+            double vx = speedMultiplier * dx;
+            double vy = speedMultiplier * dy + 0.1;
+            double vz = speedMultiplier * dz;
+
+            level.addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockStateBelow),
+                    origin.x + dx, origin.y + dy, origin.z + dz,
+                    vx, vy, vz);
+        }
+    }
+
+    private void spawnParticles(Entity entity) {
+        BlockPos blockBelow = entity.blockPosition().below();
+        BlockState blockStateBelow = entity.level().getBlockState(blockBelow);
+
+        int particleCount = 100;
+        Level level = entity.level();
+        Vec3 origin = entity.position();
+
+        for (int i = 0; i < particleCount; i++) {
+            double theta = Math.random() * 2 * Math.PI;
+            double phi = Math.acos(2 * Math.random() - 1);
+            double r = Math.random() * 0.5;
+
+            double dx = r * Math.sin(phi) * Math.cos(theta);
+            double dy = r * Math.sin(phi) * Math.sin(theta);
+            double dz = r * Math.cos(phi);
+
+            double speedMultiplier = 1;
+            double vx = speedMultiplier * dx;
+            double vy = speedMultiplier * dy + 0.1;
+            double vz = speedMultiplier * dz;
+
+            level.addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockStateBelow),
+                    origin.x + dx, origin.y + dy, origin.z + dz,
+                    vx, vy, vz);
+        }
     }
 }

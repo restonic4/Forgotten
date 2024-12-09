@@ -1,23 +1,14 @@
 package com.restonic4.forgotten.mixin;
 
-import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.client.DeathUtils;
-import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.util.GriefingPrevention;
-import com.restonic4.forgotten.util.ServerCache;
-import com.restonic4.forgotten.util.helpers.RandomUtil;
-import com.restonic4.forgotten.util.helpers.SimpleEffectHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -72,31 +63,14 @@ public abstract class LevelMixin {
 
     @Inject(method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z", at = @At("HEAD"), cancellable = true)
     public void setBlock(BlockPos blockPos, BlockState blockState, int i, int j, CallbackInfoReturnable<Boolean> cir) {
-        JsonDataManager dataManager = Forgotten.getDataManager();
-        BlockPos pos = dataManager.getBlockPos("center");
+        Level level = (Level) (Object) this;
 
-        if (pos != null && !this.isClientSide()) {
-            ServerLevel serverLevel = (ServerLevel) (Level) (Object) this;
-
-            Vec3 blockPosVec = blockPos.getCenter();
-            double distance = blockPosVec.distanceTo(pos.getCenter());
-
-            if (distance <= 120) {
+        if (level instanceof ServerLevel serverLevel) {
+            if (GriefingPrevention.isInProtectedArea(blockPos)) {
                 BlockState originalBlockState = GriefingPrevention.getOriginalBlockAndRegister(blockPos, this.getBlockState(blockPos));
 
                 if (blockState != originalBlockState) {
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(RandomUtil.randomBetween(2000, 8000));
-                        } catch (Exception ignored) {}
-
-                        if (serverLevel != null) {
-                            serverLevel.getServer().execute(() -> {
-                                SimpleEffectHelper.invalidHeadPlacement(serverLevel, blockPos);
-                                serverLevel.setBlockAndUpdate(blockPos, originalBlockState);
-                            });
-                        }
-                    }).start();
+                    GriefingPrevention.onBlockModifiedInMainTemple(serverLevel, blockState, originalBlockState, blockPos);
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.restonic4.forgotten.util;
 
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.networking.PacketManager;
+import com.restonic4.forgotten.registries.common.ForgottenBlocks;
 import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
 import com.restonic4.forgotten.util.helpers.SimpleEffectHelper;
@@ -69,6 +70,10 @@ public class GriefingPrevention {
     public static void onBlockModifiedInMainTemple(Level level, BlockState newBlockstate, BlockState originalBlockState, BlockPos blockPos) {
         if (!level.isClientSide()) {
             ServerLevel serverLevel = (ServerLevel) level;
+
+            if (originalBlockState.getBlock() == Blocks.AIR && newBlockstate.getBlock() == ForgottenBlocks.ALTAR) {
+                return;
+            }
 
             new Thread(() -> {
                 try {

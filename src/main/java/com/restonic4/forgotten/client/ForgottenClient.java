@@ -5,6 +5,7 @@ import com.restonic4.forgotten.compatibility.exordium.Overrides;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.client.ForgottenEntityRenderers;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
+import com.restonic4.forgotten.registries.common.ForgottenBlocks;
 import com.restonic4.forgotten.registries.common.ForgottenParticleTypes;
 import com.restonic4.forgotten.util.helpers.CircleGenerator;
 import com.restonic4.forgotten.util.trash.TestingVars;
@@ -39,6 +40,7 @@ public class ForgottenClient implements ClientModInitializer {
         ForgottenShaderHolders.register();
         ForgottenParticleTypes.registerClient();
         ForgottenEntityRenderers.register();
+        ForgottenBlocks.registerClient();
 
         ClientPlayConnectionEvents.DISCONNECT.register((clientPacketListener, minecraft) -> {
             DeathUtils.setDeathValue(false);

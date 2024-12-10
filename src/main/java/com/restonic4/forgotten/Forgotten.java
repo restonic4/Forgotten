@@ -70,7 +70,7 @@ public class Forgotten implements ModInitializer {
         ForgottenEntities.register();
         ForgottenParticleTypes.registerCommon();
         ForgottenItems.register();
-        ForgottenBlocks.register();
+        ForgottenBlocks.registerCommon();
         ForgottenCreativeTabs.register();
         PacketManager.registerClientToServer();
         GriefingPrevention.register();
@@ -308,10 +308,14 @@ public class Forgotten implements ModInitializer {
 
             new Thread(() -> {
                 try {
-                    Thread.sleep(30000);
+                    Thread.sleep(28000);
                 } catch (Exception ignored) {}
 
                 serverLevel.setBlock(dataManager.getBlockPos("center"), ForgottenBlocks.ALTAR.defaultBlockState(), 3);
+
+                try {
+                    Thread.sleep(2000);
+                } catch (Exception ignored) {}
 
                 ServerCache.removeRepulsionPointIfPossible(dataManager.getBlockPos("center").getCenter());
             }).start();

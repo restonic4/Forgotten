@@ -11,6 +11,8 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -24,7 +26,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class AltarBlock extends Block {
+public class AltarBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public static final VoxelShape SHAPE_BASE = Block.box(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
@@ -79,11 +81,32 @@ public class AltarBlock extends Block {
 
     @Override
     public InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
+        if (!level.isClientSide) {
+            AltarBlockEntity blockEntity = (AltarBlockEntity) level.getBlockEntity(blockPos);
+            if (blockEntity != null) {
+                ItemStack heldItem = player.getItemInHand(interactionHand);
+                ItemStack storedItem = blockEntity.getStoredItem();
+
+                if (storedItem.isEmpty() && !heldItem.isEmpty()) {
+                    blockEntity.setStoredItem(heldItem.copy());
+                    player.setItemInHand(interactionHand, ItemStack.EMPTY);
+                } else if (!storedItem.isEmpty()) {
+                    blockEntity.setStoredItem(heldItem.copy());
+                    player.setItemInHand(interactionHand, storedItem);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
         return InteractionResult.CONSUME;
     }
 
     @Override
     public boolean isPathfindable(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, PathComputationType pathComputationType) {
         return false;
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+        return new AltarBlockEntity(blockPos, blockState);
     }
 }

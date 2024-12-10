@@ -2,6 +2,7 @@ package com.restonic4.forgotten.block;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.restonic4.forgotten.registries.common.ForgottenItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -29,11 +30,18 @@ public class AltarBlockEntityRenderer implements BlockEntityRenderer<AltarBlockE
     @Override
     public void render(AltarBlockEntity blockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         ItemStack itemStack = blockEntity.getStoredItem();
+
         if (!itemStack.isEmpty()) {
             poseStack.pushPose();
 
             poseStack.translate(0.5, 1.1, 0.5);
-            poseStack.scale(0.5f, 0.5f, 0.5f);
+
+            if (itemStack.is(ForgottenItems.PLAYER_SOUL)) {
+                poseStack.scale(1f, 1f, 1f);
+                packedLight = 0xF000F0;
+            } else {
+                poseStack.scale(0.5f, 0.5f, 0.5f);
+            }
 
             int scale = (int) (2 * 360f);
             long time = blockEntity.getLevel().getGameTime();
@@ -41,6 +49,7 @@ public class AltarBlockEntityRenderer implements BlockEntityRenderer<AltarBlockE
             Quaternionf rotation = Axis.YP.rotation((float) (angle * Math.PI * 10));
 
             poseStack.mulPose(rotation);
+
 
             this.itemRenderer.renderStatic(itemStack, ItemDisplayContext.FIXED, packedLight, packedOverlay, poseStack, bufferSource, blockEntity.getLevel(), 0);
 

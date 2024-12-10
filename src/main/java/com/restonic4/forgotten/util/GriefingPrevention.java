@@ -98,7 +98,11 @@ public class GriefingPrevention {
                     }
 
                     SimpleEffectHelper.invalidHeadPlacement(serverLevel, blockPos);
-                    serverLevel.setBlockAndUpdate(blockPos, originalBlockState);
+                    try {
+                        serverLevel.setBlockAndUpdate(blockPos, originalBlockState);
+                    } catch (Exception e) {
+                        System.out.println("Could not place block");
+                    }
                 });
             }).start();
         }

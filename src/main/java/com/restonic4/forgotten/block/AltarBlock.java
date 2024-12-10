@@ -94,6 +94,10 @@ public class AltarBlock extends BaseEntityBlock {
                     blockEntity.setStoredItem(heldItem.copy());
                     player.setItemInHand(interactionHand, storedItem);
                 }
+
+                // Sync with the client
+                blockEntity.setChanged();
+                level.sendBlockUpdated(blockPos, blockState, blockState, 3);
             }
             return InteractionResult.SUCCESS;
         }

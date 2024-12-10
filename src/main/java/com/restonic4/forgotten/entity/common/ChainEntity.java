@@ -1,8 +1,10 @@
 package com.restonic4.forgotten.entity.common;
 
 import com.restonic4.forgotten.networking.PacketManager;
+import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import com.restonic4.forgotten.saving.Components;
 import com.restonic4.forgotten.util.ServerCache;
+import com.restonic4.forgotten.util.helpers.RandomUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -58,6 +60,7 @@ public class ChainEntity extends Animal {
         setDed(true);
 
         this.playSound(SoundEvents.CHAIN_BREAK);
+        this.playSound(ForgottenSounds.REJECT, 1, RandomUtil.randomBetween(0.75f, 1.25f));
     }
 
     @Override

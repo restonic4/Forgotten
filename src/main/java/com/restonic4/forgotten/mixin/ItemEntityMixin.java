@@ -76,10 +76,4 @@ public abstract class ItemEntityMixin extends Entity {
     public ItemEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
     }
-
-    @Override
-    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
-        System.out.println("there is no actual fucking way this fucking worked");
-        return InteractionResult.PASS;
-    }
 }

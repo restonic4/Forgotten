@@ -35,13 +35,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
@@ -117,6 +120,13 @@ public class Forgotten implements ModInitializer {
             if (isVanishLoaded()) {
                 ConfigManager.vanish().sendJoinDisconnectMessage = false;
                 server.getGameRules().getRule(GameRules.RULE_SHOWDEATHMESSAGES).set(false, server);
+            }
+
+            if (dataManager.contains("center")) {
+                BlockPos center = dataManager.getBlockPos("center");
+
+                ServerLevel serverLevel = server.overworld();
+                serverLevel.setDefaultSpawnPos(center, 0);
             }
         });
 
@@ -221,7 +231,9 @@ public class Forgotten implements ModInitializer {
 
                 ticksLeft = 10;
 
-                applyVanishEffects(server);
+                if (dataManager.contains("center") && dataManager.getBoolean("Hardcore")) {
+                    applyVanishEffects(server);
+                }
             }
         });
 
@@ -289,7 +301,7 @@ public class Forgotten implements ModInitializer {
     }
 
     public static void startMainRitual(ServerLevel serverLevel) {
-        if (!dataManager.getBoolean("Hardcore")) {
+        if (!dataManager.getBoolean("Hardcore") && dataManager.contains("center")) {
             dataManager.save("Hardcore", true);
 
             ServerCache.addRepulsionPointIfPossible(dataManager.getBlockPos("center").getCenter());

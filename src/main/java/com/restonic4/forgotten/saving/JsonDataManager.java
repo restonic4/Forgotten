@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -90,13 +91,18 @@ public class JsonDataManager {
         return (boolean) dataObj;
     }
 
-    public BlockPos getBlockPos(String key) {
+    public @Nullable BlockPos getBlockPos(String key) {
         Object rawData = data.get(key);
 
         if (rawData instanceof Vector3Wrapper vector3Wrapper) {
             return vector3Wrapper.toBlockPos();
         } else {
             LinkedTreeMap<String, Double> foundData = (LinkedTreeMap<String, Double>) data.get(key);
+
+            if (foundData == null) {
+                return null;
+            }
+
             return new BlockPos(foundData.get("x").intValue(), foundData.get("y").intValue(), foundData.get("z").intValue());
         }
     }

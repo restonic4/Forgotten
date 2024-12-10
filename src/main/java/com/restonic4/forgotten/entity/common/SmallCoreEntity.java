@@ -3,9 +3,11 @@ package com.restonic4.forgotten.entity.common;
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.commdands.SetUpForgotten;
 import com.restonic4.forgotten.registries.common.ForgottenEntities;
+import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import com.restonic4.forgotten.saving.Components;
 import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.util.ServerCache;
+import com.restonic4.forgotten.util.helpers.RandomUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -76,6 +78,9 @@ public class SmallCoreEntity extends Animal {
 
         if (deSpawnTime == 0 || currentTime >= deSpawnTime) {
             recoverTime = currentTime + 1500;
+
+            this.playSound(ForgottenSounds.REJECT, 1, RandomUtil.randomBetween(0.75f, 1.25f));
+
             return super.hurt(damageSource, 1);
         }
 

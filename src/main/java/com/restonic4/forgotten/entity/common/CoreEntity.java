@@ -3,9 +3,11 @@ package com.restonic4.forgotten.entity.common;
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.commdands.SetUpForgotten;
 import com.restonic4.forgotten.networking.PacketManager;
+import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import com.restonic4.forgotten.saving.Components;
 import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.util.ServerCache;
+import com.restonic4.forgotten.util.helpers.RandomUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
@@ -80,6 +82,9 @@ public class CoreEntity extends Animal {
 
         if (deSpawnTime == 0 || currentTime >= deSpawnTime) {
             recoverTime = currentTime + 1500;
+
+            this.playSound(ForgottenSounds.REJECT, 1, RandomUtil.randomBetween(0.75f, 1.25f));
+
             return super.hurt(damageSource, 1);
         }
 

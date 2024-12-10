@@ -6,6 +6,7 @@
   "mixins": [
     "BiomeMixin",
     "BlockMixin",
+    "CactusBlockMixin",
     "EntityMixin",
     "ItemEntityMixin",
     "ItemFrameMixin",
@@ -13,8 +14,11 @@
     "JigsawPlacementPlacerMixin",
     "JigsawStructureMixin",
     "LevelMixin",
+    "MinecraftServerMixin",
     "MobMixin",
+    "ServerLevelMixin",
     "StructureMixin",
+    "VineBlockMixin",
     "accessor.JigsawStructureAccessor",
     "vanish.VanishManagerMixin"
   ],

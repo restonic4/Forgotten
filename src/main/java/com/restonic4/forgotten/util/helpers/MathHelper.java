@@ -110,6 +110,36 @@ public class MathHelper {
         }
     }
 
+    public static void rotateVertices(Vector3f[] vertices, float angleXDegrees, float angleYDegrees, float angleZDegrees) {
+        float angleXRadians = (float) Math.toRadians(angleXDegrees);
+        float angleYRadians = (float) Math.toRadians(angleYDegrees);
+        float angleZRadians = (float) Math.toRadians(angleZDegrees);
+
+        float cosX = (float) Math.cos(angleXRadians);
+        float sinX = (float) Math.sin(angleXRadians);
+        float cosY = (float) Math.cos(angleYRadians);
+        float sinY = (float) Math.sin(angleYRadians);
+        float cosZ = (float) Math.cos(angleZRadians);
+        float sinZ = (float) Math.sin(angleZRadians);
+
+        for (Vector3f vertex : vertices) {
+            float y = vertex.y;
+            float z = vertex.z;
+            vertex.y = y * cosX - z * sinX;
+            vertex.z = y * sinX + z * cosX;
+
+            float x = vertex.x;
+            z = vertex.z;
+            vertex.x = x * cosY + z * sinY;
+            vertex.z = -x * sinY + z * cosY;
+
+            x = vertex.x;
+            y = vertex.y;
+            vertex.x = x * cosZ - y * sinZ;
+            vertex.y = x * sinZ + y * cosZ;
+        }
+    }
+
     public static float calculateScale(Vector3f distance, float maxDistance, float maxValue) {
         float lengthXZ = (float) Math.sqrt(distance.x * distance.x + distance.z * distance.z);
 

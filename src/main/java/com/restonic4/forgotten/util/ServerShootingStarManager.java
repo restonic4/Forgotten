@@ -67,7 +67,7 @@ public class ServerShootingStarManager {
         ServerPlayer chosenPlayer = RandomUtil.getRandomFromList(server.getPlayerList().getPlayers());
 
         if (chosenPlayer != null) {
-            BlockPos startCollisionPoint = getRandomPositionAroundPlayer(chosenPlayer, 200);
+            BlockPos startCollisionPoint = getRandomPositionAroundPlayer(chosenPlayer, 200, 300);
 
             for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
                 FallStarPacket.sendToClient(serverPlayer, startCollisionPoint);
@@ -75,18 +75,27 @@ public class ServerShootingStarManager {
         }
     }
 
-    public static BlockPos getRandomPositionAroundPlayer(ServerPlayer player, int radius) {
+    public static BlockPos getRandomPositionAroundPlayer(ServerPlayer player, int minRadius, int maxRadius) {
         BlockPos playerPos = player.blockPosition();
+        Level world = player.level();
 
-        int xOffset = RandomUtil.getRandom().nextInt(radius * 2 + 1) - radius;
-        int zOffset = RandomUtil.getRandom().nextInt(radius * 2 + 1) - radius;
+        if (minRadius < 0 || maxRadius <= minRadius) {
+            throw new IllegalArgumentException("Error.");
+        }
+
+        double angle = RandomUtil.getRandom().nextDouble() * Math.PI * 2;
+
+        double distance = minRadius + (RandomUtil.getRandom().nextDouble() * (maxRadius - minRadius));
+
+        int xOffset = (int) Math.round(Math.cos(angle) * distance);
+        int zOffset = (int) Math.round(Math.sin(angle) * distance);
 
         int x = playerPos.getX() + xOffset;
         int z = playerPos.getZ() + zOffset;
 
-        Level world = player.level();
         int y = world.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
 
         return new BlockPos(x, y, z);
     }
+
 }

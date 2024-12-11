@@ -16,7 +16,7 @@ public class FallStarPacket {
         BlockPos collisionPoint = friendlyByteBuf.readBlockPos();
 
         long startAnim = System.currentTimeMillis();
-        long endAnim = startAnim + 5000;
+        long endAnim = startAnim + 1500;
 
         ClientShootingStarManager.loadShootingStar(startAnim, endAnim, collisionPoint);
     }

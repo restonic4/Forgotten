@@ -54,10 +54,12 @@ public class RenderShapes {
 
     public static final RenderShapes BEAM;
     public static final RenderShapes SPHERE;
+    public static final RenderShapes QUAD;
 
     static {
         BEAM = new RenderShapes(buildBeamVertices());
         SPHERE = new RenderShapes(buildSphereVertices());
+        QUAD = new RenderShapes(buildQuadVertices());
     }
 
     private static List<Vector3f[]> buildBeamVertices() {
@@ -107,6 +109,15 @@ public class RenderShapes {
         List<Vector3f[]> verticesToSave = new ArrayList<>();
 
         Vector3f[] vertices = MathHelper.getSphereVertices();
+        verticesToSave.add(vertices);
+
+        return verticesToSave;
+    }
+
+    private static List<Vector3f[]> buildQuadVertices() {
+        List<Vector3f[]> verticesToSave = new ArrayList<>();
+
+        Vector3f[] vertices = MathHelper.getQuadVertices();
         verticesToSave.add(vertices);
 
         return verticesToSave;

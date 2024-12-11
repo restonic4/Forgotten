@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import team.lodestar.lodestone.handlers.RenderHandler;
 import team.lodestar.lodestone.registry.client.LodestoneRenderTypeRegistry;
 import team.lodestar.lodestone.systems.rendering.VFXBuilders;
@@ -136,30 +137,41 @@ public class RenderingHelper {
         }
     }
 
-    public static void renderComplexTwoPointsBeam(PoseStack poseStack, Matrix4f matrix4f, Camera camera, Vector3f startPosition, Vector3f endPosition, float width) {
-        List<Vector3f[]> vector3fList = RenderShapes.BEAM.getVertices();
+    public static Vector3f cachedPoint = new Vector3f();
+    public static void renderDebugBeam(PoseStack poseStack, Matrix4f matrix4f, Camera camera, Vector3f start, Vector3f end, int numPoints) {
+        for (int i = 0; i <= numPoints; i++) {
+            float t = (float) i / (float) numPoints;
 
-        for (int i = 0; i < vector3fList.size(); i++) {
-            Vector3f[] vector3fs = vector3fList.get(i);
+            cachedPoint.set(0, 0, 0);
+            start.lerp(end, t, cachedPoint);
 
-            float distance = startPosition.distance(endPosition);
-
-            Vector3f direction = new Vector3f(endPosition).sub(startPosition);
-
-            float angleZ = (float) Math.atan2(direction.y, direction.x);
-            float angleX = (float) Math.atan2(direction.z, direction.y);
-
-            MathHelper.scaleVertices(vector3fs, width, distance, width);
-
-            Vector3f middlePoint = MathHelper.getMidPoint(startPosition, endPosition);
-
-            MathHelper.rotateVerticesZ(vector3fs, (float) Math.toDegrees(angleZ));
-            MathHelper.rotateVerticesX(vector3fs, (float) Math.toDegrees(angleX));
-
-            MathHelper.translateVertices(vector3fs, middlePoint.x, middlePoint.y, middlePoint.z);
-
-            RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, VertexFormat.Mode.TRIANGLE_FAN, vector3fs);
+            renderPoint(poseStack, matrix4f, camera, cachedPoint);
         }
+    }
+
+    private static void renderPoint(PoseStack poseStack, Matrix4f matrix4f, Camera camera, Vector3f point) {
+        RenderSystem.setShaderColor(0, 0, 1, 1);
+        RenderingHelper.renderSphere(poseStack, matrix4f, camera, point, 10);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+    }
+
+    public static void renderBillboardQuad(PoseStack poseStack, Matrix4f matrix4f, Camera camera, Vector3f pointA, Vector3f pointB, float width) {
+        Vector3f delta = new Vector3f(pointB).sub(pointA);
+
+        Vector3f cameraDirection = new Vector3f(camera.getPosition().toVector3f()).sub(pointA).normalize();
+
+        Vector3f normal = new Vector3f(cameraDirection).cross(delta).normalize().mul(width / 2f, width / 2f, width / 2f);
+
+        Vector3f topLeft = new Vector3f(pointA).sub(normal);
+        Vector3f topRight = new Vector3f(pointA).add(normal);
+        Vector3f bottomLeft = new Vector3f(pointB).sub(normal);
+        Vector3f bottomRight = new Vector3f(pointB).add(normal);
+
+        Vector3f[] vertices = new Vector3f[] { topLeft, bottomLeft, bottomRight, topRight };
+
+        BufferBuilder.RenderedBuffer renderedBuffer = RenderingHelper.buildGeometry(Tesselator.getInstance().getBuilder(), VertexFormat.Mode.QUADS, vertices);
+
+        renderQuad(generateBuffer(renderedBuffer), poseStack, matrix4f, camera);
     }
 
     public static void renderSphere(PoseStack poseStack, Matrix4f matrix4f, Camera camera, Vector3f position, float radius) {

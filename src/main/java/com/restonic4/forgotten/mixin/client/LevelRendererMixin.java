@@ -33,11 +33,14 @@ public class LevelRendererMixin {
     )
     private void injectBeforeSunRendering(PoseStack poseStack, Matrix4f matrix4f, float f, Camera camera, boolean bl, Runnable runnable, CallbackInfo ci) {
         float alpha = 1.0F - this.level.getRainLevel(f);
-        ClientShootingStarManager.render(poseStack, matrix4f, camera, alpha);
+        ClientShootingStarManager.renderStar(poseStack, matrix4f, camera, alpha);
     }
 
     @Inject(method = "renderLevel", at = @At("TAIL"))
     private void renderManagers(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
+        float alpha = 1.0F - this.level.getRainLevel(f);
+
+        ClientShootingStarManager.renderShootingStar(poseStack, matrix4f, camera, alpha);
         BeamEffectManager.render(poseStack, matrix4f, camera);
         EnergyOrbEffectManager.render(poseStack, matrix4f, camera);
     }

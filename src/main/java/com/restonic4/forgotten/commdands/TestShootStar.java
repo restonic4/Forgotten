@@ -6,19 +6,19 @@ import com.restonic4.forgotten.util.ServerShootingStarManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-public class TestStarSpawn {
+public class TestShootStar {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-                Commands.literal("test_star_spawn")
+                Commands.literal("test_star_shoot")
                         .requires(source -> source.hasPermission(2))
-                        .executes(TestStarSpawn::execute)
+                        .executes(TestShootStar::execute)
         );
     }
 
     private static int execute(CommandContext<CommandSourceStack> context) {
         CommandSourceStack source = context.getSource();
 
-        ServerShootingStarManager.spawn(source.getServer());
+        ServerShootingStarManager.shootStar(source.getServer());
 
         return 1;
     }

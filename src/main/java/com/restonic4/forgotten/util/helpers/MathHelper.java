@@ -176,4 +176,12 @@ public class MathHelper {
 
         return (value - min) / (max - min);
     }
+
+    public static Vector3f getMidPoint(Vector3f startPosition, Vector3f endPosition) {
+        float midX = (startPosition.x + endPosition.x) / 2;
+        float midY = (startPosition.y + endPosition.y) / 2;
+        float midZ = (startPosition.z + endPosition.z) / 2;
+
+        return new Vector3f(midX, midY, midZ);
+    }
 }

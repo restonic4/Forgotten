@@ -2,6 +2,7 @@ package com.restonic4.forgotten.util.helpers;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Axis;
 import com.restonic4.forgotten.registries.client.ForgottenRenderTypeTokens;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
 import com.restonic4.forgotten.registries.client.custom.RenderShapes;
@@ -131,6 +132,32 @@ public class RenderingHelper {
 
             MathHelper.scaleVertices(vector3fs, width, height, width);
             MathHelper.translateVertices(vector3fs, position.x - width/2, position.y, position.z - width/2);
+            RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, VertexFormat.Mode.TRIANGLE_FAN, vector3fs);
+        }
+    }
+
+    public static void renderComplexTwoPointsBeam(PoseStack poseStack, Matrix4f matrix4f, Camera camera, Vector3f startPosition, Vector3f endPosition, float width) {
+        List<Vector3f[]> vector3fList = RenderShapes.BEAM.getVertices();
+
+        for (int i = 0; i < vector3fList.size(); i++) {
+            Vector3f[] vector3fs = vector3fList.get(i);
+
+            float distance = startPosition.distance(endPosition);
+
+            Vector3f direction = new Vector3f(endPosition).sub(startPosition);
+
+            float angleZ = (float) Math.atan2(direction.y, direction.x);
+            float angleX = (float) Math.atan2(direction.z, direction.y);
+
+            MathHelper.scaleVertices(vector3fs, width, distance, width);
+
+            Vector3f middlePoint = MathHelper.getMidPoint(startPosition, endPosition);
+
+            MathHelper.rotateVerticesZ(vector3fs, (float) Math.toDegrees(angleZ));
+            MathHelper.rotateVerticesX(vector3fs, (float) Math.toDegrees(angleX));
+
+            MathHelper.translateVertices(vector3fs, middlePoint.x, middlePoint.y, middlePoint.z);
+
             RenderingHelper.renderDynamicGeometry(poseStack, matrix4f, camera, VertexFormat.Mode.TRIANGLE_FAN, vector3fs);
         }
     }

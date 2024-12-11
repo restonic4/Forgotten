@@ -1,14 +1,18 @@
 package com.restonic4.forgotten.util;
 
 import com.restonic4.forgotten.Forgotten;
+import com.restonic4.forgotten.networking.packets.FallStarPacket;
 import com.restonic4.forgotten.networking.packets.SpawnStarPacket;
 import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.saving.StarData;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.Heightmap;
 
-public class StarSpawner {
+public class ServerShootingStarManager {
     public static void spawn(MinecraftServer server) {
         for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
             JsonDataManager dataManager = Forgotten.getDataManager();
@@ -51,5 +55,38 @@ public class StarSpawner {
                 );
             }
         }
+    }
+
+    public static void shootStar(MinecraftServer server) {
+        JsonDataManager dataManager = Forgotten.getDataManager();
+
+        if (!dataManager.contains("star")) {
+            return;
+        }
+
+        ServerPlayer chosenPlayer = RandomUtil.getRandomFromList(server.getPlayerList().getPlayers());
+
+        if (chosenPlayer != null) {
+            BlockPos startCollisionPoint = getRandomPositionAroundPlayer(chosenPlayer, 200);
+
+            for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
+                FallStarPacket.sendToClient(serverPlayer, startCollisionPoint);
+            }
+        }
+    }
+
+    public static BlockPos getRandomPositionAroundPlayer(ServerPlayer player, int radius) {
+        BlockPos playerPos = player.blockPosition();
+
+        int xOffset = RandomUtil.getRandom().nextInt(radius * 2 + 1) - radius;
+        int zOffset = RandomUtil.getRandom().nextInt(radius * 2 + 1) - radius;
+
+        int x = playerPos.getX() + xOffset;
+        int z = playerPos.getZ() + zOffset;
+
+        Level world = player.level();
+        int y = world.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
+
+        return new BlockPos(x, y, z);
     }
 }

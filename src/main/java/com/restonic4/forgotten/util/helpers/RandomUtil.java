@@ -1,10 +1,15 @@
 package com.restonic4.forgotten.util.helpers;
 
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomUtil {
     private static final Random RANDOM = new Random();
+
+    public static Random getRandom() {
+        return RANDOM;
+    }
 
     public static float randomBetween(float min, float max) {
         if (min > max) {
@@ -39,5 +44,13 @@ public class RandomUtil {
             case 1 -> obj2;
             default -> obj3;
         };
+    }
+
+    public static <T> T getRandomFromList(List<T> list) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        int index = RANDOM.nextInt(list.size());
+        return list.get(index);
     }
 }

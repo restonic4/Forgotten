@@ -92,6 +92,7 @@ public class Forgotten implements ModInitializer {
             CleanupForgotten.register(dispatcher);
             KillOne.register(dispatcher);
             TestStarSpawn.register(dispatcher);
+            TestShootStar.register(dispatcher);
             //Lodestone.register(dispatcher);
         });
 

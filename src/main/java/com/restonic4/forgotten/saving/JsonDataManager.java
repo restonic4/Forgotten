@@ -107,6 +107,22 @@ public class JsonDataManager {
         }
     }
 
+    public @Nullable StarData getStarData(String key) {
+        Object rawData = data.get(key);
+
+        if (rawData instanceof StarData starData) {
+            return starData;
+        } else {
+            LinkedTreeMap<String, Double> foundData = (LinkedTreeMap<String, Double>) data.get(key);
+
+            if (foundData == null) {
+                return null;
+            }
+
+            return new StarData(foundData.get("size").floatValue(), foundData.get("rotation").floatValue(), foundData.get("x").floatValue(), foundData.get("y").floatValue(), foundData.get("z").floatValue());
+        }
+    }
+
     public boolean contains(String key) {
         return data.containsKey(key);
     }

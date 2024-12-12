@@ -27,8 +27,7 @@ public abstract class LevelMixin {
 
     @Inject(method = "isThundering", at = @At("HEAD"), cancellable = true)
     public void isThundering(CallbackInfoReturnable<Boolean> cir) {
-        Level current = (Level) (Object) this;
-        if (current.isClientSide() && DeathUtils.isDeath()) {
+        if (this.isClientSide() && DeathUtils.isDeath()) {
             cir.setReturnValue(true);
             cir.cancel();
         }
@@ -36,8 +35,7 @@ public abstract class LevelMixin {
 
     @Inject(method = "getThunderLevel", at = @At("HEAD"), cancellable = true)
     public void getThunderLevel(float f, CallbackInfoReturnable<Float> cir) {
-        Level current = (Level) (Object) this;
-        if (current.isClientSide() && DeathUtils.isDeath()) {
+        if (this.isClientSide() && DeathUtils.isDeath()) {
             cir.setReturnValue(1f);
             cir.cancel();
         }
@@ -45,8 +43,7 @@ public abstract class LevelMixin {
 
     @Inject(method = "isRaining", at = @At("HEAD"), cancellable = true)
     public void isRaining(CallbackInfoReturnable<Boolean> cir) {
-        Level current = (Level) (Object) this;
-        if (current.isClientSide() && DeathUtils.isDeath()) {
+        if (this.isClientSide() && DeathUtils.isDeath()) {
             cir.setReturnValue(true);
             cir.cancel();
         }
@@ -54,8 +51,7 @@ public abstract class LevelMixin {
 
     @Inject(method = "getRainLevel", at = @At("HEAD"), cancellable = true)
     public void getRainLevel(float f, CallbackInfoReturnable<Float> cir) {
-        Level current = (Level) (Object) this;
-        if (current.isClientSide() && DeathUtils.isDeath()) {
+        if (this.isClientSide() && DeathUtils.isDeath()) {
             cir.setReturnValue(1f);
             cir.cancel();
         }
@@ -75,4 +71,6 @@ public abstract class LevelMixin {
             }
         }
     }
+
+
 }

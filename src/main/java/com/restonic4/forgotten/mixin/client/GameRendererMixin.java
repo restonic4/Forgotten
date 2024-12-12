@@ -1,16 +1,17 @@
 package com.restonic4.forgotten.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.restonic4.forgotten.client.CachedClientData;
 import com.restonic4.forgotten.client.DeathUtils;
 import com.restonic4.forgotten.client.ForgottenClient;
 import com.restonic4.forgotten.util.EasingSystem;
-import com.restonic4.forgotten.util.MainMatrixStorage;
 import com.restonic4.forgotten.util.trash.TestingVars;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Matrix4f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
+    @Shadow @Final public Minecraft minecraft;
     @Unique
     private static long easingStartTime = 0;
     @Unique private static long easingEndTime = 0;
@@ -31,8 +33,6 @@ public class GameRendererMixin {
     @Inject(method = "getFov", at = @At("HEAD"), cancellable = true)
     private void getFov(Camera camera, float f, boolean bl, CallbackInfoReturnable<Double> cir) {
         if (DeathUtils.isDeath()) {
-            GameRenderer current = (GameRenderer) (Object) this;
-
             if (DeathUtils.shouldResetFovAnimations()) {
                 DeathUtils.fovAnimationsRestarted();
 
@@ -40,7 +40,7 @@ public class GameRendererMixin {
                 easingEndTime = System.currentTimeMillis() + 2000;
             }
 
-            double easedFov = EasingSystem.getEasedValue(easingStartTime, easingEndTime, 10, current.minecraft.options.fov().get(), EasingSystem.EasingType.QUAD_IN_OUT);
+            double easedFov = EasingSystem.getEasedValue(easingStartTime, easingEndTime, 10, this.minecraft.options.fov().get(), EasingSystem.EasingType.QUAD_IN_OUT);
 
             cir.setReturnValue(easedFov);
             cir.cancel();
@@ -51,17 +51,5 @@ public class GameRendererMixin {
     public void getDepthFar(CallbackInfoReturnable<Float> cir) {
         cir.setReturnValue(TestingVars.FAR_PLANE);
         cir.cancel();
-    }
-
-    @Inject(method = "renderLevel", at = @At (
-            value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;",
-            shift = At.Shift.AFTER,
-            ordinal = 0
-        )
-    )
-    private void captureMatrix4f(float tickDelta, long limitTime, PoseStack poseStack, CallbackInfo ci) {
-        Matrix4f matrix4f = poseStack.last().pose();
-        MainMatrixStorage.setCurrentMatrix(matrix4f);
     }
 }

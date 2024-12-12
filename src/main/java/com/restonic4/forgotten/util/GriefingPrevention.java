@@ -59,10 +59,12 @@ public class GriefingPrevention {
     }
 
     public static BlockState getOriginalBlockAndRegister(BlockPos blockPos, BlockState blockStateFallBack) {
-        if (originalBlocks.containsKey(new SafeBlockPos(blockPos))) {
-            return originalBlocks.get(new SafeBlockPos(blockPos));
+        SafeBlockPos safeBlockPos = new SafeBlockPos(blockPos);
+
+        if (originalBlocks.containsKey(safeBlockPos)) {
+            return originalBlocks.get(safeBlockPos);
         } else {
-            originalBlocks.put(new SafeBlockPos(blockPos), blockStateFallBack);
+            originalBlocks.put(safeBlockPos, blockStateFallBack);
             return blockStateFallBack;
         }
     }

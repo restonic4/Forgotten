@@ -14,8 +14,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LevelRenderer.class)
-public class LevelRendererMixin {
+public abstract class LevelRendererMixin {
     @Shadow private @Nullable ClientLevel level;
+
+    @Shadow public abstract int countRenderedChunks();
 
     @Inject(method = "renderSky", at = @At("RETURN"))
     private void addSky(PoseStack poseStack, Matrix4f matrix4f, float f, Camera camera, boolean bl, Runnable runnable, CallbackInfo ci) {
@@ -43,5 +45,6 @@ public class LevelRendererMixin {
         ClientShootingStarManager.renderShootingStar(poseStack, matrix4f, camera, alpha);
         BeamEffectManager.render(poseStack, matrix4f, camera);
         EnergyOrbEffectManager.render(poseStack, matrix4f, camera);
+        ClientShootingStarManager.renderEtherealFragmentEffects(poseStack, matrix4f, camera);
     }
 }

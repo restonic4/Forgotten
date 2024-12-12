@@ -1,6 +1,9 @@
 package com.restonic4.forgotten.mixin;
 
+import com.restonic4.forgotten.client.rendering.ClientShootingStarManager;
+import com.restonic4.forgotten.item.EtherealFragment;
 import com.restonic4.forgotten.item.PlayerSoul;
+import com.restonic4.forgotten.registries.common.ForgottenItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.world.InteractionHand;

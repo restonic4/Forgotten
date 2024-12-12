@@ -13,16 +13,20 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.item.ItemEntity;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import team.lodestar.lodestone.handlers.ScreenshakeHandler;
 import team.lodestar.lodestone.systems.easing.Easing;
-import team.lodestar.lodestone.systems.screenshake.PositionedScreenshakeInstance;
 import team.lodestar.lodestone.systems.screenshake.ScreenshakeInstance;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientShootingStarManager {
     public static final ResourceLocation STAR_LOCATION = new ResourceLocation(Forgotten.MOD_ID, "textures/environment/star.png");
+
+    private static final List<ItemEntity> etherealFragments = new ArrayList<>();
 
     private static long spawnAnimationStart = 0;
     private static long spawnAnimationEnd = 0;
@@ -137,5 +141,37 @@ public class ClientShootingStarManager {
         }
 
         poseStack.popPose();
+    }
+
+    public static void addEtherealFragment(ItemEntity itemEntity) {
+        if (etherealFragments.contains(itemEntity)) {
+            return;
+        }
+
+        etherealFragments.add(itemEntity);
+    }
+
+    public static void renderEtherealFragmentEffects(PoseStack poseStack, Matrix4f matrix4f, Camera camera) {
+        for (int i = etherealFragments.size() - 1; i >= 0; i--) {
+            ItemEntity itemEntity = etherealFragments.get(i);
+
+            if (itemEntity != null) {
+                Vector3f position = itemEntity.position().toVector3f();
+
+                RenderSystem.setShaderColor(0.988f, 0.996f, 0.996f, 0.04f);
+
+                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 1);
+                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 2);
+                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 4);
+                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 8);
+                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 14);
+                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 18);
+                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 22);
+
+                RenderSystem.setShaderColor(1, 1, 1, 1);
+            }
+
+            etherealFragments.remove(i);
+        }
     }
 }

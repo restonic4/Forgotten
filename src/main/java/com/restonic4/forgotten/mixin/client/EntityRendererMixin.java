@@ -20,14 +20,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class EntityRendererMixin {
     @Inject(method = "getPackedLightCoords", at = @At("HEAD"), cancellable = true)
     protected <T extends Entity> void getPackedLightCoords(T entity, float f, CallbackInfoReturnable<Integer> cir) {
-        if (shouldCancel(entity)) {
+        if (isSoul(entity)) {
             cir.setReturnValue(LightTexture.pack(15, 15));
             cir.cancel();
         }
     }
 
     @Unique
-    public boolean shouldCancel(Entity entity) {
+    public boolean isSoul(Entity entity) {
         return entity instanceof ItemEntity itemEntity && itemEntity.getItem().getItem() instanceof PlayerSoul playerSoul;
     }
 }

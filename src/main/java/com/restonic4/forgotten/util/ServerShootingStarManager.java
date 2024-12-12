@@ -1,14 +1,22 @@
 package com.restonic4.forgotten.util;
 
+import com.mojang.authlib.GameProfile;
 import com.restonic4.forgotten.Forgotten;
+import com.restonic4.forgotten.item.PlayerSoul;
 import com.restonic4.forgotten.networking.packets.FallStarPacket;
 import com.restonic4.forgotten.networking.packets.SpawnStarPacket;
+import com.restonic4.forgotten.registries.common.ForgottenItems;
 import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.saving.StarData;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 
@@ -38,22 +46,20 @@ public class ServerShootingStarManager {
         }
     }
 
-    public static void load(MinecraftServer server) {
-        for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
-            JsonDataManager dataManager = Forgotten.getDataManager();
+    public static void loadStarToClient(ServerPlayer serverPlayer) {
+        JsonDataManager dataManager = Forgotten.getDataManager();
 
-            if (dataManager.contains("star")) {
-                StarData starData = dataManager.getStarData("star");
+        if (dataManager.contains("star")) {
+            StarData starData = dataManager.getStarData("star");
 
-                SpawnStarPacket.sendToClient(
-                        serverPlayer,
-                        starData.getSize(),
-                        starData.getRotation(),
-                        starData.getX(),
-                        starData.getY(),
-                        starData.getZ()
-                );
-            }
+            SpawnStarPacket.sendToClient(
+                    serverPlayer,
+                    starData.getSize(),
+                    starData.getRotation(),
+                    starData.getX(),
+                    starData.getY(),
+                    starData.getZ()
+            );
         }
     }
 
@@ -72,7 +78,35 @@ public class ServerShootingStarManager {
             for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
                 FallStarPacket.sendToClient(serverPlayer, startCollisionPoint);
             }
+
+            dataManager.delete("star");
+
+            new Thread(() -> {
+                try {
+                    Thread.sleep(FallStarPacket.ANIMATION_TIME);
+                } catch (Exception ignored) {}
+
+                spawnStarItemInLevel(chosenPlayer.serverLevel(), startCollisionPoint);
+            }).start();
         }
+    }
+
+    public static void spawnStarItemInLevel(ServerLevel serverLevel, BlockPos blockPos) {
+        ItemStack playerSoulItem = new ItemStack(ForgottenItems.ETHEREAL_SHARD);
+
+        System.out.println("Ethereal shard spawned at (" + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ")");
+
+        ItemEntity droppedItem = new ItemEntity(
+                serverLevel,
+                blockPos.getX(),
+                blockPos.getY(),
+                blockPos.getZ(),
+                playerSoulItem
+        );
+
+        droppedItem.setDefaultPickUpDelay();
+
+        serverLevel.addFreshEntity(droppedItem);
     }
 
     public static BlockPos getRandomPositionAroundPlayer(ServerPlayer player, int minRadius, int maxRadius) {

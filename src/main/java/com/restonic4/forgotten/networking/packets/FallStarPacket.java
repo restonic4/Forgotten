@@ -12,11 +12,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
 public class FallStarPacket {
+    public static final int ANIMATION_TIME = 1500;
+
     public static void receive(Minecraft minecraft, ClientPacketListener clientPacketListener, FriendlyByteBuf friendlyByteBuf, PacketSender packetSender) {
         BlockPos collisionPoint = friendlyByteBuf.readBlockPos();
 
         long startAnim = System.currentTimeMillis();
-        long endAnim = startAnim + 1500;
+        long endAnim = startAnim + ANIMATION_TIME;
 
         ClientShootingStarManager.loadShootingStar(startAnim, endAnim, collisionPoint);
     }

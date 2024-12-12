@@ -41,7 +41,7 @@ public abstract class ItemEntityMixin extends Entity {
     public void playerTouch(Player player, CallbackInfo ci) {
         ItemEntity current = (ItemEntity) (Object) this;
 
-        if (shouldCancel(current)) {
+        if (isSoul(current)) {
             ci.cancel();
         }
     }
@@ -50,7 +50,7 @@ public abstract class ItemEntityMixin extends Entity {
     public void getSpin(float f, CallbackInfoReturnable<Float> cir) {
         ItemEntity current = (ItemEntity) (Object) this;
 
-        if (shouldCancel(current)) {
+        if (isSoul(current)) {
             cir.setReturnValue(0f);
             cir.cancel();
         }
@@ -60,14 +60,14 @@ public abstract class ItemEntityMixin extends Entity {
     public void getVisualRotationYInDegrees(CallbackInfoReturnable<Float> cir) {
         ItemEntity current = (ItemEntity) (Object) this;
 
-        if (shouldCancel(current)) {
+        if (isSoul(current)) {
             cir.setReturnValue(0f);
             cir.cancel();
         }
     }
 
     @Unique
-    public boolean shouldCancel(Entity entity) {
+    public boolean isSoul(Entity entity) {
         return entity instanceof ItemEntity itemEntity && itemEntity.getItem().getItem() instanceof PlayerSoul playerSoul;
     }
 

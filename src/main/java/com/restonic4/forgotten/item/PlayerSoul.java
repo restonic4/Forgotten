@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 
 import java.util.UUID;
 
-public class PlayerSoul extends Item {
+public class PlayerSoul extends InvincibleItem {
     public static final String MAIN_TAG = "PlayerOwner";
 
     public PlayerSoul(Properties properties) {

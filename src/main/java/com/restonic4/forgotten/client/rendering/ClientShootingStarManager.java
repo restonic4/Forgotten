@@ -108,14 +108,14 @@ public class ClientShootingStarManager {
         float easedStarY = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd, (float) (posY + camera.getPosition().y), collisionVec.y, EasingSystem.EasingType.EXPONENTIAL_IN);
         float easedStarZ = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd, (float) (posZ + camera.getPosition().z), collisionVec.z, EasingSystem.EasingType.EXPONENTIAL_IN);
 
-        float easedCollisionX = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1000, (float) (posX + camera.getPosition().x), collisionVec.x, EasingSystem.EasingType.EXPONENTIAL_IN);
-        float easedCollisionY = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1000, (float) (posY + camera.getPosition().y), collisionVec.y, EasingSystem.EasingType.EXPONENTIAL_IN);
-        float easedCollisionZ = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1000, (float) (posZ + camera.getPosition().z), collisionVec.z, EasingSystem.EasingType.EXPONENTIAL_IN);
+        float easedCollisionX = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1250, (float) (posX + camera.getPosition().x), collisionVec.x, EasingSystem.EasingType.EXPONENTIAL_IN);
+        float easedCollisionY = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1250, (float) (posY + camera.getPosition().y), collisionVec.y, EasingSystem.EasingType.EXPONENTIAL_IN);
+        float easedCollisionZ = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1250, (float) (posZ + camera.getPosition().z), collisionVec.z, EasingSystem.EasingType.EXPONENTIAL_IN);
 
         float easedWidth = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd, 2, 4, EasingSystem.EasingType.EXPONENTIAL_IN);
 
-        float easedImpactRadius = EasingSystem.getEasedValue(fallAnimationEnd - 1000, fallAnimationEnd - 500, 0, 10, EasingSystem.EasingType.CIRC_IN);
-        float easedImpactAlpha = EasingSystem.getEasedValue(fallAnimationEnd - 1000, fallAnimationEnd - 500, 1, 0, EasingSystem.EasingType.CIRC_IN);
+        float easedImpactRadius = EasingSystem.getEasedValue(fallAnimationEnd - 1250, fallAnimationEnd - 500, 0, 25, EasingSystem.EasingType.CIRC_IN);
+        float easedImpactAlpha = EasingSystem.getEasedValue(fallAnimationEnd - 1250, fallAnimationEnd - 500, 1, 0, EasingSystem.EasingType.CIRC_IN);
 
         RenderSystem.setShaderColor(0.988f, 0.996f, 0.996f, 1);
         RenderingHelper.renderBillboardQuad(poseStack, matrix4f, camera, new Vector3f(easedStarX, easedStarY, easedStarZ), new Vector3f(easedCollisionX, easedCollisionY, easedCollisionZ), easedWidth);

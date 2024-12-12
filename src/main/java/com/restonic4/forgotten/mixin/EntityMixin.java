@@ -1,5 +1,7 @@
 package com.restonic4.forgotten.mixin;
 
+import com.restonic4.forgotten.item.EtherealFragment;
+import com.restonic4.forgotten.item.InvincibleItem;
 import com.restonic4.forgotten.item.PlayerSoul;
 import com.restonic4.forgotten.networking.PacketManager;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -31,7 +33,7 @@ public class EntityMixin {
     public void discard(CallbackInfo ci) {
         Entity current = (Entity) (Object) this;
 
-        if (shouldCancel(current)) {
+        if (shouldNotDie(current)) {
             ci.cancel();
         }
     }
@@ -40,7 +42,7 @@ public class EntityMixin {
     public void kill(CallbackInfo ci) {
         Entity current = (Entity) (Object) this;
 
-        if (shouldCancel(current)) {
+        if (shouldNotDie(current)) {
             ci.cancel();
         }
     }
@@ -49,7 +51,7 @@ public class EntityMixin {
     public void remove(Entity.RemovalReason removalReason, CallbackInfo ci) {
         Entity current = (Entity) (Object) this;
 
-        if (shouldCancel(current)) {
+        if (shouldNotDie(current)) {
             ci.cancel();
         }
     }
@@ -58,7 +60,7 @@ public class EntityMixin {
     public void onBelowWorld(CallbackInfo ci) {
         Entity current = (Entity) (Object) this;
 
-        if (shouldCancel(current)) {
+        if (shouldNotDie(current)) {
             Vec3 tpZone = new Vec3(current.position().x, 2000, current.position().z);
 
             if (!current.level().isClientSide()) {
@@ -87,13 +89,23 @@ public class EntityMixin {
     protected void makeBoundingBox(CallbackInfoReturnable<AABB> cir) {
         Entity current = (Entity) (Object) this;
 
-        if (shouldCancel(current)) {
+        if (isSoul(current)) {
             dimensions = customItemDimensions;
         }
     }
 
     @Unique
-    public boolean shouldCancel(Entity entity) {
-        return entity instanceof ItemEntity itemEntity && itemEntity.getItem().getItem() instanceof PlayerSoul playerSoul;
+    public boolean shouldNotDie(Entity entity) {
+        return entity instanceof ItemEntity itemEntity && itemEntity.getItem().getItem() instanceof InvincibleItem;
+    }
+
+    @Unique
+    public boolean isSoul(Entity entity) {
+        return entity instanceof ItemEntity itemEntity && itemEntity.getItem().getItem() instanceof PlayerSoul;
+    }
+
+    @Unique
+    public boolean isFragment(Entity entity) {
+        return entity instanceof ItemEntity itemEntity && itemEntity.getItem().getItem() instanceof EtherealFragment;
     }
 }

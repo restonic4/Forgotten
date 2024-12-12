@@ -11,6 +11,7 @@ import com.restonic4.forgotten.registries.common.*;
 import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.util.GriefingPrevention;
 import com.restonic4.forgotten.util.ServerCache;
+import com.restonic4.forgotten.util.ServerShootingStarManager;
 import io.github.fabricators_of_create.porting_lib.event.client.InteractEvents;
 import me.drex.vanish.api.VanishEvents;
 import me.drex.vanish.config.ConfigManager;
@@ -173,6 +174,8 @@ public class Forgotten implements ModInitializer {
                 friendlyByteBuf.writeBoolean(true);
                 ServerPlayNetworking.send(serverPlayer, PacketManager.DEATH, friendlyByteBuf);
             }
+
+            ServerShootingStarManager.loadStarToClient(serverPlayer);
 
             FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
             friendlyByteBuf.writeBoolean(dataManager.getBoolean("Hardcore"));

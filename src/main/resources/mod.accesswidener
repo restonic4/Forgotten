@@ -35,4 +35,7 @@ accessible field net/minecraft/world/level/levelgen/structure/structures/JigsawS
 accessible method net/minecraft/world/level/levelgen/structure/structures/JigsawStructure verifyRange (Lnet/minecraft/world/level/levelgen/structure/structures/JigsawStructure;)Lcom/mojang/serialization/DataResult;
 accessible method net/minecraft/client/multiplayer/ClientLevel getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;
 accessible field net/minecraft/world/level/Level levelData Lnet/minecraft/world/level/storage/WritableLevelData;
+accessible method net/minecraft/client/renderer/GameRenderer bobHurt (Lcom/mojang/blaze3d/vertex/PoseStack;F)V
+accessible field net/minecraft/client/renderer/GameRenderer tick I
+accessible method net/minecraft/client/renderer/GameRenderer bobView (Lcom/mojang/blaze3d/vertex/PoseStack;F)V
 

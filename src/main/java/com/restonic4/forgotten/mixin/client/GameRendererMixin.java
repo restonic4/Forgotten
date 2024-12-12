@@ -1,12 +1,15 @@
 package com.restonic4.forgotten.mixin.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.restonic4.forgotten.client.CachedClientData;
 import com.restonic4.forgotten.client.DeathUtils;
 import com.restonic4.forgotten.client.ForgottenClient;
 import com.restonic4.forgotten.util.EasingSystem;
+import com.restonic4.forgotten.util.MainMatrixStorage;
 import com.restonic4.forgotten.util.trash.TestingVars;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -48,5 +51,17 @@ public class GameRendererMixin {
     public void getDepthFar(CallbackInfoReturnable<Float> cir) {
         cir.setReturnValue(TestingVars.FAR_PLANE);
         cir.cancel();
+    }
+
+    @Inject(method = "renderLevel", at = @At (
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;",
+            shift = At.Shift.AFTER,
+            ordinal = 0
+        )
+    )
+    private void captureMatrix4f(float tickDelta, long limitTime, PoseStack poseStack, CallbackInfo ci) {
+        Matrix4f matrix4f = poseStack.last().pose();
+        MainMatrixStorage.setCurrentMatrix(matrix4f);
     }
 }

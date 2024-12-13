@@ -10,13 +10,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -91,6 +87,16 @@ public class EntityMixin {
 
         if (isSoul(current)) {
             dimensions = customItemDimensions;
+        }
+    }
+
+    @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
+    public void shouldRender(double d, double e, double f, CallbackInfoReturnable<Boolean> cir) {
+        Entity entity = (Entity) (Object) this;
+
+        if (isFragment(entity)) {
+            cir.setReturnValue(true);
+            cir.cancel();
         }
     }
 

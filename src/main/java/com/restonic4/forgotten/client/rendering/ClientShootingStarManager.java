@@ -152,7 +152,7 @@ public class ClientShootingStarManager {
     }
 
     public static void renderEtherealFragmentEffects(PoseStack poseStack, Matrix4f matrix4f, Camera camera) {
-        for (int i = etherealFragments.size() - 1; i >= 0; i--) {
+        for (int i = 0; i < etherealFragments.size(); i++) {
             ItemEntity itemEntity = etherealFragments.get(i);
 
             if (itemEntity != null) {
@@ -170,8 +170,8 @@ public class ClientShootingStarManager {
 
                 RenderSystem.setShaderColor(1, 1, 1, 1);
             }
-
-            etherealFragments.remove(i);
         }
+
+        etherealFragments.clear();
     }
 }

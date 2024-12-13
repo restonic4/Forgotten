@@ -4,5 +4,6 @@
   "gui.forgotten.incompatibility.close": "Close Minecraft",
   "creative_mode_tab.forgotten": "Forgotten",
   "item.forgotten.player_soul": "Spectral remnant",
-  "item.forgotten.player_soul.named": "%s's spectral remnant"
+  "item.forgotten.player_soul.named": "%s's spectral remnant",
+  "item.forgotten.ethereal_shard": "Ethereal shard"
 }

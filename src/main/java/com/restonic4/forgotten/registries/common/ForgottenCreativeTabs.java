@@ -18,6 +18,7 @@ public class ForgottenCreativeTabs {
                     .icon(() -> new ItemStack(ForgottenItems.PLAYER_SOUL))
                     .displayItems((itemDisplayParameters, output) -> {
                         output.accept(ForgottenItems.PLAYER_SOUL);
+                        output.accept(ForgottenItems.ETHEREAL_SHARD);
                         ForgottenBlocks.onCreativeTabRegistration(output);
                     })
                     .build()

@@ -1,7 +1,20 @@
 package com.restonic4.forgotten.block;
 
+import com.restonic4.forgotten.item.PlayerSoul;
+import com.restonic4.forgotten.networking.PacketManager;
+import com.restonic4.forgotten.networking.packets.BeamPacket;
+import com.restonic4.forgotten.registries.common.ForgottenItems;
+import com.restonic4.forgotten.registries.common.ForgottenSounds;
+import com.restonic4.forgotten.util.helpers.SimpleEffectHelper;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -87,6 +100,31 @@ public class AltarBlock extends BaseEntityBlock {
                 ItemStack heldItem = player.getItemInHand(interactionHand);
                 ItemStack storedItem = blockEntity.getStoredItem();
 
+                boolean isRitualCondition =
+                        (storedItem.is(ForgottenItems.PLAYER_SOUL) && heldItem.is(ForgottenItems.ETHEREAL_SHARD)) ||
+                        (storedItem.is(ForgottenItems.ETHEREAL_SHARD) && heldItem.is(ForgottenItems.PLAYER_SOUL));
+
+                if (isRitualCondition) {
+                    CompoundTag tag = storedItem.getTag();
+                    if (tag != null && tag.contains(PlayerSoul.MAIN_TAG, 8)) {
+                        String playerName = tag.getString(PlayerSoul.MAIN_TAG);
+
+                        ServerPlayer targetPlayer = level.getServer().getPlayerList().getPlayerByName(playerName);
+
+                        if (targetPlayer != null) {
+                            blockEntity.setStoredItem(ItemStack.EMPTY);
+                            player.setItemInHand(interactionHand, ItemStack.EMPTY);
+
+                            syncWithClients(level, blockEntity, blockState, blockPos);
+                            executeRitual(targetPlayer);
+                        } else {
+                            SimpleEffectHelper.invalidHeadPlacement((ServerLevel) player.level(), blockPos);
+                        }
+
+                        return InteractionResult.SUCCESS;
+                    }
+                }
+
                 if (storedItem.isEmpty() && !heldItem.isEmpty()) {
                     blockEntity.setStoredItem(heldItem.copy());
                     player.setItemInHand(interactionHand, ItemStack.EMPTY);
@@ -95,13 +133,22 @@ public class AltarBlock extends BaseEntityBlock {
                     player.setItemInHand(interactionHand, storedItem);
                 }
 
-                // Sync with the client
-                blockEntity.setChanged();
-                level.sendBlockUpdated(blockPos, blockState, blockState, 3);
+                syncWithClients(level, blockEntity, blockState, blockPos);
             }
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.CONSUME;
+    }
+
+    private void executeRitual(ServerPlayer playerToBeSaved) {
+        for (ServerPlayer serverPlayer : playerToBeSaved.getServer().getPlayerList().getPlayers()) {
+            BeamPacket.sendToClient(serverPlayer);
+        }
+    }
+
+    private void syncWithClients(Level level, BlockEntity blockEntity, BlockState blockState, BlockPos blockPos) {
+        blockEntity.setChanged();
+        level.sendBlockUpdated(blockPos, blockState, blockState, 3);
     }
 
     @Override

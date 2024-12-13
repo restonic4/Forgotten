@@ -4,5 +4,6 @@
   "gui.forgotten.incompatibility.close": "Cerrar Minecraft",
   "creative_mode_tab.forgotten": "Forgotten",
   "item.forgotten.player_soul": "Remanente espectral",
-  "item.forgotten.player_soul.named": "Remanente espectral de %s"
+  "item.forgotten.player_soul.named": "Remanente espectral de %s",
+  "item.forgotten.ethereal_shard": "Fragmento etéreo"
 }

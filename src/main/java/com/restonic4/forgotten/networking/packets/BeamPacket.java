@@ -1,16 +1,23 @@
 package com.restonic4.forgotten.networking.packets;
 
+import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.client.CachedClientData;
 import com.restonic4.forgotten.client.rendering.BeamEffect;
 import com.restonic4.forgotten.client.rendering.BeamEffectManager;
 import com.restonic4.forgotten.client.rendering.SkyWaveEffectManager;
+import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.common.ForgottenSounds;
+import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.util.helpers.MathHelper;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
@@ -98,5 +105,17 @@ public class BeamPacket {
                 minecraft.level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), ForgottenSounds.EXPLOSION, SoundSource.AMBIENT, 1, 1, false);
             }
         });
+    }
+
+    public static void sendToClient(ServerPlayer serverPlayer) {
+        JsonDataManager dataManager = Forgotten.getDataManager();
+
+        if (!dataManager.contains("center")) {
+            return;
+        }
+
+        FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
+        friendlyByteBuf.writeBlockPos(dataManager.getBlockPos("center").offset(0, -8, 0));
+        ServerPlayNetworking.send(serverPlayer, PacketManager.BEAM, friendlyByteBuf);
     }
 }

@@ -118,11 +118,13 @@ public class AltarBlock extends BaseEntityBlock {
                             syncWithClients(level, blockEntity, blockState, blockPos);
                             executeRitual(targetPlayer);
                         } else {
-                            SimpleEffectHelper.invalidHeadPlacement((ServerLevel) player.level(), blockPos);
+                            SimpleEffectHelper.invalidHeadPlacement((ServerLevel) player.level(), blockPos.offset(0, 1, 0));
                         }
-
-                        return InteractionResult.SUCCESS;
+                    } else {
+                        SimpleEffectHelper.invalidHeadPlacement((ServerLevel) player.level(), blockPos.offset(0, 1, 0));
                     }
+
+                    return InteractionResult.SUCCESS;
                 }
 
                 if (storedItem.isEmpty() && !heldItem.isEmpty()) {

@@ -151,10 +151,12 @@ public class ClientShootingStarManager {
         etherealFragments.add(itemEntity);
     }
 
+    public static void theFuck() {
+        System.out.println("wtf");
+    }
+
     public static void renderEtherealFragmentEffects(PoseStack poseStack, Matrix4f matrix4f, Camera camera) {
-        if (etherealFragments.isEmpty()) {
-            return;
-        }
+        System.out.println("Render time");
 
         for (int i = 0; i < etherealFragments.size(); i++) {
             ItemEntity itemEntity = etherealFragments.get(i);

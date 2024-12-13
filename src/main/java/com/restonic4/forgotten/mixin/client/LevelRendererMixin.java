@@ -42,9 +42,12 @@ public abstract class LevelRendererMixin {
     private void renderManagers(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
         float alpha = 1.0F - this.level.getRainLevel(f);
 
+        System.out.println("hola????");
+
         ClientShootingStarManager.renderShootingStar(poseStack, matrix4f, camera, alpha);
+        ClientShootingStarManager.theFuck();
+        ClientShootingStarManager.renderEtherealFragmentEffects(poseStack, matrix4f, camera);
         BeamEffectManager.render(poseStack, matrix4f, camera);
         EnergyOrbEffectManager.render(poseStack, matrix4f, camera);
-        ClientShootingStarManager.renderEtherealFragmentEffects(poseStack, matrix4f, camera);
     }
 }

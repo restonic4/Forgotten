@@ -5,6 +5,7 @@ import com.restonic4.forgotten.client.rendering.ClientShootingStarManager;
 import com.restonic4.forgotten.item.EtherealFragment;
 import com.restonic4.forgotten.item.InvincibleItem;
 import com.restonic4.forgotten.item.PlayerSoul;
+import com.restonic4.forgotten.registries.common.ForgottenItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -49,6 +50,6 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
     @Unique
     private boolean shouldRenderOrbs(ItemEntity itemEntity) {
-        return itemEntity.getItem().getItem() instanceof EtherealFragment;
+        return itemEntity.getItem().is(ForgottenItems.ETHEREAL_SHARD);
     }
 }

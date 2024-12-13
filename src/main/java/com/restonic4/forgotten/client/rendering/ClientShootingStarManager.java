@@ -152,6 +152,10 @@ public class ClientShootingStarManager {
     }
 
     public static void renderEtherealFragmentEffects(PoseStack poseStack, Matrix4f matrix4f, Camera camera) {
+        if (etherealFragments.isEmpty()) {
+            return;
+        }
+
         for (int i = 0; i < etherealFragments.size(); i++) {
             ItemEntity itemEntity = etherealFragments.get(i);
 

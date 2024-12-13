@@ -13,10 +13,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 
@@ -127,7 +130,21 @@ public class ServerShootingStarManager {
         int x = playerPos.getX() + xOffset;
         int z = playerPos.getZ() + zOffset;
 
+        ChunkPos chunkPos = new ChunkPos(x >> 4, z >> 4);
+        boolean wasChunkLoaded = world.isLoaded(new BlockPos(chunkPos.getMinBlockX(), 0, chunkPos.getMinBlockZ()));
+        ServerChunkCache serverChunkCache = (ServerChunkCache) world.getChunkSource();
+
+        if (!wasChunkLoaded) {
+            serverChunkCache.addRegionTicket(TicketType.POST_TELEPORT, chunkPos, 1, player.getId());
+        }
+
+        world.getChunk(chunkPos.x, chunkPos.z);
+
         int y = world.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
+
+        if (!wasChunkLoaded) {
+            serverChunkCache.removeRegionTicket(TicketType.POST_TELEPORT, chunkPos, 1, player.getId());
+        }
 
         return new BlockPos(x, y, z);
     }

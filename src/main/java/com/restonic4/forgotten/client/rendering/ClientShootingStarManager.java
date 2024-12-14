@@ -146,17 +146,8 @@ public class ClientShootingStarManager {
         }
     }
 
-    public static Vector3f testPos = new Vector3f(-214, 200, 70);
     public static void renderEtherealFragmentEffects(PoseStack poseStack, Matrix4f matrix4f, Camera camera) {
-        RenderSystem.setShaderColor(0.988f, 0.996f, 0.996f, 0.04f);
-
-        for (int i = 0; i <= 50; i++) {
-            RenderingHelper.renderSphere(poseStack, matrix4f, camera, testPos, i);
-        }
-
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-
-        /*if (etherealFragments.isEmpty()) {
+        if (etherealFragments.isEmpty()) {
             return;
         }
 
@@ -179,7 +170,7 @@ public class ClientShootingStarManager {
             RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 16);
         }
 
-        RenderSystem.setShaderColor(1, 1, 1, 1);*/
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
     private static boolean existsInClientWorld(ItemEntity itemEntity) {

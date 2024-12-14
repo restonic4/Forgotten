@@ -23,31 +23,27 @@ public class MathHelper {
     public static java.util.List<Vector3f> generateSphere(float radius, int longs, int lats) {
         java.util.List<Vector3f> vertices = new ArrayList<>();
 
-        float startU = 0.0f;                   // Comienzo en U (longitud)
-        float startV = 0.0f;                   // Comienzo en V (latitud)
-        float endU = (float) (2 * Math.PI);    // Fin en U
-        float endV = (float) Math.PI;          // Fin en V
+        float startU = 0.0f;
+        float startV = 0.0f;
+        float endU = (float) (2 * Math.PI);
+        float endV = (float) Math.PI;
 
-        float stepU = (endU - startU) / longs; // Incremento en U
-        float stepV = (endV - startV) / lats;  // Incremento en V
+        float stepU = (endU - startU) / longs;
+        float stepV = (endV - startV) / lats;
 
         for (int i = 0; i < longs; i++) {
             for (int j = 0; j < lats; j++) {
-                // Coordenadas U y V para este segmento
                 float u = i * stepU + startU;
                 float v = j * stepV + startV;
 
-                // Coordenadas U y V para el siguiente segmento
                 float un = (i + 1 == longs) ? endU : (i + 1) * stepU + startU;
                 float vn = (j + 1 == lats) ? endV : (j + 1) * stepV + startV;
 
-                // Generar los puntos paramétricos
                 Vector3f p0 = parametricSphere(u, v, radius);
                 Vector3f p1 = parametricSphere(u, vn, radius);
                 Vector3f p2 = parametricSphere(un, v, radius);
                 Vector3f p3 = parametricSphere(un, vn, radius);
 
-                // Agregar los triángulos para este segmento
                 vertices.add(p0);
                 vertices.add(p2);
                 vertices.add(p1);
@@ -70,13 +66,17 @@ public class MathHelper {
 
     public static void scaleVertices(Vector3f[] vertices, float scaleX, float scaleY, float scaleZ) {
         for (Vector3f vertex : vertices) {
-            vertex.mul(scaleX, scaleY, scaleZ);
+            vertex.x *= scaleX;
+            vertex.y *= scaleY;
+            vertex.z *= scaleZ;
         }
     }
 
     public static void translateVertices(Vector3f[] vertices, float translateX, float translateY, float translateZ) {
         for (Vector3f vertex : vertices) {
-            vertex.add(translateX, translateY, translateZ);
+            vertex.x += translateX;
+            vertex.y += translateY;
+            vertex.z += translateZ;
         }
     }
 

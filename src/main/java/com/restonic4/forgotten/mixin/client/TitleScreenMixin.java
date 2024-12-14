@@ -21,7 +21,7 @@ public class TitleScreenMixin {
     private void onRender(CallbackInfo ci) {
         if (!hasPlayedMusic) {
             hasPlayedMusic = true;
-            playCustomMusic();
+            //playCustomMusic();
         }
     }
 

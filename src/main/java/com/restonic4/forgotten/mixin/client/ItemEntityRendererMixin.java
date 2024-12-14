@@ -45,7 +45,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
     @Unique
     private boolean shouldScaleItem(ItemEntity itemEntity) {
-        return itemEntity.getItem().getItem() instanceof PlayerSoul playerSoul;
+        return itemEntity.getItem().is(ForgottenItems.PLAYER_SOUL) || itemEntity.getItem().is(ForgottenItems.ETHEREAL_SHARD);
     }
 
     @Unique

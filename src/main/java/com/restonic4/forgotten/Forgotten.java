@@ -8,11 +8,10 @@ import com.restonic4.forgotten.entity.common.SmallCoreEntity;
 import com.restonic4.forgotten.item.PlayerSoul;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.common.*;
-import com.restonic4.forgotten.saving.JsonDataManager;
+import com.restonic4.forgotten.saving.SaveManager;
 import com.restonic4.forgotten.util.GriefingPrevention;
 import com.restonic4.forgotten.util.ServerCache;
 import com.restonic4.forgotten.util.ServerShootingStarManager;
-import io.github.fabricators_of_create.porting_lib.event.client.InteractEvents;
 import me.drex.vanish.api.VanishEvents;
 import me.drex.vanish.config.ConfigManager;
 import me.drex.vanish.util.VanishManager;
@@ -32,20 +31,17 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
@@ -53,8 +49,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -63,9 +57,11 @@ import java.util.Random;
 public class Forgotten implements ModInitializer {
     public static final String MOD_ID = "forgotten";
 
-    private static final JsonDataManager dataManager = new JsonDataManager();
     int ticksLeft = 0;
     int tickSaveCounter = 0;
+
+    private static ServerPlayer playerBeingRevived = null;
+    private static long reviveAtTime = 0;
 
     @Override
     public void onInitialize() {
@@ -81,9 +77,13 @@ public class Forgotten implements ModInitializer {
     }
 
     private void registerEvents() {
-        ServerLifecycleEvents.SERVER_STARTING.register(dataManager::loadFromDisk);
+        ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer) -> {
+            SaveManager.getInstance(minecraftServer).loadFromFile();
+        });
 
-        ServerLifecycleEvents.SERVER_STOPPING.register(dataManager::saveToDisk);
+        ServerLifecycleEvents.SERVER_STOPPING.register((minecraftServer) -> {
+            SaveManager.getInstance(minecraftServer).saveToFile();
+        });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             TestDeath.register(dispatcher);
@@ -98,14 +98,16 @@ public class Forgotten implements ModInitializer {
         });
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
+            SaveManager saveManager = SaveManager.getInstance(server);
+
             tickSaveCounter++;
             if (tickSaveCounter >= 3000) {
-                dataManager.saveToDisk(server);
+                saveManager.saveToFile();
                 tickSaveCounter = 0;
             }
 
-            if (!isSmallCoreLeft() && ServerCache.getMainCore() != null && !dataManager.getBoolean("MainCoreFallAnimation")) {
-                dataManager.save("MainCoreFallAnimation", true);
+            if (!isSmallCoreLeft(server) && ServerCache.getMainCore() != null && !saveManager.get("MainCoreFallAnimation", Boolean.class)) {
+                saveManager.save("MainCoreFallAnimation", true);
 
                 for (ChainEntity entity : ServerCache.chains) {
                     entity.discard();
@@ -120,13 +122,15 @@ public class Forgotten implements ModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
+            SaveManager saveManager = SaveManager.getInstance(server);
+
             if (isVanishLoaded()) {
                 ConfigManager.vanish().sendJoinDisconnectMessage = false;
                 server.getGameRules().getRule(GameRules.RULE_SHOWDEATHMESSAGES).set(false, server);
             }
 
-            if (dataManager.contains("center")) {
-                BlockPos center = dataManager.getBlockPos("center");
+            if (saveManager.containsKey("center")) {
+                BlockPos center = saveManager.get("center", BlockPos.class);
 
                 ServerLevel serverLevel = server.overworld();
                 serverLevel.setDefaultSpawnPos(center, 0);
@@ -134,39 +138,45 @@ public class Forgotten implements ModInitializer {
         });
 
         ServerLivingEntityEvents.ALLOW_DEATH.register((livingEntity, damageSource, damageAmount) -> {
-            if (livingEntity instanceof ServerPlayer serverPlayer && isVanishLoaded() && !isPlayerGoingToUseTotem(serverPlayer) && dataManager.getBoolean("Hardcore")) {
-                regeneratePlayer(serverPlayer);
+            if (!livingEntity.level().isClientSide()) {
+                SaveManager saveManager = SaveManager.getInstance(livingEntity.getServer());
 
-                if (!VanishManager.isVanished(serverPlayer)) {
-                    //placePlayerHead(serverPlayer);
-                    placePlayerSoul(serverPlayer);
+                if (livingEntity instanceof ServerPlayer serverPlayer && isVanishLoaded() && !isPlayerGoingToUseTotem(serverPlayer) && saveManager.get("Hardcore", Boolean.class)) {
+                    regeneratePlayer(serverPlayer);
 
-                    serverPlayer.getInventory().dropAll();
+                    if (!VanishManager.isVanished(serverPlayer)) {
+                        //placePlayerHead(serverPlayer);
+                        placePlayerSoul(serverPlayer);
 
-                    if (serverPlayer.level() instanceof ServerLevel && !serverPlayer.wasExperienceConsumed()) {
-                        ExperienceOrb.award((ServerLevel)serverPlayer.level(), serverPlayer.position(), serverPlayer.getExperienceReward());
-                        serverPlayer.setExperienceLevels(0);
-                        serverPlayer.setExperiencePoints(0);
+                        serverPlayer.getInventory().dropAll();
+
+                        if (serverPlayer.level() instanceof ServerLevel && !serverPlayer.wasExperienceConsumed()) {
+                            ExperienceOrb.award((ServerLevel)serverPlayer.level(), serverPlayer.position(), serverPlayer.getExperienceReward());
+                            serverPlayer.setExperienceLevels(0);
+                            serverPlayer.setExperiencePoints(0);
+                        }
+
+                        if (isVoiceChatLoaded()) {
+                            Plugin.leaveGroup(serverPlayer);
+                        }
+
+                        FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
+                        friendlyByteBuf.writeBoolean(true);
+                        ServerPlayNetworking.send(serverPlayer, PacketManager.DEATH, friendlyByteBuf);
+
+                        VanishManager.setVanished(serverPlayer.getGameProfile(), serverPlayer.server, true);
                     }
 
-                    if (isVoiceChatLoaded()) {
-                        Plugin.leaveGroup(serverPlayer);
-                    }
-
-                    FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
-                    friendlyByteBuf.writeBoolean(true);
-                    ServerPlayNetworking.send(serverPlayer, PacketManager.DEATH, friendlyByteBuf);
-
-                    VanishManager.setVanished(serverPlayer.getGameProfile(), serverPlayer.server, true);
+                    return false;
                 }
-
-                return false;
             }
 
             return true;
         });
 
         ServerPlayConnectionEvents.JOIN.register((serverGamePacketListener, packetSender, minecraftServer) -> {
+            SaveManager saveManager = SaveManager.getInstance(minecraftServer);
+
             ServerPlayer serverPlayer = serverGamePacketListener.getPlayer();
 
             if (isVanishLoaded() && VanishManager.isVanished(serverPlayer)) {
@@ -177,12 +187,16 @@ public class Forgotten implements ModInitializer {
 
             ServerShootingStarManager.loadStarToClient(serverPlayer);
 
+            boolean isHardcore = (saveManager.containsKey("Hardcore")) ? saveManager.get("Hardcore", Boolean.class) : false;
+
             FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
-            friendlyByteBuf.writeBoolean(dataManager.getBoolean("Hardcore"));
+            friendlyByteBuf.writeBoolean(isHardcore);
             ServerPlayNetworking.send(serverPlayer, PacketManager.HARDCORE, friendlyByteBuf);
         });
 
         ServerTickEvents.START_SERVER_TICK.register((server) -> {
+            SaveManager saveManager = SaveManager.getInstance(server);
+
             if (!ServerCache.repulsionPoints.isEmpty()) {
                 List<ServerPlayer> players = server.getPlayerList().getPlayers();
                 for (int i = 0; i < players.size(); i++) {
@@ -205,6 +219,15 @@ public class Forgotten implements ModInitializer {
                             serverPlayer.addDeltaMovement(pushForce);
                         }
                     }
+                }
+            }
+
+            if (playerBeingRevived != null) {
+                Vec3 center = saveManager.get("center", BlockPos.class).getCenter();
+                playerBeingRevived.teleportTo(playerBeingRevived.server.overworld(), center.x, center.y + 25, center.z, 0, 0);
+
+                if (System.currentTimeMillis() >= reviveAtTime) {
+                    reviveTargetPlayer();
                 }
             }
 
@@ -236,7 +259,7 @@ public class Forgotten implements ModInitializer {
 
                 ticksLeft = 10;
 
-                if (dataManager.contains("center") && dataManager.getBoolean("Hardcore")) {
+                if (saveManager.containsKey("center") && saveManager.get("Hardcore", Boolean.class)) {
                     applyVanishEffects(server);
                 }
             }
@@ -283,14 +306,13 @@ public class Forgotten implements ModInitializer {
         }
     }
 
-    public static void resetCoreAnimation() {
-        dataManager.save("MainCoreFallAnimation", false);
+    public static void resetCoreAnimation(MinecraftServer server) {
+        SaveManager.getInstance(server).save("MainCoreFallAnimation", false);
     }
 
-    public static boolean isSmallCoreLeft() {
-        JsonDataManager dataManager = Forgotten.getDataManager();
-
-        return dataManager.getInt("SmallCoresDefeated") < 4;
+    public static boolean isSmallCoreLeft(MinecraftServer server) {
+        SaveManager saveManager = SaveManager.getInstance(server);
+        return !saveManager.containsKey("SmallCoresDefeated") || saveManager.get("SmallCoresDefeated", Integer.class) < 4;
     }
 
     private static boolean shouldPlayRareCreepySound() {
@@ -306,20 +328,20 @@ public class Forgotten implements ModInitializer {
     }
 
     public static void startMainRitual(ServerLevel serverLevel) {
-        if (!dataManager.getBoolean("Hardcore") && dataManager.contains("center")) {
-            dataManager.save("Hardcore", true);
+        SaveManager saveManager = SaveManager.getInstance(serverLevel.getServer());
 
-            ServerCache.addRepulsionPointIfPossible(dataManager.getBlockPos("center").getCenter());
+        if (!saveManager.get("Hardcore", Boolean.class) && saveManager.containsKey("center")) {
+            saveManager.save("Hardcore", true);
+
+            ServerCache.addRepulsionPointIfPossible(saveManager.get("center", BlockPos.class).getCenter());
 
             for (ServerPlayer serverPlayer : serverLevel.getServer().getPlayerList().getPlayers()) {
-                JsonDataManager dataManager = Forgotten.getDataManager();
-
-                if (!dataManager.contains("center")) {
+                if (!saveManager.containsKey("center")) {
                     throw new RuntimeException("Forgotten has not been initialized correctly");
                 }
 
                 FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
-                friendlyByteBuf.writeBlockPos(dataManager.getBlockPos("center").offset(0, -8, 0));
+                friendlyByteBuf.writeBlockPos(saveManager.get("center", BlockPos.class).offset(0, -8, 0));
                 ServerPlayNetworking.send(serverPlayer, PacketManager.MAIN_RITUAL, friendlyByteBuf);
             }
 
@@ -328,13 +350,13 @@ public class Forgotten implements ModInitializer {
                     Thread.sleep(28000);
                 } catch (Exception ignored) {}
 
-                serverLevel.setBlock(dataManager.getBlockPos("center"), ForgottenBlocks.ALTAR.defaultBlockState(), 3);
+                serverLevel.setBlock(saveManager.get("center", BlockPos.class), ForgottenBlocks.ALTAR.defaultBlockState(), 3);
 
                 try {
                     Thread.sleep(2000);
                 } catch (Exception ignored) {}
 
-                ServerCache.removeRepulsionPointIfPossible(dataManager.getBlockPos("center").getCenter());
+                ServerCache.removeRepulsionPointIfPossible(saveManager.get("center", BlockPos.class).getCenter());
             }).start();
         }
     }
@@ -453,15 +475,38 @@ public class Forgotten implements ModInitializer {
         return FabricLoader.getInstance().isModLoaded("voicechat");
     }
 
-    public static JsonDataManager getDataManager() {
-        return dataManager;
-    }
-
     public static boolean isVanishLoadedAndVanished(ServerPlayer serverPlayer) {
         if (!isVanishLoaded()) {
             return false;
         }
 
         return VanishManager.isVanished(serverPlayer);
+    }
+
+    public static boolean canExecuteRevivalRitual() {
+        return playerBeingRevived == null;
+    }
+
+    public static void setRevivalRitualTarget(ServerPlayer serverPlayer) {
+        playerBeingRevived = serverPlayer;
+        reviveAtTime = System.currentTimeMillis() + 2000;
+    }
+
+    public static void reviveTargetPlayer() {
+        if (isVanishLoaded()) {
+            VanishManager.setVanished(playerBeingRevived.getGameProfile(), playerBeingRevived.server, false);
+
+            MobEffectInstance slowFalling = new MobEffectInstance(
+                    MobEffects.SLOW_FALLING,
+                    20 * 20,
+                    0,
+                    false,
+                    false
+            );
+
+            playerBeingRevived.addEffect(slowFalling);
+        }
+
+        playerBeingRevived = null;
     }
 }

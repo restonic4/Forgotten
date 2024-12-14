@@ -1,6 +1,10 @@
 package com.restonic4.forgotten.saving;
 
-public class StarData {
+import java.io.Serializable;
+
+public class StarData implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private float size, rotation, x, y, z;
 
     public StarData(float size, float rotation, float x, float y, float z) {

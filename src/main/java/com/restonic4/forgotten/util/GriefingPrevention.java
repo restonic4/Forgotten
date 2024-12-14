@@ -3,24 +3,19 @@ package com.restonic4.forgotten.util;
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.common.ForgottenBlocks;
-import com.restonic4.forgotten.saving.JsonDataManager;
+import com.restonic4.forgotten.saving.SaveManager;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
 import com.restonic4.forgotten.util.helpers.SimpleEffectHelper;
-import io.github.fabricators_of_create.porting_lib.event.common.ExplosionEvents;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
@@ -40,13 +35,14 @@ public class GriefingPrevention {
 
     }
 
-    public static boolean isInProtectedArea(BlockPos blockPos) {
-        return isInMainTempleRange(blockPos);
+    public static boolean isInProtectedArea(ServerLevel serverLevel, BlockPos blockPos) {
+        return isInMainTempleRange(serverLevel, blockPos);
     }
 
-    public static boolean isInMainTempleRange(BlockPos blockPos) {
-        JsonDataManager dataManager = Forgotten.getDataManager();
-        BlockPos pos = dataManager.getBlockPos("center");
+    public static boolean isInMainTempleRange(ServerLevel serverLevel, BlockPos blockPos) {
+        SaveManager saveManager = SaveManager.getInstance(serverLevel.getServer());
+
+        BlockPos pos = saveManager.get("center", BlockPos.class);
 
         if (pos != null) {
             Vec3 blockPosVec = blockPos.getCenter();

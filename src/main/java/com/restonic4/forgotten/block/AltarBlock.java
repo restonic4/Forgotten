@@ -1,43 +1,32 @@
 package com.restonic4.forgotten.block;
 
+import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.item.PlayerSoul;
-import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.networking.packets.BeamPacket;
 import com.restonic4.forgotten.registries.common.ForgottenItems;
-import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import com.restonic4.forgotten.util.helpers.SimpleEffectHelper;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
 
 public class AltarBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -106,12 +95,27 @@ public class AltarBlock extends BaseEntityBlock {
 
                 if (isRitualCondition) {
                     CompoundTag tag = storedItem.getTag();
-                    if (tag != null && tag.contains(PlayerSoul.MAIN_TAG, 8)) {
-                        String playerName = tag.getString(PlayerSoul.MAIN_TAG);
 
+                    String playerName = null;
+
+                    if (tag != null && tag.contains(PlayerSoul.MAIN_TAG, 8)) {
+                        playerName = tag.getString(PlayerSoul.MAIN_TAG);
+                    } else if (tag != null && tag.contains(PlayerSoul.MAIN_TAG, 10)) {
+                        CompoundTag compoundTag2 = tag.getCompound(PlayerSoul.MAIN_TAG);
+                        if (compoundTag2.contains("Name", 8)) {
+                            playerName = compoundTag2.getString("Name");
+                        }
+                    }
+
+                    System.out.println("Player name: " + playerName);
+                    if (tag != null) {
+                        System.out.println(tag.contains(PlayerSoul.MAIN_TAG));
+                    }
+
+                    if (playerName != null) {
                         ServerPlayer targetPlayer = level.getServer().getPlayerList().getPlayerByName(playerName);
 
-                        if (targetPlayer != null) {
+                        if (targetPlayer != null && Forgotten.canExecuteRevivalRitual()) {
                             blockEntity.setStoredItem(ItemStack.EMPTY);
                             player.setItemInHand(interactionHand, ItemStack.EMPTY);
 
@@ -143,6 +147,8 @@ public class AltarBlock extends BaseEntityBlock {
     }
 
     private void executeRitual(ServerPlayer playerToBeSaved) {
+        Forgotten.setRevivalRitualTarget(playerToBeSaved);
+
         for (ServerPlayer serverPlayer : playerToBeSaved.getServer().getPlayerList().getPlayers()) {
             BeamPacket.sendToClient(serverPlayer);
         }

@@ -22,7 +22,7 @@ public class BlockMixin {
     @Inject(method = "popResource(Lnet/minecraft/world/level/Level;Ljava/util/function/Supplier;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     private static void popResource(Level level, Supplier<ItemEntity> supplier, ItemStack itemStack, CallbackInfo ci) {
         if (!level.isClientSide && !itemStack.isEmpty()) {
-            if (GriefingPrevention.isInProtectedArea(supplier.get().blockPosition())) {
+            if (GriefingPrevention.isInProtectedArea((ServerLevel) level, supplier.get().blockPosition())) {
                 ci.cancel();
             }
         }
@@ -30,7 +30,7 @@ public class BlockMixin {
 
     @Inject(method = "popExperience", at = @At("HEAD"), cancellable = true)
     protected void popExperience(ServerLevel serverLevel, BlockPos blockPos, int i, CallbackInfo ci) {
-        if (GriefingPrevention.isInProtectedArea(blockPos)) {
+        if (GriefingPrevention.isInProtectedArea(serverLevel, blockPos)) {
             ci.cancel();
         }
     }

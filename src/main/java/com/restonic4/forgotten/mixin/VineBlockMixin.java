@@ -17,16 +17,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class VineBlockMixin {
     @Inject(method = "randomTick", at = @At("HEAD"), cancellable = true)
     public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource, CallbackInfo ci) {
-        if (GriefingPrevention.isInProtectedArea(blockPos)) {
+        if (GriefingPrevention.isInProtectedArea(serverLevel, blockPos)) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "canSpread", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "canSpread", at = @At("HEAD"), cancellable = true)
     private void canSpread(BlockGetter blockGetter, BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
         if (GriefingPrevention.isInProtectedArea(blockPos)) {
             cir.setReturnValue(false);
             cir.cancel();
         }
-    }
+    }*/
 }

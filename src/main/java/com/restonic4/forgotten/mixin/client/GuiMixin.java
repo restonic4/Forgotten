@@ -123,7 +123,7 @@ public abstract class GuiMixin {
 
     @Unique
     private void renderIcon(GuiGraphics guiGraphics, int x, int y, int size, int iconID, boolean isCooldown) {
-        ResourceLocation texture = new ResourceLocation(Forgotten.MOD_ID, "textures/gui/icons.png");
+        /*ResourceLocation texture = new ResourceLocation(Forgotten.MOD_ID, "textures/gui/icons.png");
 
         int textureX = size * iconID;
         int textureY = 0;
@@ -135,7 +135,7 @@ public abstract class GuiMixin {
 
         if (isCooldown) {
             guiGraphics.blit(texture, x, y, 0, 0, textureY + size, size, size, globalTextureXSize, globalTextureYSize);
-        }
+        }*/
     }
 
     @Unique

@@ -1,11 +1,9 @@
 package com.restonic4.forgotten.entity.common;
 
 import com.restonic4.forgotten.Forgotten;
-import com.restonic4.forgotten.commdands.SetUpForgotten;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import com.restonic4.forgotten.saving.Components;
-import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.util.ServerCache;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -66,7 +64,7 @@ public class CoreEntity extends Animal {
             return false;
         }
 
-        if (this.level() instanceof ServerLevel && Forgotten.isSmallCoreLeft()) {
+        if (this.level() instanceof ServerLevel serverLevel && Forgotten.isSmallCoreLeft(serverLevel.getServer())) {
             return false;
         }
 

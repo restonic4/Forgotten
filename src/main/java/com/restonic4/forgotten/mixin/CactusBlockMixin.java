@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class CactusBlockMixin {
     @Inject(method = "randomTick", at = @At("HEAD"), cancellable = true)
     public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource, CallbackInfo ci) {
-        if (GriefingPrevention.isInProtectedArea(blockPos)) {
+        if (GriefingPrevention.isInProtectedArea(serverLevel, blockPos)) {
             ci.cancel();
         }
     }

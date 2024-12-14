@@ -36,7 +36,7 @@ public class AltarBlockEntityRenderer implements BlockEntityRenderer<AltarBlockE
 
             poseStack.translate(0.5, 1.1, 0.5);
 
-            if (itemStack.is(ForgottenItems.PLAYER_SOUL)) {
+            if (itemStack.is(ForgottenItems.PLAYER_SOUL) || itemStack.is(ForgottenItems.ETHEREAL_SHARD)) {
                 poseStack.scale(1f, 1f, 1f);
                 packedLight = 0xF000F0;
             } else {

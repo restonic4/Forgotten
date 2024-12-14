@@ -2,6 +2,7 @@ package com.restonic4.forgotten.mixin.client;
 
 import com.restonic4.forgotten.client.ForgottenClient;
 import com.restonic4.forgotten.item.PlayerSoul;
+import com.restonic4.forgotten.registries.common.ForgottenItems;
 import com.restonic4.forgotten.util.OptimizedSine;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -20,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class EntityRendererMixin {
     @Inject(method = "getPackedLightCoords", at = @At("HEAD"), cancellable = true)
     protected <T extends Entity> void getPackedLightCoords(T entity, float f, CallbackInfoReturnable<Integer> cir) {
-        if (isSoul(entity)) {
+        if (isSoul(entity) || isFragment(entity)) {
             cir.setReturnValue(LightTexture.pack(15, 15));
             cir.cancel();
         }
@@ -29,5 +30,10 @@ public class EntityRendererMixin {
     @Unique
     public boolean isSoul(Entity entity) {
         return entity instanceof ItemEntity itemEntity && itemEntity.getItem().getItem() instanceof PlayerSoul playerSoul;
+    }
+
+    @Unique
+    public boolean isFragment(Entity entity) {
+        return entity instanceof ItemEntity itemEntity && itemEntity.getItem().is(ForgottenItems.ETHEREAL_SHARD);
     }
 }

@@ -1,17 +1,13 @@
 package com.restonic4.forgotten.util;
 
-import com.mojang.authlib.GameProfile;
 import com.restonic4.forgotten.Forgotten;
-import com.restonic4.forgotten.item.PlayerSoul;
 import com.restonic4.forgotten.networking.packets.FallStarPacket;
 import com.restonic4.forgotten.networking.packets.SpawnStarPacket;
 import com.restonic4.forgotten.registries.common.ForgottenItems;
-import com.restonic4.forgotten.saving.JsonDataManager;
+import com.restonic4.forgotten.saving.SaveManager;
 import com.restonic4.forgotten.saving.StarData;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
@@ -26,8 +22,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 public class ServerShootingStarManager {
     public static void spawn(MinecraftServer server) {
         for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
-            JsonDataManager dataManager = Forgotten.getDataManager();
-
             StarData starData = new StarData(
                     RandomUtil.randomBetween(3, 6),
                     RandomUtil.randomBetween(0, 365),
@@ -36,7 +30,7 @@ public class ServerShootingStarManager {
                     RandomUtil.randomBetween(-200, 200)
             );
 
-            dataManager.save("star", starData);
+            SaveManager.getInstance(server).save("star", starData);
 
             SpawnStarPacket.sendToClient(
                     serverPlayer,
@@ -50,10 +44,10 @@ public class ServerShootingStarManager {
     }
 
     public static void loadStarToClient(ServerPlayer serverPlayer) {
-        JsonDataManager dataManager = Forgotten.getDataManager();
+        SaveManager saveManager = SaveManager.getInstance(serverPlayer.server);
 
-        if (dataManager.contains("star")) {
-            StarData starData = dataManager.getStarData("star");
+        if (saveManager.containsKey("star")) {
+            StarData starData = saveManager.get("star", StarData.class);
 
             SpawnStarPacket.sendToClient(
                     serverPlayer,
@@ -67,9 +61,9 @@ public class ServerShootingStarManager {
     }
 
     public static void shootStar(MinecraftServer server) {
-        JsonDataManager dataManager = Forgotten.getDataManager();
+        SaveManager saveManager = SaveManager.getInstance(server);
 
-        if (!dataManager.contains("star")) {
+        if (!saveManager.containsKey("star")) {
             return;
         }
 
@@ -82,7 +76,7 @@ public class ServerShootingStarManager {
                 FallStarPacket.sendToClient(serverPlayer, startCollisionPoint);
             }
 
-            dataManager.delete("star");
+            saveManager.delete("star");
 
             new Thread(() -> {
                 try {
@@ -95,21 +89,23 @@ public class ServerShootingStarManager {
     }
 
     public static void spawnStarItemInLevel(ServerLevel serverLevel, BlockPos blockPos) {
-        ItemStack playerSoulItem = new ItemStack(ForgottenItems.ETHEREAL_SHARD);
+        serverLevel.getServer().execute(() -> {
+            ItemStack playerSoulItem = new ItemStack(ForgottenItems.ETHEREAL_SHARD);
 
-        System.out.println("Ethereal shard spawned at (" + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ")");
+            System.out.println("Ethereal shard spawned at (" + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ")");
 
-        ItemEntity droppedItem = new ItemEntity(
-                serverLevel,
-                blockPos.getX(),
-                blockPos.getY(),
-                blockPos.getZ(),
-                playerSoulItem
-        );
+            ItemEntity droppedItem = new ItemEntity(
+                    serverLevel,
+                    blockPos.getX(),
+                    blockPos.getY(),
+                    blockPos.getZ(),
+                    playerSoulItem
+            );
 
-        droppedItem.setDefaultPickUpDelay();
+            droppedItem.setDefaultPickUpDelay();
 
-        serverLevel.addFreshEntity(droppedItem);
+            serverLevel.addFreshEntity(droppedItem);
+        });
     }
 
     public static BlockPos getRandomPositionAroundPlayer(ServerPlayer player, int minRadius, int maxRadius) {

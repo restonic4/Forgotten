@@ -18,7 +18,9 @@ import team.lodestar.lodestone.registry.client.LodestoneRenderTypeRegistry;
 import team.lodestar.lodestone.systems.rendering.VFXBuilders;
 
 import java.awt.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RenderingHelper {
     public static void renderBeamFromEntity(PoseStack poseStack, Vec3 startPos, Vec3 endPos, float width) {
@@ -77,12 +79,12 @@ public class RenderingHelper {
         poseStack.popPose();
     }
 
-    public static void renderDynamicGeometry(PoseStack poseStack, Matrix4f matrix4f, Camera camera, VertexFormat.Mode mode, Vector3f[] vertices) {
+    /*public static void renderDynamicGeometry(PoseStack poseStack, Matrix4f matrix4f, Camera camera, VertexFormat.Mode mode, Vector3f[] vertices) {
         BufferBuilder.RenderedBuffer renderedBuffer = RenderingHelper.buildGeometry(Tesselator.getInstance().getBuilder(), mode, vertices);
         renderQuad(generateBuffer(renderedBuffer), poseStack, matrix4f, camera);
-    }
+    }*/
 
-    public static void renderQuad(VertexBuffer vertexBuffer, PoseStack poseStack, Matrix4f matrix4f, Camera camera) {
+    /*public static void renderQuad(VertexBuffer vertexBuffer, PoseStack poseStack, Matrix4f matrix4f, Camera camera) {
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
@@ -99,6 +101,27 @@ public class RenderingHelper {
         poseStack.popPose();
 
         RenderSystem.depthMask(true);
+    }*/
+
+    public static void renderDynamicGeometry(PoseStack poseStack, Matrix4f matrix4f, Camera camera, VertexFormat.Mode mode, Vector3f[] vertices) {
+        BufferBuilder.RenderedBuffer renderedBuffer = buildGeometryReusable(mode, vertices);
+        renderQuad(generateReusableBuffer(renderedBuffer), poseStack, matrix4f, camera);
+    }
+
+    public static void renderQuad(VertexBuffer vertexBuffer, PoseStack poseStack, Matrix4f matrix4f, Camera camera) {
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.enableDepthTest();
+
+        poseStack.pushPose();
+        poseStack.translate(-camera.getPosition().x, -camera.getPosition().y, -camera.getPosition().z);
+
+        vertexBuffer.bind();
+        vertexBuffer.drawWithShader(poseStack.last().pose(), matrix4f, ForgottenShaderHolders.SIMPLE_COLOR.getInstance().get());
+
+        poseStack.popPose();
+
+        RenderSystem.depthMask(true);
     }
 
     public static VertexBuffer generateBuffer(BufferBuilder.RenderedBuffer renderedBuffer) {
@@ -109,6 +132,14 @@ public class RenderingHelper {
         VertexBuffer.unbind();
 
         return buffer;
+    }
+
+    private static final VertexBuffer reusableVertexBuffer = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
+    public static VertexBuffer generateReusableBuffer(BufferBuilder.RenderedBuffer renderedBuffer) {
+        reusableVertexBuffer.bind();
+        reusableVertexBuffer.upload(renderedBuffer);
+        VertexBuffer.unbind();
+        return reusableVertexBuffer;
     }
 
     public static BufferBuilder.RenderedBuffer buildGeometry(BufferBuilder bufferBuilder, VertexFormat.Mode mode, Vector3f[] positions) {
@@ -123,7 +154,23 @@ public class RenderingHelper {
         return bufferBuilder.end();
     }
 
+    private static final BufferBuilder reusableBufferBuilder = Tesselator.getInstance().getBuilder();
+    public static BufferBuilder.RenderedBuffer buildGeometryReusable(VertexFormat.Mode mode, Vector3f[] positions) {
+        reusableBufferBuilder.begin(mode, DefaultVertexFormat.POSITION);
+        for (Vector3f position : positions) {
+            reusableBufferBuilder.vertex(position.x, position.y, position.z).endVertex();
+        }
+        return reusableBufferBuilder.end();
+    }
 
+    private static final Map<String, VertexBuffer> dynamicBuffers = new HashMap<>();
+    public static VertexBuffer getDynamicBuffer(String key, BufferBuilder.RenderedBuffer renderedBuffer) {
+        VertexBuffer buffer = dynamicBuffers.computeIfAbsent(key, k -> new VertexBuffer(VertexBuffer.Usage.DYNAMIC));
+        buffer.bind();
+        buffer.upload(renderedBuffer);
+        VertexBuffer.unbind();
+        return buffer;
+    }
 
     public static void renderComplexBeam(PoseStack poseStack, Matrix4f matrix4f, Camera camera, Vector3f position, float width, float height) {
         List<Vector3f[]> vector3fList = RenderShapes.BEAM.getVertices();
@@ -169,8 +216,7 @@ public class RenderingHelper {
 
         Vector3f[] vertices = new Vector3f[] { topLeft, bottomLeft, bottomRight, topRight };
 
-        BufferBuilder.RenderedBuffer renderedBuffer = RenderingHelper.buildGeometry(Tesselator.getInstance().getBuilder(), VertexFormat.Mode.QUADS, vertices);
-
+        BufferBuilder.RenderedBuffer renderedBuffer = buildGeometry(Tesselator.getInstance().getBuilder(), VertexFormat.Mode.QUADS, vertices);
         renderQuad(generateBuffer(renderedBuffer), poseStack, matrix4f, camera);
     }
 

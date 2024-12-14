@@ -20,13 +20,12 @@ import team.lodestar.lodestone.handlers.ScreenshakeHandler;
 import team.lodestar.lodestone.systems.easing.Easing;
 import team.lodestar.lodestone.systems.screenshake.ScreenshakeInstance;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ClientShootingStarManager {
     public static final ResourceLocation STAR_LOCATION = new ResourceLocation(Forgotten.MOD_ID, "textures/environment/star.png");
 
-    private static final List<ItemEntity> etherealFragments = new ArrayList<>();
+    private static final Set<ItemEntity> etherealFragments = new HashSet<>();
 
     private static long spawnAnimationStart = 0;
     private static long spawnAnimationEnd = 0;
@@ -39,7 +38,7 @@ public class ClientShootingStarManager {
 
     private static long fallAnimationStart = 0;
     private static long fallAnimationEnd = 0;
-    private static BlockPos collisionPoint;
+    private static Vector3f collisionPoint;
     private static boolean impacted = false;
 
     public static void loadStarDataFromServer(long spawnAnimationStart, long spawnAnimationEnd, float size, float rotation, float x, float y, float z) {
@@ -63,7 +62,7 @@ public class ClientShootingStarManager {
         ClientShootingStarManager.fallAnimationStart = fallAnimationStart;
         ClientShootingStarManager.fallAnimationEnd = fallAnimationEnd;
 
-        ClientShootingStarManager.collisionPoint = collisionPoint;
+        ClientShootingStarManager.collisionPoint = collisionPoint.getCenter().toVector3f();
         impacted = false;
     }
 
@@ -104,17 +103,15 @@ public class ClientShootingStarManager {
 
         poseStack.pushPose();
 
-        Vector3f collisionVec = collisionPoint.getCenter().toVector3f();
-
         size = 0;
 
-        float easedStarX = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd, (float) (posX + camera.getPosition().x), collisionVec.x, EasingSystem.EasingType.EXPONENTIAL_IN);
-        float easedStarY = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd, (float) (posY + camera.getPosition().y), collisionVec.y, EasingSystem.EasingType.EXPONENTIAL_IN);
-        float easedStarZ = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd, (float) (posZ + camera.getPosition().z), collisionVec.z, EasingSystem.EasingType.EXPONENTIAL_IN);
+        float easedStarX = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd, (float) (posX + camera.getPosition().x), collisionPoint.x, EasingSystem.EasingType.EXPONENTIAL_IN);
+        float easedStarY = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd, (float) (posY + camera.getPosition().y), collisionPoint.y, EasingSystem.EasingType.EXPONENTIAL_IN);
+        float easedStarZ = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd, (float) (posZ + camera.getPosition().z), collisionPoint.z, EasingSystem.EasingType.EXPONENTIAL_IN);
 
-        float easedCollisionX = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1250, (float) (posX + camera.getPosition().x), collisionVec.x, EasingSystem.EasingType.EXPONENTIAL_IN);
-        float easedCollisionY = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1250, (float) (posY + camera.getPosition().y), collisionVec.y, EasingSystem.EasingType.EXPONENTIAL_IN);
-        float easedCollisionZ = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1250, (float) (posZ + camera.getPosition().z), collisionVec.z, EasingSystem.EasingType.EXPONENTIAL_IN);
+        float easedCollisionX = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1250, (float) (posX + camera.getPosition().x), collisionPoint.x, EasingSystem.EasingType.EXPONENTIAL_IN);
+        float easedCollisionY = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1250, (float) (posY + camera.getPosition().y), collisionPoint.y, EasingSystem.EasingType.EXPONENTIAL_IN);
+        float easedCollisionZ = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd - 1250, (float) (posZ + camera.getPosition().z), collisionPoint.z, EasingSystem.EasingType.EXPONENTIAL_IN);
 
         float easedWidth = EasingSystem.getEasedValue(fallAnimationStart, fallAnimationEnd, 2, 4, EasingSystem.EasingType.EXPONENTIAL_IN);
 
@@ -125,7 +122,7 @@ public class ClientShootingStarManager {
         RenderingHelper.renderBillboardQuad(poseStack, matrix4f, camera, new Vector3f(easedStarX, easedStarY, easedStarZ), new Vector3f(easedCollisionX, easedCollisionY, easedCollisionZ), easedWidth);
 
         RenderSystem.setShaderColor(0.988f, 0.996f, 0.996f, easedImpactAlpha);
-        RenderingHelper.renderSphere(poseStack, matrix4f, camera, collisionVec, easedImpactRadius);
+        RenderingHelper.renderSphere(poseStack, matrix4f, camera, collisionPoint, easedImpactRadius);
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
@@ -136,7 +133,7 @@ public class ClientShootingStarManager {
             ScreenshakeHandler.addScreenshake(orbShake);
 
             Minecraft.getInstance().execute(() -> {
-                Minecraft.getInstance().level.playLocalSound(collisionVec.x, collisionVec.y, collisionVec.z, ForgottenSounds.EXPLOSION, SoundSource.AMBIENT, 1, 1, false);
+                Minecraft.getInstance().level.playLocalSound(collisionPoint.x, collisionPoint.y, collisionPoint.z, ForgottenSounds.EXPLOSION, SoundSource.AMBIENT, 1, 1, false);
             });
         }
 
@@ -144,40 +141,51 @@ public class ClientShootingStarManager {
     }
 
     public static void addEtherealFragment(ItemEntity itemEntity) {
-        if (etherealFragments.contains(itemEntity)) {
+        if (existsInClientWorld(itemEntity)) {
+            etherealFragments.add(itemEntity);
+        }
+    }
+
+    public static Vector3f testPos = new Vector3f(-214, 200, 70);
+    public static void renderEtherealFragmentEffects(PoseStack poseStack, Matrix4f matrix4f, Camera camera) {
+        RenderSystem.setShaderColor(0.988f, 0.996f, 0.996f, 0.04f);
+
+        for (int i = 0; i <= 50; i++) {
+            RenderingHelper.renderSphere(poseStack, matrix4f, camera, testPos, i);
+        }
+
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+
+        /*if (etherealFragments.isEmpty()) {
             return;
         }
 
-        etherealFragments.add(itemEntity);
-    }
+        RenderSystem.setShaderColor(0.988f, 0.996f, 0.996f, 0.04f);
 
-    public static void theFuck() {
-        System.out.println("wtf");
-    }
+        Iterator<ItemEntity> iterator = etherealFragments.iterator();
+        while (iterator.hasNext()) {
+            ItemEntity itemEntity = iterator.next();
 
-    public static void renderEtherealFragmentEffects(PoseStack poseStack, Matrix4f matrix4f, Camera camera) {
-        System.out.println("Render time");
-
-        for (int i = 0; i < etherealFragments.size(); i++) {
-            ItemEntity itemEntity = etherealFragments.get(i);
-
-            if (itemEntity != null) {
-                Vector3f position = itemEntity.position().toVector3f();
-
-                RenderSystem.setShaderColor(0.988f, 0.996f, 0.996f, 0.04f);
-
-                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 1);
-                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 2);
-                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 4);
-                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 8);
-                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 14);
-                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 18);
-                RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 22);
-
-                RenderSystem.setShaderColor(1, 1, 1, 1);
+            if (!existsInClientWorld(itemEntity)) {
+                iterator.remove();
+                continue;
             }
+
+            Vector3f position = itemEntity.position().toVector3f();
+
+            RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 2);
+            RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 4);
+            RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 8);
+            RenderingHelper.renderSphere(poseStack, matrix4f, camera, position, 16);
         }
 
-        etherealFragments.clear();
+        RenderSystem.setShaderColor(1, 1, 1, 1);*/
+    }
+
+    private static boolean existsInClientWorld(ItemEntity itemEntity) {
+        if (itemEntity == null) return false;
+
+        return Minecraft.getInstance().level != null &&
+                Minecraft.getInstance().level.getEntity(itemEntity.getId()) instanceof ItemEntity;
     }
 }

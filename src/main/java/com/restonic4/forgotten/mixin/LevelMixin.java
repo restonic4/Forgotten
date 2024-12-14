@@ -62,7 +62,7 @@ public abstract class LevelMixin {
         Level level = (Level) (Object) this;
 
         if (level instanceof ServerLevel serverLevel) {
-            if (GriefingPrevention.isInProtectedArea(blockPos)) {
+            if (GriefingPrevention.isInProtectedArea(serverLevel, blockPos)) {
                 BlockState originalBlockState = GriefingPrevention.getOriginalBlockAndRegister(blockPos, this.getBlockState(blockPos));
 
                 if (blockState != originalBlockState) {

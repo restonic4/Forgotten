@@ -1,22 +1,17 @@
 package com.restonic4.forgotten.entity.common;
 
-import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.commdands.SetUpForgotten;
-import com.restonic4.forgotten.registries.common.ForgottenEntities;
 import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import com.restonic4.forgotten.saving.Components;
-import com.restonic4.forgotten.saving.JsonDataManager;
 import com.restonic4.forgotten.util.ServerCache;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

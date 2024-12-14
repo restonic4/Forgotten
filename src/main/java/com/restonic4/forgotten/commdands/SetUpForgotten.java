@@ -1,6 +1,5 @@
 package com.restonic4.forgotten.commdands;
 
-import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -9,22 +8,17 @@ import com.restonic4.forgotten.entity.common.ChainEntity;
 import com.restonic4.forgotten.entity.common.CoreEntity;
 import com.restonic4.forgotten.entity.common.SmallCoreEntity;
 import com.restonic4.forgotten.registries.common.ForgottenEntities;
-import com.restonic4.forgotten.saving.JsonDataManager;
+import com.restonic4.forgotten.saving.SaveManager;
 import com.restonic4.forgotten.util.ServerCache;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class SetUpForgotten {
     private static int currentIndex = 0;
@@ -45,13 +39,13 @@ public class SetUpForgotten {
 
         ServerLevel serverLevel = source.getLevel();
 
-        JsonDataManager dataManager = Forgotten.getDataManager();
-        dataManager.save("center", pos);
-        dataManager.save("SmallCoresDefeated", 0);
-        dataManager.save("MainCoreFallAnimation", false);
-        dataManager.save("Hardcore", false);
+        SaveManager saveManager = SaveManager.getInstance(serverLevel.getServer());
+        saveManager.save("center", pos);
+        saveManager.save("SmallCoresDefeated", 0);
+        saveManager.save("MainCoreFallAnimation", false);
+        saveManager.save("Hardcore", false);
 
-        Forgotten.resetCoreAnimation();
+        Forgotten.resetCoreAnimation(serverLevel.getServer());
 
         try {
             generateSmallCore(serverLevel, new BlockPos(pos).offset(42, -2, 42));
@@ -168,11 +162,11 @@ public class SetUpForgotten {
                 }
             }
 
-            JsonDataManager dataManager = Forgotten.getDataManager();
+            SaveManager saveManager = SaveManager.getInstance(serverLevel.getServer());
 
-            int defeated = dataManager.getInt("SmallCoresDefeated");
+            int defeated = saveManager.get("SmallCoresDefeated", Integer.class);
 
-            dataManager.save("SmallCoresDefeated", defeated + 1);
+            saveManager.save("SmallCoresDefeated", defeated + 1);
         }).start();
     }
 }

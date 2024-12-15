@@ -7,6 +7,7 @@ import com.restonic4.forgotten.registries.client.ForgottenEntityRenderers;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
 import com.restonic4.forgotten.registries.common.ForgottenBlocks;
 import com.restonic4.forgotten.registries.common.ForgottenParticleTypes;
+import com.restonic4.forgotten.util.ModCheck;
 import com.restonic4.forgotten.util.helpers.CircleGenerator;
 import com.restonic4.forgotten.util.helpers.RenderingHelper;
 import com.restonic4.forgotten.util.trash.TestingVars;
@@ -44,6 +45,7 @@ public class ForgottenClient implements ClientModInitializer {
         ForgottenParticleTypes.registerClient();
         ForgottenEntityRenderers.register();
         ForgottenBlocks.registerClient();
+        ModCheck.check();
 
         ClientPlayConnectionEvents.DISCONNECT.register((clientPacketListener, minecraft) -> {
             DeathUtils.setDeathValue(false);

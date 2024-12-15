@@ -2,6 +2,7 @@ package com.restonic4.forgotten.registries.common;
 
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.item.EtherealFragment;
+import com.restonic4.forgotten.item.EtherealWrittenBook;
 import com.restonic4.forgotten.item.InvincibleItem;
 import com.restonic4.forgotten.item.PlayerSoul;
 import net.minecraft.core.Registry;
@@ -25,6 +26,15 @@ public class ForgottenItems {
             new EtherealFragment(
                     new Item.Properties()
                             .stacksTo(1)
+                            .rarity(Rarity.EPIC)
+                            .fireResistant()
+            )
+    );
+
+    public static final EtherealWrittenBook ETHEREAL_WRITTEN_BOOK = Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(Forgotten.MOD_ID, "ethereal_written_book"),
+            new EtherealWrittenBook(
+                    new Item.Properties()
+                            .stacksTo(16)
                             .rarity(Rarity.EPIC)
                             .fireResistant()
             )

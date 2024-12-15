@@ -19,6 +19,7 @@ public class ForgottenCreativeTabs {
                     .displayItems((itemDisplayParameters, output) -> {
                         output.accept(ForgottenItems.PLAYER_SOUL);
                         output.accept(ForgottenItems.ETHEREAL_SHARD);
+                        output.accept(ForgottenItems.ETHEREAL_WRITTEN_BOOK);
                         ForgottenBlocks.onCreativeTabRegistration(output);
                     })
                     .build()

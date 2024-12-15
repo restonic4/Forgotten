@@ -3,8 +3,11 @@ package com.restonic4.forgotten.mixin.client;
 import com.restonic4.forgotten.client.DeathUtils;
 import com.restonic4.forgotten.client.ClientItemInteractions;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.util.profiling.ProfileResults;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.HitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,6 +35,14 @@ public class MinecraftMixin {
             cancellable = true, require = 1)
     public void rightClickEarly(CallbackInfo ci) {
         if (ClientItemInteractions.onPlayerInteract(((Minecraft) (Object) this).player)) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "renderFpsMeter", at = @At("HEAD"), cancellable = true)
+    private void renderFpsMeter(GuiGraphics guiGraphics, ProfileResults profileResults, CallbackInfo ci) {
+        Minecraft minecraft = (Minecraft) (Object) this;
+        if (minecraft.player != null && minecraft.player.getPlayerInfo() != null && (minecraft.player.getPlayerInfo().getGameMode() == GameType.SURVIVAL || minecraft.player.getPlayerInfo().getGameMode() == GameType.ADVENTURE)) {
             ci.cancel();
         }
     }

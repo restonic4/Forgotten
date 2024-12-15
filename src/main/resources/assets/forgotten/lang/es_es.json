@@ -5,5 +5,8 @@
   "creative_mode_tab.forgotten": "Forgotten",
   "item.forgotten.player_soul": "Remanente espectral",
   "item.forgotten.player_soul.named": "Remanente espectral de %s",
-  "item.forgotten.ethereal_shard": "Fragmento etéreo"
+  "item.forgotten.ethereal_shard": "Fragmento etéreo",
+  "gui.forgotten.incompatibility.title.cheater": "¡Tramposo!",
+  "gui.forgotten.incompatibility.message.cheater": "Estas usando mods que podrian arruinarte la experiecia de juego a ti y otros jugadores, por favor, desinstala los siguientes mods.",
+  "item.forgotten.ethereal_written_book": "Libro escrito etéreo"
 }

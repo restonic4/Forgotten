@@ -5,5 +5,8 @@
   "creative_mode_tab.forgotten": "Forgotten",
   "item.forgotten.player_soul": "Spectral remnant",
   "item.forgotten.player_soul.named": "%s's spectral remnant",
-  "item.forgotten.ethereal_shard": "Ethereal shard"
+  "item.forgotten.ethereal_shard": "Ethereal shard",
+  "gui.forgotten.incompatibility.title.cheater": "You cheater!",
+  "gui.forgotten.incompatibility.message.cheater": "You are using a mod that could ruin the experience for yourself or other users, please, uninstall the next mods.",
+  "item.forgotten.ethereal_written_book": "Ethereal written book"
 }

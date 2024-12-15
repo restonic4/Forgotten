@@ -12,10 +12,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(VanishManager.class)
 public class VanishManagerMixin {
-    @Inject(method = "broadcastToOthers", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "broadcastToOthers", at = @At("HEAD"), cancellable = true)
     private static void broadcastToOthers(ServerPlayer actor, Packet<?> packet, CallbackInfo ci) {
         ci.cancel();
-    }
+    }*/
 
     @Inject(method = "canViewVanished", at = @At("HEAD"), cancellable = true)
     private static void canViewVanished(SharedSuggestionProvider observer, CallbackInfoReturnable<Boolean> cir) {

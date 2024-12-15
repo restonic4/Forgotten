@@ -2,6 +2,7 @@ package com.restonic4.forgotten;
 
 import com.mojang.authlib.GameProfile;
 import com.restonic4.forgotten.commdands.*;
+import com.restonic4.forgotten.compatibility.vanish.ConfigOverride;
 import com.restonic4.forgotten.compatibility.voicechat.Plugin;
 import com.restonic4.forgotten.entity.common.ChainEntity;
 import com.restonic4.forgotten.entity.common.SmallCoreEntity;
@@ -10,6 +11,7 @@ import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.common.*;
 import com.restonic4.forgotten.saving.SaveManager;
 import com.restonic4.forgotten.util.GriefingPrevention;
+import com.restonic4.forgotten.util.RandomPlayerSpawnerManager;
 import com.restonic4.forgotten.util.ServerCache;
 import com.restonic4.forgotten.util.ServerShootingStarManager;
 import me.drex.vanish.api.VanishEvents;
@@ -74,6 +76,7 @@ public class Forgotten implements ModInitializer {
         ForgottenCreativeTabs.register();
         PacketManager.registerClientToServer();
         GriefingPrevention.register();
+        RandomPlayerSpawnerManager.register();
     }
 
     private void registerEvents() {
@@ -468,7 +471,13 @@ public class Forgotten implements ModInitializer {
     }
 
     public static boolean isVanishLoaded() {
-        return FabricLoader.getInstance().isModLoaded("melius-vanish");
+        boolean result = FabricLoader.getInstance().isModLoaded("melius-vanish");
+
+        if (result) {
+            ConfigOverride.override();
+        }
+
+        return result;
     }
 
     public static boolean isVoiceChatLoaded() {
@@ -479,6 +488,8 @@ public class Forgotten implements ModInitializer {
         if (!isVanishLoaded()) {
             return false;
         }
+
+        ConfigOverride.override();
 
         return VanishManager.isVanished(serverPlayer);
     }

@@ -21,17 +21,17 @@ import net.minecraft.world.level.levelgen.Heightmap;
 
 public class ServerShootingStarManager {
     public static void spawn(MinecraftServer server) {
+        StarData starData = new StarData(
+                RandomUtil.randomBetween(3, 6),
+                RandomUtil.randomBetween(0, 365),
+                RandomUtil.randomBetween(-200, 200),
+                100,
+                RandomUtil.randomBetween(-200, 200)
+        );
+
+        SaveManager.getInstance(server).save("star", starData);
+
         for (ServerPlayer serverPlayer : server.getPlayerList().getPlayers()) {
-            StarData starData = new StarData(
-                    RandomUtil.randomBetween(3, 6),
-                    RandomUtil.randomBetween(0, 365),
-                    RandomUtil.randomBetween(-200, 200),
-                    100,
-                    RandomUtil.randomBetween(-200, 200)
-            );
-
-            SaveManager.getInstance(server).save("star", starData);
-
             SpawnStarPacket.sendToClient(
                     serverPlayer,
                     starData.getSize(),

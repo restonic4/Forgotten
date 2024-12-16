@@ -35,6 +35,7 @@
     "client.GuiMixin",
     "client.ItemEntityRendererMixin",
     "client.KeyboardHandlerMixin",
+    "client.LecternRenderMixin",
     "client.LevelRendererMixin",
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",

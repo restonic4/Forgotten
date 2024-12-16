@@ -26,6 +26,8 @@
     "vanish.VanishManagerMixin"
   ],
   "client": [
+    "client.BookAccessMixin",
+    "client.BookViewScreenMixin",
     "client.ClientPacketListenerMixin",
     "client.DebugScreenOverlayMixin",
     "client.EntityRendererMixin",

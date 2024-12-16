@@ -1,8 +1,13 @@
 package com.restonic4.forgotten.item;
 
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WrittenBookItem;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class EtherealWrittenBook extends WrittenBookItem {
@@ -15,4 +20,12 @@ public class EtherealWrittenBook extends WrittenBookItem {
         System.out.println("Ethereal book used on block");
         return super.useOn(useOnContext);
     }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand interactionHand) {
+        System.out.println("Ethereal book used");
+        return super.use(level, player, interactionHand);
+    }
+
+
 }

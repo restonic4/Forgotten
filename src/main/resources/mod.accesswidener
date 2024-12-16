@@ -49,3 +49,4 @@ accessible field net/minecraft/client/gui/screens/inventory/BookViewScreen cache
 accessible field net/minecraft/client/gui/screens/inventory/BookViewScreen pageMsg Lnet/minecraft/network/chat/Component;
 accessible method net/minecraft/client/gui/screens/inventory/BookViewScreen getNumPages ()I
 accessible method net/minecraft/world/level/block/entity/LecternBlockEntity createCommandSourceStack (Lnet/minecraft/world/entity/player/Player;)Lnet/minecraft/commands/CommandSourceStack;
+accessible field net/minecraft/server/level/ServerPlayer containerCounter I

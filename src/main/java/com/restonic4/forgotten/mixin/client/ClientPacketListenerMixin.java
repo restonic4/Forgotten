@@ -1,13 +1,12 @@
 package com.restonic4.forgotten.mixin.client;
 
-import com.restonic4.forgotten.client.gui.EtherealBookViewScreen;
+import com.restonic4.forgotten.item.EtherealWrittenBookAccess;
 import com.restonic4.forgotten.registries.common.ForgottenItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,7 +26,7 @@ public class ClientPacketListenerMixin {
     public void handleOpenBook(ClientboundOpenBookPacket clientboundOpenBookPacket, CallbackInfo ci) {
         ItemStack itemStack = this.minecraft.player.getItemInHand(clientboundOpenBookPacket.getHand());
         if (itemStack.is(ForgottenItems.ETHEREAL_WRITTEN_BOOK)) {
-            this.minecraft.setScreen(new EtherealBookViewScreen(new BookViewScreen.WrittenBookAccess(itemStack)));
+            this.minecraft.setScreen(new BookViewScreen(new EtherealWrittenBookAccess(itemStack)));
             ci.cancel();
         }
     }

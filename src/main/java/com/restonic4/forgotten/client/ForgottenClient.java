@@ -4,6 +4,7 @@ import com.restonic4.forgotten.client.gui.IrisScreen;
 import com.restonic4.forgotten.compatibility.exordium.Overrides;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.client.ForgottenEntityRenderers;
+import com.restonic4.forgotten.registries.client.ForgottenMaterials;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
 import com.restonic4.forgotten.registries.common.ForgottenBlocks;
 import com.restonic4.forgotten.registries.common.ForgottenParticleTypes;
@@ -12,12 +13,14 @@ import com.restonic4.forgotten.util.helpers.CircleGenerator;
 import com.restonic4.forgotten.util.helpers.RenderingHelper;
 import com.restonic4.forgotten.util.trash.TestingVars;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
@@ -45,6 +48,7 @@ public class ForgottenClient implements ClientModInitializer {
         ForgottenParticleTypes.registerClient();
         ForgottenEntityRenderers.register();
         ForgottenBlocks.registerClient();
+        ForgottenMaterials.register();
         ModCheck.check();
 
         ClientPlayConnectionEvents.DISCONNECT.register((clientPacketListener, minecraft) -> {

@@ -20,6 +20,7 @@
     "MobMixin",
     "ServerLevelMixin",
     "ServerPlayerMixin",
+    "ShapelessRecipeMixin",
     "StructureMixin",
     "VineBlockMixin",
     "accessor.JigsawStructureAccessor",

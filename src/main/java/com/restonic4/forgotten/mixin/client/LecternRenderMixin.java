@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.restonic4.forgotten.Forgotten;
+import com.restonic4.forgotten.registries.client.ForgottenMaterials;
 import com.restonic4.forgotten.registries.common.ForgottenItems;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.BookModel;
@@ -29,13 +30,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LecternRenderer.class)
 public class LecternRenderMixin {
     @Shadow @Final private BookModel bookModel;
-    private static final Material ETHEREAL_BOOK_LOCATION = new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(Forgotten.MOD_ID, "entity/ethereal_book"));
 
     @Inject(method = "render(Lnet/minecraft/world/level/block/entity/LecternBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V", at = @At("HEAD"), cancellable = true)
     public void render(LecternBlockEntity lecternBlockEntity, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, CallbackInfo ci) {
         BlockState blockState = lecternBlockEntity.getBlockState();
-        System.out.println(blockState.getValue(LecternBlock.HAS_BOOK) + " and " + lecternBlockEntity.getBook().is(ForgottenItems.ETHEREAL_WRITTEN_BOOK));
-        System.out.println(lecternBlockEntity.getBook());
         if ((Boolean)blockState.getValue(LecternBlock.HAS_BOOK) && lecternBlockEntity.getBook().is(ForgottenItems.ETHEREAL_WRITTEN_BOOK)) {
             poseStack.pushPose();
             poseStack.translate(0.5F, 1.0625F, 0.5F);
@@ -44,7 +42,7 @@ public class LecternRenderMixin {
             poseStack.mulPose(Axis.ZP.rotationDegrees(67.5F));
             poseStack.translate(0.0F, -0.125F, 0.0F);
             this.bookModel.setupAnim(0.0F, 0.1F, 0.9F, 1.2F);
-            VertexConsumer vertexConsumer = ETHEREAL_BOOK_LOCATION.buffer(multiBufferSource, RenderType::entitySolid);
+            VertexConsumer vertexConsumer = ForgottenMaterials.ETHEREAL_BOOK_LOCATION.buffer(multiBufferSource, RenderType::entitySolid);
             this.bookModel.render(poseStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
             poseStack.popPose();
 

@@ -1,5 +1,7 @@
 package com.restonic4.forgotten.item;
 
+import com.restonic4.forgotten.client.gui.EtherealSendingScreen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -17,15 +19,33 @@ public class EtherealWrittenBook extends WrittenBookItem {
 
     @Override
     public @NotNull InteractionResult useOn(@NotNull UseOnContext useOnContext) {
-        System.out.println("Ethereal book used on block");
         return super.useOn(useOnContext);
     }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand interactionHand) {
-        System.out.println("Ethereal book used");
-        return super.use(level, player, interactionHand);
+        boolean couldOpenMenu = openSendMenuIfPossible(player);
+
+        return (couldOpenMenu) ?
+                InteractionResultHolder.sidedSuccess(player.getItemInHand(interactionHand), level.isClientSide()) :
+                super.use(level, player, interactionHand);
     }
 
+    private boolean openSendMenuIfPossible(Player player) {
+        if (player == null) {
+            return false;
+        }
 
+        if (player.isShiftKeyDown()) {
+            if (player.level().isClientSide()) {
+                Minecraft.getInstance().setScreen(new EtherealSendingScreen());
+            } else {
+                // sync shit or something
+            }
+
+            return true;
+        }
+
+        return false;
+    }
 }

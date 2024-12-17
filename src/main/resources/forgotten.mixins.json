@@ -18,6 +18,7 @@
     "LevelMixin",
     "MinecraftServerMixin",
     "MobMixin",
+    "MsgCommandMixin",
     "ServerLevelMixin",
     "ServerPlayerMixin",
     "ShapelessRecipeMixin",

@@ -1,6 +1,7 @@
 package com.restonic4.forgotten;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.CommandDispatcher;
 import com.restonic4.forgotten.commdands.*;
 import com.restonic4.forgotten.compatibility.vanish.ConfigOverride;
 import com.restonic4.forgotten.compatibility.voicechat.Plugin;
@@ -28,6 +29,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

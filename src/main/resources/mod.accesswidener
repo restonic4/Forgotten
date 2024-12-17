@@ -57,3 +57,5 @@ accessible field net/minecraft/client/gui/screens/social/SocialInteractionsScree
 accessible field net/minecraft/client/gui/screens/social/SocialInteractionsScreen blockedButton Lnet/minecraft/client/gui/components/Button;
 accessible field net/minecraft/client/gui/screens/social/SocialInteractionsScreen socialInteractionsPlayerList Lnet/minecraft/client/gui/screens/social/SocialInteractionsPlayerList;
 accessible field net/minecraft/client/gui/screens/social/SocialInteractionsPlayerList players Ljava/util/List;
+accessible field net/minecraft/client/gui/components/Button onPress Lnet/minecraft/client/gui/components/Button$OnPress;
+accessible field net/minecraft/client/gui/components/Button DEFAULT_NARRATION Lnet/minecraft/client/gui/components/Button$CreateNarration;

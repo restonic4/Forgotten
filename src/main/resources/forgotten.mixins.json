@@ -41,6 +41,7 @@
     "client.LevelRendererMixin",
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",
+    "client.PlayerEntryMixin",
     "client.TitleScreenMixin"
   ],
   "injectors": {

@@ -17,6 +17,7 @@ public class PacketManager {
     public static final ResourceLocation BLOCK_CANCELLATION_EFFECTS = new ResourceLocation(Forgotten.MOD_ID, "block_cancellation_effects");
     public static final ResourceLocation SPAWN_STAR = new ResourceLocation(Forgotten.MOD_ID, "spawn_star");
     public static final ResourceLocation FALL_STAR = new ResourceLocation(Forgotten.MOD_ID, "fall_star");
+    public static final ResourceLocation SEND_BOOK = new ResourceLocation(Forgotten.MOD_ID, "send_book");
 
     public static void registerServerToClient() {
         ClientPlayNetworking.registerGlobalReceiver(HARDCORE, HardcorePacket::receive);
@@ -32,5 +33,6 @@ public class PacketManager {
 
     public static void registerClientToServer() {
         ServerPlayNetworking.registerGlobalReceiver(INTERACTED_ITEM, InteractedItemPacket::receive);
+        ServerPlayNetworking.registerGlobalReceiver(SEND_BOOK, SendBookPacket::receive);
     }
 }

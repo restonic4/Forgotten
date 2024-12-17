@@ -1,6 +1,7 @@
 package com.restonic4.forgotten.mixin.client;
 
 import com.restonic4.forgotten.client.gui.EtherealSendingScreen;
+import com.restonic4.forgotten.networking.packets.SendBookPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -60,9 +61,10 @@ public class PlayerEntryMixin {
 
     @Unique
     private void onSendPress(Button button) {
-        System.out.println("Send button pressed!");
+        System.out.println("Send button pressed to " + this.playerName);
 
-        String playerName = this.playerName;
-        this.minecraft.player.sendSystemMessage(Component.literal("You clicked on: " + playerName));
+        this.minecraft.setScreen(null);
+
+        SendBookPacket.sendToServer(this.playerName);
     }
 }

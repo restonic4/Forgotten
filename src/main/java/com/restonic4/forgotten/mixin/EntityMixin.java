@@ -5,6 +5,7 @@ import com.restonic4.forgotten.item.EtherealFragment;
 import com.restonic4.forgotten.item.InvincibleItem;
 import com.restonic4.forgotten.item.PlayerSoul;
 import com.restonic4.forgotten.networking.PacketManager;
+import com.restonic4.forgotten.registries.common.ForgottenItems;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
@@ -103,7 +104,7 @@ public class EntityMixin {
 
     @Unique
     public boolean shouldNotDie(Entity entity) {
-        return entity instanceof ItemEntity itemEntity && itemEntity.getItem().getItem() instanceof InvincibleItem;
+        return entity instanceof ItemEntity itemEntity && (itemEntity.getItem().getItem() instanceof InvincibleItem || (itemEntity.getItem().is(ForgottenItems.ETHEREAL_WRITTEN_BOOK)));
     }
 
     @Unique

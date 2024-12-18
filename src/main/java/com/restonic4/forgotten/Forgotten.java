@@ -15,6 +15,10 @@ import com.restonic4.forgotten.util.GriefingPrevention;
 import com.restonic4.forgotten.util.RandomPlayerSpawnerManager;
 import com.restonic4.forgotten.util.ServerCache;
 import com.restonic4.forgotten.util.ServerShootingStarManager;
+import com.restonic4.forgotten.util.helpers.RandomUtil;
+import io.github.fabricators_of_create.porting_lib.core.event.BaseEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.LivingEntityEvents;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDamageEvent;
 import me.drex.vanish.api.VanishEvents;
 import me.drex.vanish.config.ConfigManager;
 import me.drex.vanish.util.VanishManager;
@@ -42,8 +46,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
@@ -143,6 +149,20 @@ public class Forgotten implements ModInitializer {
         });
 
         ServerLivingEntityEvents.ALLOW_DEATH.register((livingEntity, damageSource, damageAmount) -> {
+            boolean isDamageByPlayer = damageSource.getEntity() != null && damageSource.getEntity() instanceof Player;
+
+            if (livingEntity instanceof ServerPlayer player) {
+                if (!isDamageByPlayer) {
+                    if (RandomUtil.randomBetween(0, 100) >= 0) {
+                        player.setHealth(1.0f);
+
+                        System.out.println(player.getDisplayName() + " saved by Forgotten");
+
+                        return false;
+                    }
+                }
+            }
+
             if (!livingEntity.level().isClientSide()) {
                 SaveManager saveManager = SaveManager.getInstance(livingEntity.getServer());
 

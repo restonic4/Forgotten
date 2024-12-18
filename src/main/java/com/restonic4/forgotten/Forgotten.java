@@ -43,6 +43,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stat;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -50,6 +52,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
@@ -153,8 +156,12 @@ public class Forgotten implements ModInitializer {
 
             if (livingEntity instanceof ServerPlayer player) {
                 if (!isDamageByPlayer) {
-                    if (RandomUtil.randomBetween(0, 100) >= 0) {
+                    if (player.getStats().getValue(Stats.CUSTOM.get(Stats.DEATHS)) <= 0 || RandomUtil.randomBetween(0, 100) <= 15) {
                         player.setHealth(1.0f);
+
+                        if (damageSource.getEntity() instanceof Projectile projectile) {
+                            projectile.discard();
+                        }
 
                         System.out.println(player.getDisplayName() + " saved by Forgotten");
 
@@ -166,33 +173,37 @@ public class Forgotten implements ModInitializer {
             if (!livingEntity.level().isClientSide()) {
                 SaveManager saveManager = SaveManager.getInstance(livingEntity.getServer());
 
-                if (livingEntity instanceof ServerPlayer serverPlayer && isVanishLoaded() && !isPlayerGoingToUseTotem(serverPlayer) && saveManager.get("Hardcore", Boolean.class)) {
-                    regeneratePlayer(serverPlayer);
+                if (livingEntity instanceof ServerPlayer serverPlayer && isVanishLoaded() && !isPlayerGoingToUseTotem(serverPlayer)) {
+                    Boolean isHardcore = saveManager.get("Hardcore", Boolean.class);
 
-                    if (!VanishManager.isVanished(serverPlayer)) {
-                        //placePlayerHead(serverPlayer);
-                        placePlayerSoul(serverPlayer);
+                    if (isHardcore != null && isHardcore) {
+                        regeneratePlayer(serverPlayer);
 
-                        serverPlayer.getInventory().dropAll();
+                        if (!VanishManager.isVanished(serverPlayer)) {
+                            //placePlayerHead(serverPlayer);
+                            placePlayerSoul(serverPlayer);
 
-                        if (serverPlayer.level() instanceof ServerLevel && !serverPlayer.wasExperienceConsumed()) {
-                            ExperienceOrb.award((ServerLevel)serverPlayer.level(), serverPlayer.position(), serverPlayer.getExperienceReward());
-                            serverPlayer.setExperienceLevels(0);
-                            serverPlayer.setExperiencePoints(0);
+                            serverPlayer.getInventory().dropAll();
+
+                            if (serverPlayer.level() instanceof ServerLevel && !serverPlayer.wasExperienceConsumed()) {
+                                ExperienceOrb.award((ServerLevel)serverPlayer.level(), serverPlayer.position(), serverPlayer.getExperienceReward());
+                                serverPlayer.setExperienceLevels(0);
+                                serverPlayer.setExperiencePoints(0);
+                            }
+
+                            if (isVoiceChatLoaded()) {
+                                Plugin.leaveGroup(serverPlayer);
+                            }
+
+                            FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
+                            friendlyByteBuf.writeBoolean(true);
+                            ServerPlayNetworking.send(serverPlayer, PacketManager.DEATH, friendlyByteBuf);
+
+                            VanishManager.setVanished(serverPlayer.getGameProfile(), serverPlayer.server, true);
                         }
 
-                        if (isVoiceChatLoaded()) {
-                            Plugin.leaveGroup(serverPlayer);
-                        }
-
-                        FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
-                        friendlyByteBuf.writeBoolean(true);
-                        ServerPlayNetworking.send(serverPlayer, PacketManager.DEATH, friendlyByteBuf);
-
-                        VanishManager.setVanished(serverPlayer.getGameProfile(), serverPlayer.server, true);
+                        return false;
                     }
-
-                    return false;
                 }
             }
 

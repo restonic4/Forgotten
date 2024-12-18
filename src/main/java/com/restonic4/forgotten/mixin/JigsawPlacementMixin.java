@@ -38,7 +38,7 @@ public class JigsawPlacementMixin {
             at = @At("HEAD")
     )
     private static void addPieces(Structure.GenerationContext generationContext, Holder<StructureTemplatePool> holder, Optional<ResourceLocation> optional, int i, BlockPos blockPos, boolean bl, Optional<Heightmap.Types> optional2, int j, CallbackInfoReturnable<Optional<Structure.GenerationStub>> cir) {
-        System.out.println("Level: " + i + ", MaxDistance: " + j + ", Part: " + currentJigsawLocation);
+        //System.out.println("Level: " + i + ", MaxDistance: " + j + ", Part: " + currentJigsawLocation);
     }
 
     @Inject(
@@ -46,7 +46,7 @@ public class JigsawPlacementMixin {
             at = @At("HEAD")
     )
     private static void addPiecesIndividual(RandomState randomState, int i, boolean bl, ChunkGenerator chunkGenerator, StructureTemplateManager structureTemplateManager, LevelHeightAccessor levelHeightAccessor, RandomSource randomSource, Registry<StructureTemplatePool> registry, PoolElementStructurePiece poolElementStructurePiece, List<PoolElementStructurePiece> list, VoxelShape voxelShape, CallbackInfo ci) {
-        System.out.println("Level: " + i + ", Part: " + currentJigsawLocation);
+        //System.out.println("Level: " + i + ", Part: " + currentJigsawLocation);
     }
 
     @ModifyVariable(
@@ -89,7 +89,7 @@ public class JigsawPlacementMixin {
     @Inject(method = "generateJigsaw", at = @At("HEAD"))
     private static void generateJigsaw(ServerLevel serverLevel, Holder<StructureTemplatePool> holder, ResourceLocation resourceLocation, int i, BlockPos blockPos, boolean bl, CallbackInfoReturnable<Boolean> cir) {
         currentJigsawLocation = resourceLocation;
-        System.out.println("Level: " + i + ", Part: " + currentJigsawLocation);
+        //System.out.println("Level: " + i + ", Part: " + currentJigsawLocation);
     }
 
     @Unique private static boolean shouldUpgrade() {

@@ -19,6 +19,6 @@ public class JigsawPlacementPlacerMixin {
 
     @Inject(method = "tryPlacingChildren", at = @At("HEAD"))
     void tryPlacingChildren(PoolElementStructurePiece poolElementStructurePiece, MutableObject<VoxelShape> mutableObject, int i, boolean bl, LevelHeightAccessor levelHeightAccessor, RandomState randomState, CallbackInfo ci) {
-        System.out.println("Level: " + i + ", max: " + this.maxDepth);
+        //System.out.println("Level: " + i + ", max: " + this.maxDepth);
     }
 }

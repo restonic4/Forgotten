@@ -4,9 +4,11 @@ import com.restonic4.forgotten.commdands.RandomTP;
 import com.restonic4.forgotten.saving.SaveManager;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.border.WorldBorder;
@@ -28,6 +30,14 @@ public class RandomPlayerSpawnerManager {
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
             spawnPlayer(newPlayer);
+        });
+
+        ServerPlayConnectionEvents.JOIN.register((serverGamePacketListener, packetSender, minecraftServer) -> {
+            ServerPlayer serverPlayer = serverGamePacketListener.getPlayer();
+
+            if (serverPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.PLAY_TIME)) <= 2400) {
+                spawnPlayer(serverPlayer);
+            }
         });
     }
 
@@ -63,6 +73,8 @@ public class RandomPlayerSpawnerManager {
         BlockPos groupSpawn = saveManager.get("groupSpawn", BlockPos.class);
 
         if (groupSpawn != null) {
+            System.out.println("Group spawn found at " + groupSpawn);
+
             Random random = new Random();
             int offsetX = random.nextInt(CLOSE_SPAWN_RADIUS * 2 + 1) - CLOSE_SPAWN_RADIUS;
             int offsetZ = random.nextInt(CLOSE_SPAWN_RADIUS * 2 + 1) - CLOSE_SPAWN_RADIUS;
@@ -74,14 +86,13 @@ public class RandomPlayerSpawnerManager {
                 BlockPos finalSpawn = new BlockPos(nearbySpawn.getX(), y, nearbySpawn.getZ());
                 teleportAndSave(player, finalSpawn);
 
+                System.out.println("Teleported to " + finalSpawn);
+
                 return;
             }
         }
 
         forceSpawnRandomly(player);
-        saveManager.save("groupSpawn", player.blockPosition());
-
-        System.out.println("Group position saved at " + player.blockPosition());
     }
 
     public static void forceSpawnRandomly(ServerPlayer player) {
@@ -124,6 +135,18 @@ public class RandomPlayerSpawnerManager {
         if (y != INVALID_HEIGHT) {
             BlockPos spawnPos = new BlockPos(x, y, z);
             teleportAndSave(player, spawnPos);
+
+            if (isGroupedPlayer(player.getGameProfile().getName())) {
+                SaveManager saveManager = SaveManager.getInstance(player.getServer());
+
+                BlockPos groupSpawn = saveManager.get("groupSpawn", BlockPos.class);
+
+                if (groupSpawn == null) {
+                    saveManager.save("groupSpawn", spawnPos);
+
+                    System.out.println("Group position saved at " + spawnPos);
+                }
+            }
 
             return true;
         }

@@ -1,6 +1,7 @@
 package com.restonic4.forgotten.item;
 
 import com.restonic4.forgotten.client.gui.EtherealSendingScreen;
+import com.restonic4.forgotten.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -38,7 +39,7 @@ public class EtherealWrittenBook extends WrittenBookItem {
 
         if (player.isShiftKeyDown()) {
             if (player.level().isClientSide()) {
-                Minecraft.getInstance().setScreen(new EtherealSendingScreen());
+                GuiHelper.openEtherealBook();
             } else {
                 // sync shit or something
             }

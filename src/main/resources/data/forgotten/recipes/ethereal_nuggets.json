@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "forgotten:ethereal_shard"
+    }
+  ],
+  "result": {
+    "item": "forgotten:ethereal_nugget",
+    "count": 4
+  }
+}

@@ -10,5 +10,6 @@
   "gui.forgotten.incompatibility.message.cheater": "You are using a mod that could ruin the experience for yourself or other users, please, uninstall the next mods.",
   "item.forgotten.ethereal_written_book": "Ethereal written book",
   "gui.forgotten.ethereal_sending_screen.send": "Send!",
-  "gui.forgotten.ethereal_sending_screen.send.tooltip": "Sends the book to this player!"
+  "gui.forgotten.ethereal_sending_screen.send.tooltip": "Sends the book to this player!",
+  "item.forgotten.ethereal_nugget": "Ethereal nugget"
 }

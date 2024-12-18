@@ -10,5 +10,6 @@
   "gui.forgotten.incompatibility.message.cheater": "Estas usando mods que podrian arruinarte la experiecia de juego a ti y otros jugadores, por favor, desinstala los siguientes mods.",
   "item.forgotten.ethereal_written_book": "Libro escrito etéreo",
   "gui.forgotten.ethereal_sending_screen.send": "¡Enviar!",
-  "gui.forgotten.ethereal_sending_screen.send.tooltip": "¡Enviale el libro a este jugador!"
+  "gui.forgotten.ethereal_sending_screen.send.tooltip": "¡Enviale el libro a este jugador!",
+  "item.forgotten.ethereal_nugget": "Pepita etérea"
 }

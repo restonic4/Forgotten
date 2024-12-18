@@ -31,6 +31,15 @@ public class ForgottenItems {
             )
     );
 
+    public static final EtherealFragment ETHEREAL_NUGGET = Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(Forgotten.MOD_ID, "ethereal_nugget"),
+            new EtherealFragment(
+                    new Item.Properties()
+                            .stacksTo(4)
+                            .rarity(Rarity.EPIC)
+                            .fireResistant()
+            )
+    );
+
     public static final EtherealWrittenBook ETHEREAL_WRITTEN_BOOK = Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(Forgotten.MOD_ID, "ethereal_written_book"),
             new EtherealWrittenBook(
                     new Item.Properties()

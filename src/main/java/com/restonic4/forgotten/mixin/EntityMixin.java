@@ -104,7 +104,12 @@ public class EntityMixin {
 
     @Unique
     public boolean shouldNotDie(Entity entity) {
-        return entity instanceof ItemEntity itemEntity && (itemEntity.getItem().getItem() instanceof InvincibleItem || (itemEntity.getItem().is(ForgottenItems.ETHEREAL_WRITTEN_BOOK)));
+        return entity instanceof ItemEntity itemEntity &&
+                (
+                        itemEntity.getItem().getItem() instanceof InvincibleItem ||
+                        itemEntity.getItem().is(ForgottenItems.ETHEREAL_WRITTEN_BOOK) ||
+                        itemEntity.getItem().is(ForgottenItems.ETHEREAL_NUGGET)
+                );
     }
 
     @Unique

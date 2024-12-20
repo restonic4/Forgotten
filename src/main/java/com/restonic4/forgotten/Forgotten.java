@@ -1,7 +1,6 @@
 package com.restonic4.forgotten;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.CommandDispatcher;
 import com.restonic4.forgotten.commdands.*;
 import com.restonic4.forgotten.compatibility.vanish.ConfigOverride;
 import com.restonic4.forgotten.compatibility.voicechat.Plugin;
@@ -10,15 +9,13 @@ import com.restonic4.forgotten.entity.common.SmallCoreEntity;
 import com.restonic4.forgotten.item.PlayerSoul;
 import com.restonic4.forgotten.networking.PacketManager;
 import com.restonic4.forgotten.registries.common.*;
+import com.restonic4.forgotten.saving.PlayerData;
 import com.restonic4.forgotten.saving.SaveManager;
 import com.restonic4.forgotten.util.GriefingPrevention;
 import com.restonic4.forgotten.util.RandomPlayerSpawnerManager;
 import com.restonic4.forgotten.util.ServerCache;
 import com.restonic4.forgotten.util.ServerShootingStarManager;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
-import io.github.fabricators_of_create.porting_lib.core.event.BaseEvent;
-import io.github.fabricators_of_create.porting_lib.entity.events.LivingEntityEvents;
-import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDamageEvent;
 import me.drex.vanish.api.VanishEvents;
 import me.drex.vanish.config.ConfigManager;
 import me.drex.vanish.util.VanishManager;
@@ -33,7 +30,6 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -43,12 +39,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stat;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -155,15 +148,33 @@ public class Forgotten implements ModInitializer {
             boolean isDamageByPlayer = damageSource.getEntity() != null && damageSource.getEntity() instanceof Player;
 
             if (livingEntity instanceof ServerPlayer player) {
-                if (!isDamageByPlayer) {
-                    if (player.getStats().getValue(Stats.CUSTOM.get(Stats.DEATHS)) <= 0 || RandomUtil.randomBetween(0, 100) <= 15) {
+                SaveManager saveManager = SaveManager.getInstance(player.getServer());
+                Boolean isHardcore = saveManager.get("Hardcore", Boolean.class);
+
+                if (!isDamageByPlayer && isHardcore != null && isHardcore) {
+                    PlayerData playerData = saveManager.get(player.getGameProfile().getId().toString(), PlayerData.class);
+
+                    if (playerData == null) {
+                        playerData = new PlayerData();
+                    }
+
+                    boolean hasBeenSaved = playerData.hasBeenSavedFromLethalDamage();
+                    int chance = RandomUtil.randomBetween(0, 100);
+
+                    System.out.println("Death conditions: " + hasBeenSaved + ", " + chance);
+
+                    if (!hasBeenSaved || chance <= 15) {
                         player.setHealth(1.0f);
+
+                        playerData.setHasBeenSavedFromLethalDamage(true);
 
                         if (damageSource.getEntity() instanceof Projectile projectile) {
                             projectile.discard();
                         }
 
                         System.out.println(player.getDisplayName() + " saved by Forgotten");
+
+                        saveManager.save(player.getGameProfile().getId().toString(), playerData);
 
                         return false;
                     }

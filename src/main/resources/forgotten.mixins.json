@@ -26,6 +26,7 @@
     "StructureMixin",
     "VineBlockMixin",
     "accessor.JigsawStructureAccessor",
+    "supplementaries.GlobeBlockMixin",
     "vanish.VanishManagerMixin"
   ],
   "client": [

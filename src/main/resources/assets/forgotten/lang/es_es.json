@@ -11,5 +11,6 @@
   "item.forgotten.ethereal_written_book": "Libro escrito etéreo",
   "gui.forgotten.ethereal_sending_screen.send": "¡Enviar!",
   "gui.forgotten.ethereal_sending_screen.send.tooltip": "¡Enviale el libro a este jugador!",
-  "item.forgotten.ethereal_nugget": "Pepita etérea"
+  "item.forgotten.ethereal_nugget": "Pepita etérea",
+  "compact.forgotten.block.supplementaries.globe.message": "¿Donde estoy?"
 }

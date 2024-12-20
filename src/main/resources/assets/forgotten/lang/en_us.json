@@ -11,5 +11,6 @@
   "item.forgotten.ethereal_written_book": "Ethereal written book",
   "gui.forgotten.ethereal_sending_screen.send": "Send!",
   "gui.forgotten.ethereal_sending_screen.send.tooltip": "Sends the book to this player!",
-  "item.forgotten.ethereal_nugget": "Ethereal nugget"
+  "item.forgotten.ethereal_nugget": "Ethereal nugget",
+  "compact.forgotten.block.supplementaries.globe.message": "Where could I be?"
 }

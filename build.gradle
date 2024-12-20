@@ -56,6 +56,9 @@ dependencies {
 
     modImplementation 'maven.modrinth:exordium:fROHV9gC'
 
+    modImplementation 'maven.modrinth:moonlight:fabric_1.20-2.13.33'
+    modImplementation 'maven.modrinth:supplementaries:SFY0zXug'
+
     //modImplementation 'maven.modrinth:effective:2.3.2-1.20.1'
     /*modImplementation 'maven.modrinth:sodium:mc1.20.1-0.5.11'
     modImplementation 'maven.modrinth:iris:1.7.5+1.20.1'*/

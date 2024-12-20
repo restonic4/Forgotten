@@ -1,7 +1,9 @@
 package com.restonic4.forgotten.util;
 
 import com.restonic4.forgotten.commdands.RandomTP;
+import com.restonic4.forgotten.saving.PlayerData;
 import com.restonic4.forgotten.saving.SaveManager;
+import com.restonic4.forgotten.saving.SerializableBlockPos;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -51,8 +53,8 @@ public class RandomPlayerSpawnerManager {
         UUID uuid = player.getGameProfile().getId();
         String uuidString = uuid.toString();
 
-        if (saveManager.containsKey(uuidString)) {
-            BlockPos spawnPoint = saveManager.get(uuidString, BlockPos.class);
+        if (saveManager.containsKey(uuidString) && saveManager.get(uuidString, PlayerData.class).getDefaultSpawnPoint() != null) {
+            SerializableBlockPos spawnPoint = saveManager.get(uuidString, PlayerData.class).getDefaultSpawnPoint();
             player.teleportTo(player.getServer().overworld(), spawnPoint.getX(), spawnPoint.getY(), spawnPoint.getZ(), player.getYRot(), player.getXRot());
         } else {
             String playerName = player.getGameProfile().getName();
@@ -159,8 +161,19 @@ public class RandomPlayerSpawnerManager {
     private static void teleportAndSave(ServerPlayer player, BlockPos spawnPos) {
         player.teleportTo(player.serverLevel(), spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, player.getYRot(), player.getXRot());
 
+        String uuidString = player.getGameProfile().getId().toString();
+
         SaveManager saveManager = SaveManager.getInstance(player.getServer());
-        saveManager.save(player.getGameProfile().getId().toString(), spawnPos);
+
+        PlayerData playerData = saveManager.get(uuidString, PlayerData.class);
+
+        if (playerData == null) {
+            playerData = new PlayerData();
+        }
+
+        playerData.setDefaultSpawnPoint(new SerializableBlockPos(spawnPos));
+
+        saveManager.save(uuidString, playerData);
     }
 
     private static int findValidY(Level level, int x, int z) {

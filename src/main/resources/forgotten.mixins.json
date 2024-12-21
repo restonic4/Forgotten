@@ -26,6 +26,7 @@
     "StructureMixin",
     "VineBlockMixin",
     "accessor.JigsawStructureAccessor",
+    "sodium_extra.SodiumExtraHudMixin",
     "supplementaries.GlobeBlockMixin",
     "vanish.VanishManagerMixin"
   ],

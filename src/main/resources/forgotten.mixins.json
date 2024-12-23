@@ -45,7 +45,8 @@
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",
     "client.PlayerEntryMixin",
-    "client.TitleScreenMixin"
+    "client.TitleScreenMixin",
+    "map_atlases.MapAtlasesHUDMixin"
   ],
   "injectors": {
     "defaultRequire": 1

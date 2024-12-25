@@ -47,6 +47,8 @@ public class ForgottenClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        SaveManager.getClientInstance(Minecraft.getInstance()).loadFromFile();
+
         PacketManager.registerServerToClient();
         ForgottenShaderHolders.register();
         ForgottenParticleTypes.registerClient();
@@ -54,8 +56,6 @@ public class ForgottenClient implements ClientModInitializer {
         ForgottenBlocks.registerClient();
         ForgottenMaterials.register();
         ModCheck.check();
-
-        SaveManager.getClientInstance(Minecraft.getInstance()).loadFromFile();
 
         ClientPlayConnectionEvents.DISCONNECT.register((clientPacketListener, minecraft) -> {
             DeathUtils.setDeathValue(false);

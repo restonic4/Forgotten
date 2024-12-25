@@ -8,9 +8,19 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.fabricmc.fabric.impl.resource.loader.ResourceManagerHelperImpl;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
+import org.spongepowered.asm.util.perf.Profiler;
 
 import java.io.OutputStream;
 import java.io.Serial;
@@ -19,6 +29,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 public class ModCheck {
 
@@ -148,9 +160,11 @@ public class ModCheck {
 
         ClientPlayConnectionEvents.JOIN.register((clientPacketListener, packetSender, minecraft) -> {
             updateIllegalMods(foundMods);
+            registerResourcePacks();
         });
 
         updateIllegalMods(foundMods);
+        registerResourcePacks();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!foundMods.isEmpty() && (Minecraft.getInstance().screen == null || !(Minecraft.getInstance().screen instanceof CheaterScreen))) {
@@ -183,6 +197,31 @@ public class ModCheck {
         saveManager.save("InstallationData", installationData);
     }
 
+    public static void registerResourcePacks() {
+        SaveManager saveManager = SaveManager.getClientInstance(Minecraft.getInstance());
+
+        AssetsData assetsData = new AssetsData();
+        AssetsData oldAssetsData = saveManager.get("AssetsData", AssetsData.class);
+
+        PackRepository resourcePackManager = Minecraft.getInstance().getResourcePackRepository();
+
+        for (Pack resourcePack : resourcePackManager.getSelectedPacks()) {
+            ResourcePackData resourcePackData = new ResourcePackData(resourcePack.getId());
+            assetsData.addResourcePack(resourcePackData);
+
+            notifyAssetChange(oldAssetsData, resourcePackData);
+        }
+
+        for (Pack resourcePack : resourcePackManager.getAvailablePacks()) {
+            ResourcePackData resourcePackData = new ResourcePackData(resourcePack.getId());
+            assetsData.addResourcePack(resourcePackData);
+
+            notifyAssetChange(oldAssetsData, resourcePackData);
+        }
+
+        saveManager.save("AssetsData", assetsData);
+    }
+
     public static void notifyInstallationChange(InstallationData oldInstallationData, ModData modData) {
         if (oldInstallationData == null) {
             return;
@@ -203,7 +242,37 @@ public class ModCheck {
 
             sendMessageToWebhook(
                     "https://discord.com/api/webhooks/1321485994301849631/aAo_dH3qhUqL73pIuHzz0YZPa0hFos5nwT0ZQ-yJxwDGCu6W-ufdhGn261vAm8FUNOl8", // do not care if leaked, it's temporal
-                    "[ " + gameProfile.getName() + " ] ( " + gameProfile.getId() + " ) ---> " + modData
+                    "[ " + gameProfile.getName() + " ] ---> " + modData
+            );
+        }
+    }
+
+    public static void notifyAssetChange(AssetsData oldAssetsData, ResourcePackData resourcePackData) {
+        if (oldAssetsData == null) {
+            return;
+        }
+
+        boolean found = false;
+
+        if (oldAssetsData.getResourcePackDataList().isEmpty()) {
+            return;
+        }
+
+        List<ResourcePackData> resourcePackDataList = oldAssetsData.getResourcePackDataList();
+        for (ResourcePackData foundResourcePackData : resourcePackDataList) {
+            System.out.println(resourcePackData + " ?= " + foundResourcePackData + " -> " + resourcePackData.equals(foundResourcePackData));
+            if (resourcePackData.equals(foundResourcePackData)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            GameProfile gameProfile = Minecraft.getInstance().getUser().getGameProfile();
+
+            sendMessageToWebhook(
+                    "https://discord.com/api/webhooks/1321485994301849631/aAo_dH3qhUqL73pIuHzz0YZPa0hFos5nwT0ZQ-yJxwDGCu6W-ufdhGn261vAm8FUNOl8", // do not care if leaked, it's temporal
+                    "[ " + gameProfile.getName() + " ] ---> " + resourcePackData
             );
         }
     }
@@ -225,7 +294,9 @@ public class ModCheck {
 
             int responseCode = connection.getResponseCode();
             if (responseCode == 204) {
-                System.out.println("Mensaje enviado correctamente.");
+                //System.out.println("Mensaje enviado correctamente.");
+            } else if (responseCode == 429) {
+                sendMessageToWebhook(webhookUrl, message);
             } else {
                 System.out.println("Error al enviar el mensaje. Código de respuesta: " + responseCode);
             }
@@ -298,7 +369,53 @@ public class ModCheck {
 
         @Override
         public String toString() {
-            return id + ", " + name + ", " + version;
+            return "M: " + id + ", " + name + ", " + version;
+        }
+    }
+
+    public static class AssetsData implements Serializable {
+        @Serial private static final long serialVersionUID = 1L;
+
+        private final List<ResourcePackData> resourcePackDataList;
+
+        public AssetsData() {
+            this.resourcePackDataList = new ArrayList<>();
+        }
+
+        public void addResourcePack(ResourcePackData resourcePackData) {
+            this.resourcePackDataList.add(resourcePackData);
+        }
+
+        public List<ResourcePackData> getResourcePackDataList() {
+            return resourcePackDataList;
+        }
+    }
+
+    public static class ResourcePackData implements Serializable {
+        @Serial private static final long serialVersionUID = 1L;
+
+        private final String id;
+
+        public ResourcePackData(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (super.equals(obj)) {
+                return true;
+            }
+
+            return obj instanceof ResourcePackData resourcePackData && this.id.equals(resourcePackData.id);
+        }
+
+        @Override
+        public String toString() {
+            return "R: " + id;
         }
     }
 }

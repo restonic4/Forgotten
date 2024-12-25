@@ -2,6 +2,7 @@ package com.restonic4.forgotten.mixin.client;
 
 import com.restonic4.forgotten.client.DeathUtils;
 import com.restonic4.forgotten.client.ClientItemInteractions;
+import com.restonic4.forgotten.util.ModCheck;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,6 +14,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.concurrent.CompletableFuture;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
@@ -45,5 +49,11 @@ public class MinecraftMixin {
         if (minecraft.player != null && minecraft.player.getPlayerInfo() != null && (minecraft.player.getPlayerInfo().getGameMode() == GameType.SURVIVAL || minecraft.player.getPlayerInfo().getGameMode() == GameType.ADVENTURE)) {
             ci.cancel();
         }
+    }
+
+    //anticheat
+    @Inject(method = "reloadResourcePacks()Ljava/util/concurrent/CompletableFuture;", at = @At("RETURN"))
+    private void reloadResourcePacks(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+        ModCheck.registerResourcePacks();
     }
 }

@@ -46,6 +46,7 @@
     "client.MinecraftMixin",
     "client.PlayerEntryMixin",
     "client.TitleScreenMixin",
+    "map_atlases.MapAtlasesAtlasOverviewScreenMixin",
     "map_atlases.MapAtlasesHUDMixin"
   ],
   "injectors": {

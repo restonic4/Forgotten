@@ -191,6 +191,10 @@ public class RandomPlayerSpawnerManager {
     }
 
     private static boolean isEmpty(Level level, BlockPos blockPos) {
-        return (level.getBlockState(blockPos).isAir() || !level.getBlockState(blockPos).isSolidRender(level, blockPos)) && !(level.getBlockState(blockPos).getBlock() instanceof LiquidBlock);
+        return (
+                level.getBlockState(blockPos).isAir() ||
+                !level.getBlockState(blockPos).isSolidRender(level, blockPos)) &&
+                !(level.getBlockState(blockPos).getBlock() instanceof LiquidBlock
+        );
     }
 }

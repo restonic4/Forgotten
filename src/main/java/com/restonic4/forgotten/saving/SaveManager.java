@@ -1,15 +1,19 @@
 package com.restonic4.forgotten.saving;
 
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SaveManager {
     private static SaveManager instance;
+    private static SaveManager clientInstance;
 
     private final Map<String, Object> dataStore = new HashMap<>();
 
@@ -24,6 +28,14 @@ public class SaveManager {
             SaveManager.instance = new SaveManager(server.getWorldPath(LevelResource.ROOT).resolve("forgotten.dat").toString());
         }
         return SaveManager.instance;
+    }
+
+    public static SaveManager getClientInstance(Minecraft client) {
+        if (SaveManager.clientInstance == null) {
+            Path clientRootPath = FabricLoader.getInstance().getGameDir();
+            clientInstance = new SaveManager(clientRootPath.resolve("forgotten.dat").toString());
+        }
+        return SaveManager.clientInstance;
     }
 
     public void saveToFile() {

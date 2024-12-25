@@ -8,6 +8,7 @@ import com.restonic4.forgotten.registries.client.ForgottenMaterials;
 import com.restonic4.forgotten.registries.client.ForgottenShaderHolders;
 import com.restonic4.forgotten.registries.common.ForgottenBlocks;
 import com.restonic4.forgotten.registries.common.ForgottenParticleTypes;
+import com.restonic4.forgotten.saving.SaveManager;
 import com.restonic4.forgotten.util.ModCheck;
 import com.restonic4.forgotten.util.helpers.CircleGenerator;
 import com.restonic4.forgotten.util.helpers.RenderingHelper;
@@ -41,6 +42,9 @@ public class ForgottenClient implements ClientModInitializer {
     private long lastTimeSpawned = System.currentTimeMillis();
     public static long currentTime = System.currentTimeMillis();
 
+    int ticksLeft = 0;
+    int tickSaveCounter = 0;
+
     @Override
     public void onInitializeClient() {
         PacketManager.registerServerToClient();
@@ -51,11 +55,20 @@ public class ForgottenClient implements ClientModInitializer {
         ForgottenMaterials.register();
         ModCheck.check();
 
+        SaveManager.getClientInstance(Minecraft.getInstance()).loadFromFile();
+
         ClientPlayConnectionEvents.DISCONNECT.register((clientPacketListener, minecraft) -> {
             DeathUtils.setDeathValue(false);
+            SaveManager.getClientInstance(minecraft).saveToFile();
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            tickSaveCounter++;
+            if (tickSaveCounter >= 3000) {
+                SaveManager.getClientInstance(client).saveToFile();
+                tickSaveCounter = 0;
+            }
+
             if (FabricLoader.getInstance().isModLoaded("iris") && (Minecraft.getInstance().screen == null || !(Minecraft.getInstance().screen instanceof IrisScreen))) {
                 Minecraft.getInstance().forceSetScreen(new IrisScreen());
             }

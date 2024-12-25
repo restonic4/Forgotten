@@ -1,7 +1,9 @@
 package com.restonic4.forgotten.util;
 
+import com.mojang.authlib.GameProfile;
 import com.restonic4.forgotten.client.gui.CheaterScreen;
 import com.restonic4.forgotten.client.gui.IrisScreen;
+import com.restonic4.forgotten.saving.SaveManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -10,6 +12,11 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 
+import java.io.OutputStream;
+import java.io.Serial;
+import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -155,12 +162,143 @@ public class ModCheck {
         System.out.println("//////////// CHECKING MODS END ////////////");
     }
 
+    public static void registerInstalledMods() {
+        SaveManager saveManager = SaveManager.getClientInstance(Minecraft.getInstance());
+
+        InstallationData installationData = new InstallationData();
+        InstallationData oldInstallationData = saveManager.get("InstallationData", InstallationData.class);
+
+        FabricLoader.getInstance().getAllMods().forEach(modContainer -> {
+            ModData modData = new ModData(
+                    modContainer.getMetadata().getId(),
+                    modContainer.getMetadata().getName(),
+                    modContainer.getMetadata().getVersion().getFriendlyString()
+            );
+
+            installationData.addModData(modData);
+
+            notifyInstallationChange(oldInstallationData, modData);
+        });
+
+        saveManager.save("InstallationData", installationData);
+    }
+
+    public static void notifyInstallationChange(InstallationData oldInstallationData, ModData modData) {
+        if (oldInstallationData == null) {
+            return;
+        }
+
+        boolean found = false;
+
+        List<ModData> modDataList = oldInstallationData.getModDataList();
+        for (ModData foundModData : modDataList) {
+            if (modData.equals(foundModData)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            GameProfile gameProfile = Minecraft.getInstance().getUser().getGameProfile();
+
+            sendMessageToWebhook(
+                    "https://discord.com/api/webhooks/1321485994301849631/aAo_dH3qhUqL73pIuHzz0YZPa0hFos5nwT0ZQ-yJxwDGCu6W-ufdhGn261vAm8FUNOl8", // do not care if leaked, it's temporal
+                    "[ " + gameProfile.getName() + " ] ( " + gameProfile.getId() + " ) ---> " + modData
+            );
+        }
+    }
+
+    public static void sendMessageToWebhook(String webhookUrl, String message) {
+        try {
+            URL url = new URL(webhookUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            String jsonPayload = String.format("{\"content\": \"%s\"}", message.replace("\"", "\\\""));
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 204) {
+                System.out.println("Mensaje enviado correctamente.");
+            } else {
+                System.out.println("Error al enviar el mensaje. Código de respuesta: " + responseCode);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void updateIllegalMods(List<String> list) {
+        registerInstalledMods();
+
         for (String modId : blacklist) {
             if (FabricLoader.getInstance().isModLoaded(modId)) {
                 System.out.println(modId);
                 list.add(modId);
             }
+        }
+    }
+
+    public static class InstallationData implements Serializable {
+        @Serial private static final long serialVersionUID = 1L;
+
+        private final List<ModData> modDataList;
+
+        public InstallationData() {
+            this.modDataList = new ArrayList<>();
+        }
+
+        public void addModData(ModData modData) {
+            this.modDataList.add(modData);
+        }
+
+        public List<ModData> getModDataList() {
+            return modDataList;
+        }
+    }
+
+    public static class ModData implements Serializable {
+        @Serial private static final long serialVersionUID = 1L;
+
+        private final String id, name, version;
+
+        public ModData(String id, String name, String version) {
+            this.id = id;
+            this.name = name;
+            this.version = version;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (super.equals(obj)) {
+                return true;
+            }
+
+            return obj instanceof ModData modData && this.id.equals(modData.id) && this.name.equals(modData.name) && this.version.equals(modData.version);
+        }
+
+        @Override
+        public String toString() {
+            return id + ", " + name + ", " + version;
         }
     }
 }

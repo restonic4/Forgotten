@@ -10,6 +10,7 @@ public class PacketManager {
     public static final ResourceLocation HARDCORE = new ResourceLocation(Forgotten.MOD_ID, "hardcore");
     public static final ResourceLocation DEATH = new ResourceLocation(Forgotten.MOD_ID, "death");
     public static final ResourceLocation CORE_FALL = new ResourceLocation(Forgotten.MOD_ID, "core_fall");
+    public static final ResourceLocation CUTSCENE = new ResourceLocation(Forgotten.MOD_ID, "cutscene");
     public static final ResourceLocation BEAM = new ResourceLocation(Forgotten.MOD_ID, "beam");
     public static final ResourceLocation LITTLE_SKY_WAVE = new ResourceLocation(Forgotten.MOD_ID, "little_sky_wave");
     public static final ResourceLocation MAIN_RITUAL = new ResourceLocation(Forgotten.MOD_ID, "main_ritual");
@@ -23,6 +24,7 @@ public class PacketManager {
         ClientPlayNetworking.registerGlobalReceiver(HARDCORE, HardcorePacket::receive);
         ClientPlayNetworking.registerGlobalReceiver(DEATH, DeathPacket::receive);
         ClientPlayNetworking.registerGlobalReceiver(CORE_FALL, FallCorePacket::receive);
+        ClientPlayNetworking.registerGlobalReceiver(CUTSCENE, CutscenePacket::receive);
         ClientPlayNetworking.registerGlobalReceiver(BEAM, BeamPacket::receive);
         ClientPlayNetworking.registerGlobalReceiver(LITTLE_SKY_WAVE, LittleSkyWavePacket::receive);
         ClientPlayNetworking.registerGlobalReceiver(MAIN_RITUAL, MainRitualPacket::receive);

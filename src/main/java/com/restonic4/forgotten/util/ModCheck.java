@@ -150,7 +150,8 @@ public class ModCheck {
             "simplecalculator",
             "nether-portal-coords",
             "portal-helper",
-            "bbor"
+            "bbor",
+            "freecam"
     };
 
     private static final List<String> foundMods = new ArrayList<>();

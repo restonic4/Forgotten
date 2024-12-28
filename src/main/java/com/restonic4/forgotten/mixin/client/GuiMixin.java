@@ -52,6 +52,11 @@ public abstract class GuiMixin {
             cancellable = true
     )
     private void onRenderHotbarInjected(GuiGraphics guiGraphics, float f, CallbackInfo ci) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime >= CachedClientData.chainsCutsceneStartTime && currentTime <= CachedClientData.chainsCutsceneEndTime) {
+            ci.cancel();
+        }
+
         if (DeathUtils.isDeath()) {
             Gui current = (Gui) (Object) this;
 

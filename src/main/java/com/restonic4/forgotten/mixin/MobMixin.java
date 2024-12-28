@@ -1,7 +1,10 @@
 package com.restonic4.forgotten.mixin;
 
+import com.restonic4.forgotten.util.GriefingPrevention;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PlayerHeadItem;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,6 +30,15 @@ public class MobMixin {
         if (itemStack.getItem() instanceof PlayerHeadItem) {
             cir.setReturnValue(ItemStack.EMPTY);
             cir.cancel();
+        }
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+    public void tick(CallbackInfo ci) {
+        Mob current = (Mob) (Object) this;
+
+        if (current instanceof Monster && !current.level().isClientSide() && GriefingPrevention.isInProtectedArea((ServerLevel) current.level(), current.blockPosition())) {
+            current.discard();
         }
     }
 }

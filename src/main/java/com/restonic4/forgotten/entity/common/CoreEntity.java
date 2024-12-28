@@ -8,6 +8,7 @@ import com.restonic4.forgotten.util.ServerCache;
 import com.restonic4.forgotten.util.helpers.RandomUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +17,9 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -78,7 +81,7 @@ public class CoreEntity extends Animal {
             return currentTime >= deSpawnTime;
         }
 
-        if (deSpawnTime == 0 || currentTime >= deSpawnTime) {
+        if (deSpawnTime == 0 || currentTime >= deSpawnTime && damageSource.getEntity() instanceof Player) {
             recoverTime = currentTime + 1500;
 
             this.playSound(ForgottenSounds.REJECT, 1, RandomUtil.randomBetween(0.75f, 1.25f));
@@ -96,7 +99,11 @@ public class CoreEntity extends Animal {
     }
 
     public void startFallAnimation() {
-        this.setPos(new Vec3(this.position().x, this.position().y - 21.5f, this.position().z));
+        Vec3 desiredPos = new Vec3(this.position().x, this.position().y - 20.7f, this.position().z);
+
+        this.setPos(desiredPos);
+        this.teleportTo(desiredPos.x, desiredPos.y, desiredPos.z);
+        this.moveTo(desiredPos);
 
         for (ServerPlayer serverPlayer : this.level().getServer().getPlayerList().getPlayers()) {
             FriendlyByteBuf friendlyByteBuf = PacketByteBufs.create();
@@ -120,6 +127,26 @@ public class CoreEntity extends Animal {
 
     @Override
     public void knockback(double d, double e, double f) {
+
+    }
+
+    @Override
+    public void playAmbientSound() {
+
+    }
+
+    @Override
+    protected void playSwimSound(float f) {
+
+    }
+
+    @Override
+    protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+
+    }
+
+    @Override
+    protected void playMuffledStepSound(BlockState blockState) {
 
     }
 

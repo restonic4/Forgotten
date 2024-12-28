@@ -18,7 +18,7 @@ public class ForgottenEntities {
             BuiltInRegistries.ENTITY_TYPE,
             new ResourceLocation(Forgotten.MOD_ID, "core"),
             FabricEntityTypeBuilder.create(MobCategory.CREATURE, CoreEntity::new)
-                    .dimensions(EntityDimensions.fixed(1.25f, 1.25f))
+                    .dimensions(EntityDimensions.fixed(3f, 3f))
                     .fireImmune()
                     .build()
     );

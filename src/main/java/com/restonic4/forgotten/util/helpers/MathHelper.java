@@ -189,6 +189,18 @@ public class MathHelper {
         return (float) (currentTime - startTime) / (endTime - startTime);
     }
 
+    public static float getProgress(long startTime, long endTime, long currentTime) {
+        if (currentTime < startTime) {
+            return 0f;
+        }
+
+        if (currentTime > endTime) {
+            return 1f;
+        }
+
+        return (float) (currentTime - startTime) / (endTime - startTime);
+    }
+
     public static double calculatePeak(float normalizedValue, double min, double max) {
         if (normalizedValue < 0 || normalizedValue > 1) {
             throw new IllegalArgumentException("The normalized value should be between 0 and 1.");

@@ -42,7 +42,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -271,7 +273,7 @@ public class Forgotten implements ModInitializer {
 
             if (playerBeingRevived != null) {
                 Vec3 center = saveManager.get("center", BlockPos.class).getCenter();
-                playerBeingRevived.teleportTo(playerBeingRevived.server.overworld(), center.x, center.y + 25, center.z, 0, 0);
+                playerBeingRevived.teleportTo(playerBeingRevived.server.overworld(), center.x, center.y + 3, center.z, 0, 0);
 
                 if (System.currentTimeMillis() >= reviveAtTime) {
                     reviveTargetPlayer();
@@ -391,6 +393,24 @@ public class Forgotten implements ModInitializer {
                 friendlyByteBuf.writeBlockPos(saveManager.get("center", BlockPos.class).offset(0, -8, 0));
                 ServerPlayNetworking.send(serverPlayer, PacketManager.MAIN_RITUAL, friendlyByteBuf);
             }
+
+            int durationTicks = 300 * 20;
+            serverLevel.setWeatherParameters(0, durationTicks, true, true);
+
+            new Thread(() -> {
+                try {
+                    Thread.sleep(8000);
+                    LightningBolt lightningBolt = new LightningBolt(
+                            EntityType.LIGHTNING_BOLT,
+                            serverLevel
+                    );
+
+                    lightningBolt.moveTo(-461.38f, 192.06f, -403.47f);
+
+                    serverLevel.addFreshEntity(lightningBolt);
+                } catch (Exception ignored) {
+                }
+            }).start();
 
             new Thread(() -> {
                 try {
@@ -559,7 +579,16 @@ public class Forgotten implements ModInitializer {
                     false
             );
 
+            MobEffectInstance slow = new MobEffectInstance(
+                    MobEffects.MOVEMENT_SLOWDOWN,
+                    20 * 20,
+                    1,
+                    false,
+                    false
+            );
+
             playerBeingRevived.addEffect(slowFalling);
+            playerBeingRevived.addEffect(slow);
         }
 
         playerBeingRevived = null;

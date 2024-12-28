@@ -1,8 +1,11 @@
 package com.restonic4.forgotten.entity.client.chain;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.entity.common.ChainEntity;
+import com.restonic4.forgotten.util.EasingSystem;
+import com.restonic4.forgotten.util.helpers.MathHelper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;

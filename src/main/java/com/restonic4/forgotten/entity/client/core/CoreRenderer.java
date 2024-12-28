@@ -11,6 +11,7 @@ import com.restonic4.forgotten.registries.common.ForgottenSounds;
 import com.restonic4.forgotten.util.EasingSystem;
 import com.restonic4.forgotten.util.ServerCache;
 import com.restonic4.forgotten.util.helpers.MathHelper;
+import com.restonic4.forgotten.util.helpers.RandomUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.ladysnake.effective.core.world.RenderedHypnotizingEntities;
 import team.lodestar.lodestone.handlers.ScreenshakeHandler;
 import team.lodestar.lodestone.systems.easing.Easing;
 import team.lodestar.lodestone.systems.screenshake.PositionedScreenshakeInstance;
@@ -85,7 +87,23 @@ public class CoreRenderer extends MobRenderer<CoreEntity, CoreModel<CoreEntity>>
             }
         }
 
-        poseStack.scale(1.5f, 1.5f, 1.5f);
+        poseStack.scale(3.01f, 3.01f, 3.01f);
+
+        if (entity.hurtTime > 0) {
+            float range = 0.02f;
+            poseStack.translate(RandomUtil.randomBetween(-range, range), RandomUtil.randomBetween(-range, range), RandomUtil.randomBetween(-range, range));
+        }
+
+        if (entity.getHealth() == 2) {
+            float range = 0.005f;
+            poseStack.translate(RandomUtil.randomBetween(-range, range), RandomUtil.randomBetween(-range, range), RandomUtil.randomBetween(-range, range));
+        } else if (entity.getHealth() == 1) {
+            float range = 0.01f;
+            poseStack.translate(RandomUtil.randomBetween(-range, range), RandomUtil.randomBetween(-range, range), RandomUtil.randomBetween(-range, range));
+        } else if (entity.getHealth() == 0) {
+            float range = 0.025f;
+            poseStack.translate(RandomUtil.randomBetween(-range, range), RandomUtil.randomBetween(-range, range), RandomUtil.randomBetween(-range, range));
+        }
 
         super.render(entity, f, g, poseStack, vertexConsumerProvider, i);
     }
@@ -143,4 +161,5 @@ public class CoreRenderer extends MobRenderer<CoreEntity, CoreModel<CoreEntity>>
                     vx, vy, vz);
         }
     }
+
 }

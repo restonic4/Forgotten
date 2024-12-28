@@ -75,7 +75,7 @@ public class SetUpForgotten {
         currentIndex++;
 
         serverLevel.addFreshEntity(entity);
-        entity.setPos(position.getCenter());
+        entity.setPos(position.getCenter().add(0,-1,0));
 
         generateChain(serverLevel, position.offset(0, -4, 0), 22, new Vec3(0, 1, 0));
     }
@@ -83,7 +83,7 @@ public class SetUpForgotten {
     private static void generateBigCore(ServerLevel serverLevel, BlockPos position) {
         CoreEntity entity = new CoreEntity(ForgottenEntities.CORE, serverLevel);
         serverLevel.addFreshEntity(entity);
-        entity.setPos(position.getCenter());
+        entity.setPos(position.getCenter().add(0, -0.8f, 0));
     }
 
     // This is complete garbage
@@ -138,7 +138,7 @@ public class SetUpForgotten {
 
                     if (chainEntity != null && chainEntity.getIndex() == i) {
                         try {
-                            Thread.sleep(300);
+                            Thread.sleep(50);
                             chainEntity.destroy();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -153,7 +153,7 @@ public class SetUpForgotten {
 
                     if (chainEntity != null && chainEntity.getIndex() == i) {
                         try {
-                            Thread.sleep(300);
+                            Thread.sleep(50);
                             chainEntity.destroy();
                         } catch (Exception e) {
                             e.printStackTrace();

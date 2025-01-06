@@ -73,22 +73,22 @@ public class GriefingPrevention {
                 return;
             }
 
-            new Thread(() -> {
-                try {
-                    int randomMilliseconds;
+            //new Thread(() -> {
+                //try {
+                    //int randomMilliseconds;
 
-                    if (newBlockstate.getBlock() instanceof FireBlock) {
-                        randomMilliseconds = RandomUtil.randomBetween(100, 250);
-                    } else if (originalBlockState.getBlock() instanceof VineBlock || originalBlockState.getBlock() instanceof BushBlock) {
-                        randomMilliseconds = RandomUtil.randomBetween(250, 1000);
-                    } else {
-                        randomMilliseconds = RandomUtil.randomBetween(2000, 8000);
-                    }
+                    //if (newBlockstate.getBlock() instanceof FireBlock) {
+                        //randomMilliseconds = RandomUtil.randomBetween(100, 250);
+                    //} else if (originalBlockState.getBlock() instanceof VineBlock || originalBlockState.getBlock() instanceof BushBlock) {
+                        //randomMilliseconds = RandomUtil.randomBetween(250, 1000);
+                    //} else {
+                        //randomMilliseconds = RandomUtil.randomBetween(2000, 8000);
+                    //}
 
-                    sendEffectsToNearbyPlayers(serverLevel, randomMilliseconds, blockPos);
+                    sendEffectsToNearbyPlayers(serverLevel, 10, blockPos);
 
-                    Thread.sleep(randomMilliseconds);
-                } catch (Exception ignored) {}
+                    //Thread.sleep(randomMilliseconds);
+                //} catch (Exception ignored) {}
 
                 serverLevel.getServer().execute(() -> {
                     if (shouldDropBlock(originalBlockState)) {
@@ -102,7 +102,7 @@ public class GriefingPrevention {
                         System.out.println("Could not place block");
                     }
                 });
-            }).start();
+            //}).start();
         }
     }
 

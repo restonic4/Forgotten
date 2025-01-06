@@ -65,17 +65,17 @@ public abstract class LevelMixin {
 
         if (level instanceof ServerLevel serverLevel) {
             if (GriefingPrevention.isInProtectedArea(serverLevel, blockPos)) {
-                BlockState originalBlockState = GriefingPrevention.getOriginalBlockAndRegister(blockPos, this.getBlockState(blockPos));
+                //BlockState originalBlockState = GriefingPrevention.getOriginalBlockAndRegister(blockPos, this.getBlockState(blockPos));
 
                 // Prevents crashes with mods like trecapitator or mods like dynamic trees
-                if (blockState.is(BlockTags.LOGS)) {
+                //if (blockState.is(BlockTags.LOGS)) {
                     cir.setReturnValue(false);
                     cir.cancel();
-                }
+               // }
 
-                if (blockState != originalBlockState) {
-                    GriefingPrevention.onBlockModifiedInMainTemple(serverLevel, blockState, originalBlockState, blockPos);
-                }
+                //if (blockState != originalBlockState) {
+                    //GriefingPrevention.onBlockModifiedInMainTemple(serverLevel, blockState, originalBlockState, blockPos);
+               // }
             }
         }
     }

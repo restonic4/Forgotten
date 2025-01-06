@@ -1,5 +1,6 @@
 package com.restonic4.forgotten.client;
 
+import com.restonic4.forgotten.Forgotten;
 import com.restonic4.forgotten.client.gui.IrisScreen;
 import com.restonic4.forgotten.compatibility.exordium.Overrides;
 import com.restonic4.forgotten.networking.PacketManager;
@@ -13,6 +14,8 @@ import com.restonic4.forgotten.util.ModCheck;
 import com.restonic4.forgotten.util.helpers.CircleGenerator;
 import com.restonic4.forgotten.util.helpers.RenderingHelper;
 import com.restonic4.forgotten.util.trash.TestingVars;
+import com.restonic4.under_control.api.whitelist.WhitelistAPI;
+import com.restonic4.under_control.client.gui.FatalErrorScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -22,6 +25,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
@@ -32,7 +36,13 @@ import team.lodestar.lodestone.systems.particle.data.color.ColorParticleData;
 import team.lodestar.lodestone.systems.particle.data.spin.SpinParticleData;
 
 import java.awt.*;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class ForgottenClient implements ClientModInitializer {
     /**
@@ -41,6 +51,7 @@ public class ForgottenClient implements ClientModInitializer {
     private boolean configured = false;
     private long lastTimeSpawned = System.currentTimeMillis();
     public static long currentTime = System.currentTimeMillis();
+    private int status = -1;
 
     int ticksLeft = 0;
     int tickSaveCounter = 0;
@@ -56,6 +67,32 @@ public class ForgottenClient implements ClientModInitializer {
         ForgottenBlocks.registerClient();
         ForgottenMaterials.register();
         ModCheck.check();
+
+        WhitelistAPI.registerWhitelist(Forgotten.MOD_ID, "earlyAccess", (UUID uuid) -> {
+            try {
+                HttpClient client = HttpClient.newHttpClient();
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("https://chaotic-loom.com/api/testers"))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    String responseBody = response.body();
+                    List<String> testers = Arrays.asList(responseBody.replace("[", "").replace("]", "").replace("\"", "").split(","));
+
+                    return testers.contains(uuid.toString());
+                } else {
+                    System.out.println("Error: " + response.statusCode());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return false;
+        });
 
         ClientPlayConnectionEvents.DISCONNECT.register((clientPacketListener, minecraft) -> {
             DeathUtils.setDeathValue(false);
@@ -77,9 +114,12 @@ public class ForgottenClient implements ClientModInitializer {
                 Overrides.override();
             }
 
-            if (!configured && Minecraft.getInstance().getWindow().getWindow() != 0) {
-                configured = true;
-                //configureWindow();
+            if (status == -1) {
+                status = (WhitelistAPI.isAllowed(Forgotten.MOD_ID, "earlyAccess", client.getUser().getGameProfile().getId())) ? 1 : 0;
+            }
+
+            if (status == 0) {
+                Minecraft.getInstance().forceSetScreen(new FatalErrorScreen(Component.literal("Access denied!"), Component.literal("Forgotten is in early access, how the fuck did you got the mod?")));
             }
 
             if (System.currentTimeMillis() > lastTimeSpawned + 3000 && Minecraft.getInstance().level != null) {
